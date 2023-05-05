@@ -1,21 +1,12 @@
-# create-t3-turbo
-
-<img width="1758" alt="turbo2" src="https://user-images.githubusercontent.com/51714798/213819392-33e50db9-3e38-4c51-9a22-03abe5e48f3d.png">
-
-## Installation
-
-There are two ways of initializing an app using `create-t3-turbo` starter. You can either use this repository as a template or use Turbo's CLI to init your project:
-```bash
-npx create-turbo@latest -e https://github.com/t3-oss/create-t3-turbo
-```
+# BetterAlexa Monorepo
 
 ## About
 
-Ever wondered how to migrate your T3 application into a monorepo? Stop right here! This is the perfect starter repo to get you running with the perfect stack!
+Welcome to BetterAlexa monorepo, we use create t3 turbo to create this monorepo.
 
-It uses [Turborepo](https://turborepo.org/) and contains:
+Folder structure:
 
-```
+```txt
 .github
   └─ workflows
         └─ CI with pnpm cache setup
@@ -42,7 +33,7 @@ packages
      └─ typesafe db-calls using Prisma
 ```
 
-## FAQ
+<!-- ## FAQ
 
 ### Can you include Solito?
 
@@ -62,7 +53,7 @@ During Launch Week 7, Supabase [announced their fork](https://supabase.com/blog/
 
 No, it does not. The `api` package should only be a production dependency in the Next.js application where it's served. The Expo app, and all other apps you may add in the future, should only add the `api` package as a dev dependency. This lets you have full typesafety in your client applications, while keeping your backend code safe.
 
-If you need to share runtime code between the client and server, such as input validation schemas, you can create a separate `shared` package for this and import on both sides.
+If you need to share runtime code between the client and server, such as input validation schemas, you can create a separate `shared` package for this and import on both sides. -->
 
 ## Quick Start
 
@@ -70,21 +61,13 @@ To get it running, follow the steps below:
 
 ### Setup dependencies
 
-```diff
+```txt
 # Install dependencies
 pnpm i
-
-# In packages/db/prisma update schema.prisma provider to use sqlite
-# or use your own database provider
-- provider = "postgresql"
-+ provider = "sqlite"
 
 # Configure environment variables.
 # There is an `.env.example` in the root directory you can use for reference
 cp .env.example .env
-
-# Push the Prisma schema to your database
-pnpm db:push
 ```
 
 ### Configure Expo `dev`-script
@@ -98,20 +81,20 @@ pnpm db:push
 +  "dev": "expo start --ios",
 ```
 
-3. Run `pnpm dev` at the project root folder.
+1. Run `pnpm dev` at the project root folder.
 
 > **TIP:** It might be easier to run each app in separate terminal windows so you get the logs from each app separately. This is also required if you want your terminals to be interactive, e.g. to access the Expo QR code. You can run `pnpm --filter expo dev` and `pnpm --filter nextjs dev` to run each app in a separate terminal window.
 
 #### For Android
 
 1. Install Android Studio tools [as shown on expo docs](https://docs.expo.dev/workflow/android-studio-emulator/).
-2. Change the `dev` script at `apps/expo/package.json` to open the Android emulator.
+1. Change the `dev` script at `apps/expo/package.json` to open the Android emulator.
 
 ```diff
 +  "dev": "expo start --android",
 ```
 
-3. Run `pnpm dev` at the project root folder.
+1. Run `pnpm dev` at the project root folder.
 
 ## Deployment
 
@@ -119,13 +102,21 @@ pnpm db:push
 
 #### Prerequisites
 
-_We do not recommend deploying a SQLite database on serverless environments since the data wouldn't be persisted. I provisioned a quick Postgresql database on [Railway](https://railway.app), but you can of course use any other database provider. Make sure the prisma schema is updated to use the correct database._
+We will be using MongoDB as our database, and Firebase for our authentication.
+
+1. Create a MongoDB database and get the connection string. You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) for this.
+2. Create a Firebase project and get the credentials. You can use [Firebase Console](https://console.firebase.google.com/) for this.
+3. Enable Firebase authentication with Google as a sign-in method. You can follow [this guide](https://firebase.google.com/docs/auth/web/google-signin) for this.
+4. Create a Service Account for your Firebase project. You can follow [this guide](https://firebase.google.com/docs/admin/setup#initialize-sdk) for this. Download the credentials file and save it as `service_account.json` in `packages/api`.
+5. Get your Firebase config. You can follow [this guide](https://firebase.google.com/docs/web/setup#config-object) for this. Paste the config to the `.env` file in the root directory, match it with our `.env.example`.
 
 **Please note that the Next.js application with tRPC must be deployed in order for the Expo app to communicate with the server in a production environment.**
 
 #### Deploy to Vercel
 
-Let's deploy the Next.js application to [Vercel](https://vercel.com/). If you have ever deployed a Turborepo app there, the steps are quite straightforward. You can also read the [official Turborepo guide](https://vercel.com/docs/concepts/monorepos/turborepo) on deploying to Vercel.
+Currently it is not possible to deploy this to vercel, as we need the `service_account.json` and it is currently gitignored. I will try to find a way to make this work as a `.env` variable(currrently for some reason we can't use the json as environment variable because there's a JSON parse error with the multiline env variable).
+
+<!-- Let's deploy the Next.js application to [Vercel](https://vercel.com/). If you have ever deployed a Turborepo app there, the steps are quite straightforward. You can also read the [official Turborepo guide](https://vercel.com/docs/concepts/monorepos/turborepo) on deploying to Vercel.
 
 1. Create a new project on Vercel, select the `apps/nextjs` folder as the root directory and apply the following build settings:
 
@@ -135,7 +126,7 @@ Let's deploy the Next.js application to [Vercel](https://vercel.com/). If you ha
 
 2. Add your `DATABASE_URL` environment variable.
 
-3. Done! Your app should successfully deploy. Assign your domain and use that instead of `localhost` for the `url` in the Expo app so that your Expo app can communicate with your backend when you are not in development.
+3. Done! Your app should successfully deploy. Assign your domain and use that instead of `localhost` for the `url` in the Expo app so that your Expo app can communicate with your backend when you are not in development. -->
 
 ### Expo
 
@@ -206,5 +197,3 @@ https://github.com/t3-oss/create-t3-turbo/blob/656965aff7db271e5e080242c4a3ce4da
 ## References
 
 The stack originates from [create-t3-app](https://github.com/t3-oss/create-t3-app).
-
-A [blog post](https://jumr.dev/blog/t3-turbo) where I wrote how to migrate a T3 app into this.
