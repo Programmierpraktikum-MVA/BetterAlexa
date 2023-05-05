@@ -28,9 +28,9 @@ packages
  ├─ api
  |   └─ tRPC v10 router definition
  ├─ auth
-     └─ authentication using next-auth. **NOTE: Only for Next.js app, not Expo**
+     └─ authentication using firebase auth
  └─ db
-     └─ typesafe db-calls using Prisma
+     └─ typesafe db-calls using Prisma -> optional, we can also just use mongodb client
 ```
 
 <!-- ## FAQ
