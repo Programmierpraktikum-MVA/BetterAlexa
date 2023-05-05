@@ -1,3 +1,4 @@
-export { authOptions } from "./src/auth-options";
-export { getServerSession } from "./src/get-session";
-export type { Session } from "next-auth";
+export { app } from "./src/firebase";
+export * from "./src/auth";
+export { AuthProvider } from "./src/AuthProvider";
+export { useSession } from "./src/useSession";
