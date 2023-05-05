@@ -106,17 +106,15 @@ We will be using MongoDB as our database, and Firebase for our authentication.
 
 1. Create a MongoDB database and get the connection string. You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) for this.
 2. Create a Firebase project and get the credentials. You can use [Firebase Console](https://console.firebase.google.com/) for this.
-3. Enable Firebase authentication with Google as a sign-in method. You can follow [this guide](https://firebase.google.com/docs/auth/web/google-signin) for this.
-4. Create a Service Account for your Firebase project. You can follow [this guide](https://firebase.google.com/docs/admin/setup#initialize-sdk) for this. Download the credentials file and save it as `service_account.json` in `packages/api`.
+3. Enable Firebase authentication with Google as a sign-in method. You can follow [this guide](https://firebase.google.com/docs/auth/web/google-signin) for this. We can add more sign-in method later.
+4. Create a Service Account for your Firebase project. You can follow [this guide](https://firebase.google.com/docs/admin/setup#initialize-sdk) for this. Download the credentials file and paste the config to the `.env` file in the root directory, match it with our `.env.example`.
 5. Get your Firebase config. You can follow [this guide](https://firebase.google.com/docs/web/setup#config-object) for this. Paste the config to the `.env` file in the root directory, match it with our `.env.example`.
 
 **Please note that the Next.js application with tRPC must be deployed in order for the Expo app to communicate with the server in a production environment.**
 
 #### Deploy to Vercel
 
-Currently it is not possible to deploy this to vercel, as we need the `service_account.json` and it is currently gitignored. I will try to find a way to make this work as a `.env` variable(currrently for some reason we can't use the json as environment variable because there's a JSON parse error with the multiline env variable).
-
-<!-- Let's deploy the Next.js application to [Vercel](https://vercel.com/). If you have ever deployed a Turborepo app there, the steps are quite straightforward. You can also read the [official Turborepo guide](https://vercel.com/docs/concepts/monorepos/turborepo) on deploying to Vercel.
+Let's deploy the Next.js application to [Vercel](https://vercel.com/). If you have ever deployed a Turborepo app there, the steps are quite straightforward. You can also read the [official Turborepo guide](https://vercel.com/docs/concepts/monorepos/turborepo) on deploying to Vercel.
 
 1. Create a new project on Vercel, select the `apps/nextjs` folder as the root directory and apply the following build settings:
 
@@ -124,9 +122,9 @@ Currently it is not possible to deploy this to vercel, as we need the `service_a
 
 > The install command filters out the expo package and saves a few second (and cache size) of dependency installation. The build command makes us build the application using Turbo.
 
-2. Add your `DATABASE_URL` environment variable.
+1. Add your environment variables (you can paste the .env file to vercel).
 
-3. Done! Your app should successfully deploy. Assign your domain and use that instead of `localhost` for the `url` in the Expo app so that your Expo app can communicate with your backend when you are not in development. -->
+2. Done! Your app should successfully deploy. Assign your domain and use that instead of `localhost` for the `url` in the Expo app so that your Expo app can communicate with your backend when you are not in development.
 
 ### Expo
 
@@ -152,7 +150,7 @@ https://github.com/t3-oss/create-t3-turbo/blob/656965aff7db271e5e080242c4a3ce4da
 
 3. After the initial setup, you can create your first build. You can build for Android and iOS platforms and use different [**eas.json** build profiles](https://docs.expo.dev/build-reference/eas-json/) to create production builds or development, or test builds. Let's make a production build for iOS.
 
-   ```
+   ```bash
    $ eas build --platform ios --profile production
    ```
 
@@ -160,7 +158,7 @@ https://github.com/t3-oss/create-t3-turbo/blob/656965aff7db271e5e080242c4a3ce4da
 
 4. Now that you have your first production build, you can submit this to the stores. [EAS Submit](https://docs.expo.dev/submit/introduction/) can help you send the build to the stores.
 
-   ```
+   ```bash
    $ eas submit --platform ios --latest
    ```
 
