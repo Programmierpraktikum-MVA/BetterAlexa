@@ -3,6 +3,7 @@ import { createTRPCNext } from "@trpc/next";
 import superjson from "superjson";
 
 import type { AppRouter } from "@acme/api";
+import { auth } from "@acme/auth";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -33,6 +34,14 @@ export const api = createTRPCNext<AppRouter>({
         }),
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
+          async headers() {
+            const token = (await auth.currentUser?.getIdToken()) || "";
+            return token
+              ? {
+                  Authorization: `Bearer ${token}`,
+                }
+              : {};
+          },
         }),
       ],
     };
