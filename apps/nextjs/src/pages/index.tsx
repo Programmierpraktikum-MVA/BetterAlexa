@@ -1,7 +1,15 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 
+import {
+  GoogleAuthProvider,
+  auth,
+  signInWithPopup,
+  useSession,
+} from "@acme/auth";
+
 const Home: NextPage = () => {
+  const session = useSession();
   return (
     <>
       <Head>
@@ -14,6 +22,30 @@ const Home: NextPage = () => {
           <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
             Create <span className="text-pink-400">T3</span> Turbo
           </h1>
+          {!session.user && (
+            <button
+              onClick={() => {
+                const provider = new GoogleAuthProvider();
+                void signInWithPopup(auth, provider);
+              }}
+            >
+              Sign in
+            </button>
+          )}
+          {session.user && (
+            <div>
+              <p>{session.user.displayName}</p>
+              <p>{session.user.email}</p>
+
+              <button
+                onClick={() => {
+                  void auth.signOut();
+                }}
+              >
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       </main>
     </>
