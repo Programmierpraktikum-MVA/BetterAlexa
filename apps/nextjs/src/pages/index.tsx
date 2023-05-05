@@ -8,6 +8,8 @@ import {
   useSession,
 } from "@acme/auth";
 
+import { api } from "~/utils/api";
+
 const Home: NextPage = () => {
   const session = useSession();
   return (
@@ -36,6 +38,7 @@ const Home: NextPage = () => {
             <div>
               <p>{session.user.displayName}</p>
               <p>{session.user.email}</p>
+              <Hidden />
 
               <button
                 onClick={() => {
@@ -49,6 +52,17 @@ const Home: NextPage = () => {
         </div>
       </main>
     </>
+  );
+};
+
+const Hidden = () => {
+  const { data } = api.auth.getSecretMessage.useQuery();
+
+  return (
+    <div>
+      <h1>Secret:</h1>
+      <p>{data ?? "error"}</p>
+    </div>
   );
 };
 

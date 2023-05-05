@@ -8,11 +8,13 @@
  */
 import { TRPCError, initTRPC } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { type DecodedIdToken } from "firebase-admin/auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { getServerSession, type Session } from "@acme/auth";
 import { prisma } from "@acme/db";
+
+import { adminAuth } from "./firebase";
 
 /**
  * 1. CONTEXT
@@ -24,7 +26,7 @@ import { prisma } from "@acme/db";
  *
  */
 type CreateContextOptions = {
-  session: Session | null;
+  session: DecodedIdToken | null;
 };
 
 /**
@@ -49,13 +51,21 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts;
+  const { req } = opts;
 
   // Get the session from the server using the unstable_getServerSession wrapper function
-  const session = await getServerSession({ req, res });
+  const authorization = req.headers.authorization;
+  if (!authorization) return createInnerTRPCContext({ session: null });
+
+  const token = authorization.split("Bearer ")[1];
+  if (!token) return createInnerTRPCContext({ session: null });
+
+  const decodedIdToken = await adminAuth.verifyIdToken(token);
+  if (!decodedIdToken || !decodedIdToken.email)
+    return createInnerTRPCContext({ session: null });
 
   return createInnerTRPCContext({
-    session,
+    session: decodedIdToken,
   });
 };
 
@@ -106,13 +116,13 @@ export const publicProcedure = t.procedure;
  * procedure
  */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session?.user) {
+  if (!ctx.session?.email) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
       // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
+      session: { ...ctx.session, email: ctx.session.email },
     },
   });
 });

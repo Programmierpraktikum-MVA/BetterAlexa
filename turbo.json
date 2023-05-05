@@ -34,6 +34,7 @@
   "globalEnv": [
     "CI",
     "DATABASE_URL",
+    "FIREBASE_CONFIG",
     "NEXT_PUBLIC_API_KEY",
     "NEXT_PUBLIC_AUTH_DOMAIN",
     "NEXT_PUBLIC_PROJECT_ID",
