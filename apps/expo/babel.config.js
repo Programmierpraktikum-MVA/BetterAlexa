@@ -12,6 +12,23 @@ module.exports = function (api) {
       "nativewind/babel",
       "expo-router/babel",
       ["module-resolver", { alias: { "~": "./src" } }],
+      [
+        "transform-inline-environment-variables",
+        {
+          include: [
+            "NODE_ENV",
+            "ANDROID_GOOGLE_CLIENT_ID",
+            "IOS_GOOGLE_CLIENT_ID",
+            "EXPO_GOOGLE_CLIENT_ID",
+            "NEXT_PUBLIC_API_KEY",
+            "NEXT_PUBLIC_AUTH_DOMAIN",
+            "NEXT_PUBLIC_PROJECT_ID",
+            "NEXT_PUBLIC_STORAGE_BUCKET",
+            "NEXT_PUBLIC_MESSAGING_SENDER_ID",
+            "NEXT_PUBLIC_APP_ID",
+          ],
+        },
+      ],
     ],
   };
 };
