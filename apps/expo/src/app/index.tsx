@@ -12,6 +12,8 @@ import {
   useSession,
 } from "@acme/auth";
 
+import { api } from "~/utils/api";
+
 WebBrowser.maybeCompleteAuthSession();
 
 const Index = () => {
@@ -56,14 +58,30 @@ const Index = () => {
         )}
 
         {session.user && (
-          <Button
-            onPress={() => void auth.signOut()}
-            title="Sign out"
-            color={"#f472b6"}
-          />
+          <View>
+            <Hidden />
+            <Button
+              onPress={() => void auth.signOut()}
+              title="Sign out"
+              color={"#f472b6"}
+            />
+          </View>
         )}
       </View>
     </SafeAreaView>
+  );
+};
+
+const Hidden = () => {
+  const { data, isLoading } = api.auth.getSecretMessage.useQuery();
+
+  return (
+    <View>
+      <Text className="text-xl text-white">Secret:</Text>
+      <Text className="text-white">
+        {isLoading ? "Loading..." : data ?? "error"}
+      </Text>
+    </View>
   );
 };
 
