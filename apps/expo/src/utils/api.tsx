@@ -6,6 +6,7 @@ import { createTRPCReact } from "@trpc/react-query";
 import superjson from "superjson";
 
 import { type AppRouter } from "@acme/api";
+import { auth } from "@acme/auth";
 
 /**
  * A set of typesafe hooks for consuming your API.
@@ -31,7 +32,7 @@ const getBaseUrl = () => {
     Constants.manifest2?.extra?.expoGo?.debuggerHost;
   const localhost = debuggerHost?.split(":")[0];
   if (!localhost) {
-    // return "https://your-production-url.com";
+    return "https://better-alexa.vercel.app";
     throw new Error(
       "Failed to get localhost. Please point to your production server.",
     );
@@ -53,6 +54,14 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
       links: [
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
+          async headers() {
+            const token = (await auth.currentUser?.getIdToken()) || "";
+            return token
+              ? {
+                  Authorization: `Bearer ${token}`,
+                }
+              : {};
+          },
         }),
       ],
     }),

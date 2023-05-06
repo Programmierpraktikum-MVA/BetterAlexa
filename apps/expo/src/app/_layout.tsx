@@ -3,6 +3,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
+import { AuthProvider } from "@acme/auth";
+
 import { TRPCProvider } from "~/utils/api";
 
 // This is the main layout of the app
@@ -10,20 +12,22 @@ import { TRPCProvider } from "~/utils/api";
 const RootLayout = () => {
   return (
     <TRPCProvider>
-      <SafeAreaProvider>
-        {/*
+      <AuthProvider>
+        <SafeAreaProvider>
+          {/*
           The Stack component displays the current page.
           It also allows you to configure your screens 
         */}
-        <Stack
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: "#f472b6",
-            },
-          }}
-        />
-        <StatusBar />
-      </SafeAreaProvider>
+          <Stack
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: "#f472b6",
+              },
+            }}
+          />
+          <StatusBar />
+        </SafeAreaProvider>
+      </AuthProvider>
     </TRPCProvider>
   );
 };

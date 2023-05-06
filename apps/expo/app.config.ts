@@ -1,9 +1,9 @@
 import type { ExpoConfig } from "@expo/config";
 
 const defineConfig = (): ExpoConfig => ({
-  name: "expo",
-  slug: "expo",
-  scheme: "expo",
+  name: "Better Alexa",
+  slug: "betteralexa",
+  scheme: "betteralexa",
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
@@ -19,9 +19,10 @@ const defineConfig = (): ExpoConfig => ({
   assetBundlePatterns: ["**/*"],
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "your.bundle.identifier",
+    bundleIdentifier: "com.mva.betteralexa",
   },
   android: {
+    package: "com.mva.betteralexa",
     adaptiveIcon: {
       foregroundImage: "./assets/icon.png",
       backgroundColor: "#1F104A",
@@ -29,7 +30,7 @@ const defineConfig = (): ExpoConfig => ({
   },
   extra: {
     eas: {
-      // projectId: "your-project-id",
+      projectId: "5f5d1e96-959f-4d6c-9603-2f5a79bea126",
     },
   },
   plugins: ["./expo-plugins/with-modify-gradle.js"],
