@@ -3,7 +3,7 @@ import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 
 import { auth } from "./auth";
 
-interface IAuthContext {
+interface ISession {
   loading: boolean;
   user?: User;
 }
@@ -12,14 +12,14 @@ interface IAuthProvider {
   children: React.ReactNode;
 }
 
-const init: IAuthContext = {
+const init: ISession = {
   loading: true,
 };
 
-export const AuthContext = createContext<IAuthContext>(init);
+export const AuthContext = createContext<ISession>(init);
 
 export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
-  const [session, setSession] = useState<IAuthContext>(init);
+  const [session, setSession] = useState<ISession>(init);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
         setSession({ loading: false, user: user });
       } else {
         void signOut(auth);
-        setSession({ loading: false, user: undefined });
+        setSession({ loading: false });
       }
     });
     return unsubscribe;
