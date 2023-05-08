@@ -14,7 +14,7 @@ import { ZodError } from "zod";
 
 import { prisma } from "@acme/db";
 
-import { adminAuth } from "./firebase";
+import { adminAuth } from "./utils/firebase";
 
 /**
  * 1. CONTEXT
