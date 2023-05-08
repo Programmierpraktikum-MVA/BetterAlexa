@@ -1,24 +1,13 @@
 import { useEffect, useState } from "react";
 
+import { api } from "~/utils/api";
+import { blobToBase64 } from "~/utils/blobToBase64";
 import { createMediaRecorder } from "~/utils/mediaRecorder";
-
-const processAudio = async (audioBlob: Blob) => {
-  const response = await fetch("/api/audio", {
-    method: "POST",
-    body: audioBlob,
-  });
-
-  if (!response.ok) {
-    throw new Error("Error processing audio");
-  }
-
-  console.log("Audio processed");
-  // Do something with the processed audio, e.g., play it or save it
-};
 
 const RecordAudio = () => {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
+  const { mutateAsync } = api.audio.process.useMutation();
 
   useEffect(() => {
     void navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
@@ -35,7 +24,13 @@ const RecordAudio = () => {
             <button
               className="aspect-square rounded-full bg-gray-700 p-4 text-sm font-semibold text-white hover:bg-gray-800"
               onClick={() => {
-                const recorder = createMediaRecorder({ stream, processAudio });
+                const recorder = createMediaRecorder({
+                  stream,
+                  processAudio: async (blob) => {
+                    const base64 = await blobToBase64(blob);
+                    await mutateAsync(base64);
+                  },
+                });
                 setRecorder(recorder);
                 recorder.start();
               }}
