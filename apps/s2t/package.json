@@ -1,0 +1,13 @@
+{
+  "name": "@acme/s2t",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "pnpm with-env python3 api/index.py",
+    "dev": "DEBUG=true pnpm start",
+    "with-env": "dotenv -e ../../.env --"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^7.2.1"
+  }
+}
