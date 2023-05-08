@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
 
@@ -9,6 +10,9 @@ import {
 } from "@acme/auth";
 
 import { api } from "~/utils/api";
+import { blobToBase64 } from "~/utils/blobToBase64";
+import { createMediaRecorder } from "~/utils/mediaRecorder";
+import { MicrophoneIcon } from "~/components/MicrophoneIcon";
 
 const Home: NextPage = () => {
   const session = useSession();
@@ -24,31 +28,27 @@ const Home: NextPage = () => {
           <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
             Better <span className="text-pink-400">Alexa</span>
           </h1>
-          {!session.user && (
+          <div>
             <button
+              className="rounded-lg bg-gray-700 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-800"
               onClick={() => {
+                if (session.user) {
+                  void auth.signOut();
+                  return;
+                }
                 const provider = new GoogleAuthProvider();
                 void signInWithPopup(auth, provider);
               }}
             >
-              Sign in
+              {!session.user ? "Sign in" : "Sign out"}
             </button>
-          )}
-          {session.user && (
-            <div>
-              <p>{session.user.displayName}</p>
-              <p>{session.user.email}</p>
-              <Hidden />
-
-              <button
-                onClick={() => {
-                  void auth.signOut();
-                }}
-              >
-                Sign out
-              </button>
-            </div>
-          )}
+            {session.user && (
+              <span className="ml-2 text-sm font-semibold text-gray-400">
+                {session.user.email}
+              </span>
+            )}
+          </div>
+          {session.user && <Hidden />}
         </div>
       </main>
     </>
@@ -56,12 +56,58 @@ const Home: NextPage = () => {
 };
 
 const Hidden = () => {
-  const { data } = api.auth.getSecretMessage.useQuery();
+  const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
+  const { mutateAsync, isLoading } = api.audio.process.useMutation();
+  const [text, setText] = useState("");
 
   return (
     <div>
-      <h1>Secret:</h1>
-      <p>{data ?? "error"}</p>
+      <div className="flex items-center gap-1">
+        <input
+          value={isLoading ? "Loading..." : text}
+          onChange={(e) => setText(e.target.value)}
+          type="text"
+          className="block w-96 rounded-md border-0 px-2 py-1 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"
+          disabled={isLoading}
+          placeholder="Alexa, play some music"
+        />
+
+        {recorder?.state !== "recording" && (
+          <button
+            className="aspect-square rounded-full bg-gray-700 p-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:bg-gray-500"
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            onClick={async () => {
+              const stream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+              });
+              const recorder = createMediaRecorder({
+                stream,
+                processAudio: async (blob) => {
+                  const base64 = await blobToBase64(blob);
+                  const data = await mutateAsync(base64);
+                  setText(data.result.text);
+                },
+              });
+              setRecorder(recorder);
+              recorder.start();
+            }}
+            disabled={isLoading}
+          >
+            <MicrophoneIcon className="h-4 w-4" />
+          </button>
+        )}
+        {recorder?.state === "recording" && (
+          <button
+            className="aspect-square rounded-full bg-red-700 p-2 text-sm font-semibold text-white hover:bg-red-800 disabled:bg-red-500"
+            onClick={() => {
+              recorder.stop();
+              setRecorder(null);
+            }}
+          >
+            <MicrophoneIcon className="h-4 w-4" />
+          </button>
+        )}
+      </div>
     </div>
   );
 };
