@@ -19,11 +19,13 @@ apps
   |   ├─ Navigation using Expo Router
   |   ├─ Tailwind using Nativewind
   |   └─ Typesafe API calls using tRPC
-  └─ next.js
-      ├─ Next.js 13
-      ├─ React 18
-      ├─ Tailwind CSS
-      └─ E2E Typesafe API Server & Client
+  ├─ next.js
+  |   ├─ Next.js 13
+  |   ├─ React 18
+  |   ├─ Tailwind CSS
+  |   └─ E2E Typesafe API Server & Client
+  └─ sample
+      └─ Sample api for frontend
 packages
  ├─ api
  |   └─ tRPC v10 router definition
