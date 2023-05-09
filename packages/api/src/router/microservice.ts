@@ -2,14 +2,8 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
-type ProcessOutput = {
-  result: {
-    text: string;
-  };
-};
-
-export const audioRouter = createTRPCRouter({
-  process: protectedProcedure
+export const microserviceRouter = createTRPCRouter({
+  speechToText: protectedProcedure
     .input(
       z.string().startsWith("data:audio/webm;base64,", "Invalid audio data"),
     )
@@ -17,7 +11,7 @@ export const audioRouter = createTRPCRouter({
       const data = input.replace("data:audio/webm;base64,", "");
       const audioBlob = Buffer.from(data, "base64");
 
-      const result = await fetch(`${process.env.SAMPLE_URL}/process`, {
+      const result = await fetch(`${process.env.SAMPLE_URL}/speech-to-text`, {
         method: "POST",
         body: audioBlob,
       });
@@ -26,6 +20,6 @@ export const audioRouter = createTRPCRouter({
         throw new Error("Failed to process audio");
       }
 
-      return (await result.json()) as ProcessOutput;
+      return (await result.json()) as { result: { text: string } };
     }),
 });

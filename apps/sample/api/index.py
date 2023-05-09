@@ -12,7 +12,7 @@ def home():
     return {"message": "Hello, World!"}
 
 
-@app.route("/process", methods=["POST"])
+@app.route("/speech-to-text", methods=["POST"])
 def process_audio():
     try:
         # Check if request method is POST
