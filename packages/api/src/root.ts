@@ -1,10 +1,10 @@
-import { audioRouter } from "./router/audio";
 import { authRouter } from "./router/auth";
+import { microserviceRouter } from "./router/microservice";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
-  audio: audioRouter,
+  microservice: microserviceRouter,
 });
 
 // export type definition of API

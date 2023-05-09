@@ -25,7 +25,7 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
         <div className="container mt-12 flex flex-col items-center justify-center gap-4 px-4 py-8">
-          <h1 className="sm:text-[5rem] text-5xl font-extrabold tracking-tight">
+          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
             Better <span className="text-pink-400">Alexa</span>
           </h1>
           <div>
@@ -57,18 +57,19 @@ const Home: NextPage = () => {
 
 const Hidden = () => {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
-  const { mutateAsync, isLoading } = api.audio.process.useMutation();
+  const { mutateAsync: speechToText, isLoading: processingSpeech } =
+    api.microservice.speechToText.useMutation();
   const [text, setText] = useState("");
 
   return (
     <div>
       <div className="flex items-center gap-1">
         <input
-          value={isLoading || !!recorder ? "Loading..." : text}
+          value={processingSpeech || !!recorder ? "Loading..." : text}
           onChange={(e) => setText(e.target.value)}
           type="text"
           className="block w-96 rounded-md border-0 px-2 py-1 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"
-          disabled={isLoading || !!recorder}
+          disabled={processingSpeech || !!recorder}
           placeholder="Alexa, play some music"
         />
 
@@ -85,14 +86,14 @@ const Hidden = () => {
                 processAudio: async (blob) => {
                   const base64 = await blobToBase64(blob);
                   setRecorder(null);
-                  const data = await mutateAsync(base64);
+                  const data = await speechToText(base64);
                   setText(data.result.text);
                 },
               });
               setRecorder(recorder);
               recorder.start();
             }}
-            disabled={isLoading}
+            disabled={processingSpeech}
           >
             <MicrophoneIcon className="h-4 w-4" />
           </button>
