@@ -25,7 +25,7 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
         <div className="container mt-12 flex flex-col items-center justify-center gap-4 px-4 py-8">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+          <h1 className="sm:text-[5rem] text-5xl font-extrabold tracking-tight">
             Better <span className="text-pink-400">Alexa</span>
           </h1>
           <div>
@@ -64,11 +64,11 @@ const Hidden = () => {
     <div>
       <div className="flex items-center gap-1">
         <input
-          value={isLoading ? "Loading..." : text}
+          value={isLoading || !!recorder ? "Loading..." : text}
           onChange={(e) => setText(e.target.value)}
           type="text"
           className="block w-96 rounded-md border-0 px-2 py-1 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6"
-          disabled={isLoading}
+          disabled={isLoading || !!recorder}
           placeholder="Alexa, play some music"
         />
 
@@ -84,6 +84,7 @@ const Hidden = () => {
                 stream,
                 processAudio: async (blob) => {
                   const base64 = await blobToBase64(blob);
+                  setRecorder(null);
                   const data = await mutateAsync(base64);
                   setText(data.result.text);
                 },
@@ -101,7 +102,6 @@ const Hidden = () => {
             className="aspect-square rounded-full bg-red-700 p-2 text-sm font-semibold text-white hover:bg-red-800 disabled:bg-red-500"
             onClick={() => {
               recorder.stop();
-              setRecorder(null);
             }}
           >
             <MicrophoneIcon className="h-4 w-4" />
