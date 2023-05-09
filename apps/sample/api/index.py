@@ -1,4 +1,5 @@
 from flask import Flask, request
+from gtts import gTTS
 
 import openai
 import io
@@ -59,6 +60,25 @@ def generate_cta():
 
         # Respond with success message
         return {"result": result}, 200
+    except Exception as e:
+        print(e)
+        return {"error": "Internal Server Error"}, 500
+
+
+@app.route("/text-to-speech", methods=["POST"])
+def process_text():
+    try:
+        # Check if request method is POST
+        if request.method != "POST":
+            return "Method Not Allowed", 405
+
+        # Parse incoming data as binary
+        data = request.get_data()
+        text = data.decode("utf-8")
+        tts = gTTS(text=text, lang="en")
+
+        # return tts audio stream
+        return tts.stream()
     except Exception as e:
         print(e)
         return {"error": "Internal Server Error"}, 500
