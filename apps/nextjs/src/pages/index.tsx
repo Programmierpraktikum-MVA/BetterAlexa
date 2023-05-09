@@ -28,27 +28,32 @@ const Home: NextPage = () => {
           <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
             Better <span className="text-pink-400">Alexa</span>
           </h1>
-          <div>
-            <button
-              className="rounded-lg bg-gray-700 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-800"
-              onClick={() => {
-                if (session.user) {
-                  void auth.signOut();
-                  return;
-                }
-                const provider = new GoogleAuthProvider();
-                void signInWithPopup(auth, provider);
-              }}
-            >
-              {!session.user ? "Sign in" : "Sign out"}
-            </button>
-            {session.user && (
-              <span className="ml-2 text-sm font-semibold text-gray-400">
-                {session.user.email}
-              </span>
-            )}
-          </div>
-          {session.user && <Hidden />}
+          {session.loading && <div>Loading...</div>}
+          {!session.loading && (
+            <>
+              <div>
+                <button
+                  className="rounded-lg bg-gray-700 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-800"
+                  onClick={() => {
+                    if (session.user) {
+                      void auth.signOut();
+                      return;
+                    }
+                    const provider = new GoogleAuthProvider();
+                    void signInWithPopup(auth, provider);
+                  }}
+                >
+                  {!session.user ? "Sign in" : "Sign out"}
+                </button>
+                {session.user && (
+                  <span className="ml-2 text-sm font-semibold text-gray-400">
+                    {session.user.email}
+                  </span>
+                )}
+              </div>
+              {session.user && <Hidden />}
+            </>
+          )}
         </div>
       </main>
     </>
