@@ -17,7 +17,7 @@ export const audioRouter = createTRPCRouter({
       const data = input.replace("data:audio/webm;base64,", "");
       const audioBlob = Buffer.from(data, "base64");
 
-      const result = await fetch("http://localhost:3001/process", {
+      const result = await fetch(`${process.env.S2T_URL}/process`, {
         method: "POST",
         body: audioBlob,
       });
