@@ -36,4 +36,21 @@ export const microserviceRouter = createTRPCRouter({
 
       return (await result.json()) as { result: { text: string } };
     }),
+  textToSpeech: protectedProcedure
+    .input(z.string().min(1, "Invalid request"))
+    .mutation(async ({ input }) => {
+      const result = await fetch(`${process.env.SAMPLE_URL}/text-to-speech`, {
+        method: "POST",
+        body: input,
+      });
+
+      if (!result.ok) {
+        throw new Error("Failed to generate speech");
+      }
+
+      const audioBuffer = await result.arrayBuffer();
+      const audioData = Buffer.from(audioBuffer).toString("base64");
+
+      return { result: { base64: audioData } };
+    }),
 });
