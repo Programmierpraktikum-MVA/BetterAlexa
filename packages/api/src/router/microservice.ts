@@ -22,4 +22,18 @@ export const microserviceRouter = createTRPCRouter({
 
       return (await result.json()) as { result: { text: string } };
     }),
+  callToAction: protectedProcedure
+    .input(z.string().min(1, "Invalid request"))
+    .mutation(async ({ input }) => {
+      const result = await fetch(`${process.env.SAMPLE_URL}/call-to-action`, {
+        method: "POST",
+        body: input,
+      });
+
+      if (!result.ok) {
+        throw new Error("Failed to process action");
+      }
+
+      return (await result.json()) as { result: { text: string } };
+    }),
 });
