@@ -32,10 +32,12 @@ const getBaseUrl = () => {
     Constants.manifest2?.extra?.expoGo?.debuggerHost;
   const localhost = debuggerHost?.split(":")[0];
   if (!localhost) {
-    return "https://better-alexa.vercel.app";
-    throw new Error(
-      "Failed to get localhost. Please point to your production server.",
-    );
+    if (!process.env.NEXT_PUBLIC_BASE_URL) {
+      throw new Error(
+        "Failed to get localhost. Please set your production server env variable.",
+      );
+    }
+    return process.env.NEXT_PUBLIC_BASE_URL;
   }
   return `http://${localhost}:3000`;
 };
