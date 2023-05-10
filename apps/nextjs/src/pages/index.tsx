@@ -119,13 +119,13 @@ const Hidden = () => {
           </button>
         )}
         <button
-          className="rounded-lg bg-gray-700 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-800"
+          className="rounded-lg bg-gray-700 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:bg-gray-500"
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={async () => {
             const data = await callToAction(text);
             setResult(data.result.text);
           }}
-          disabled={processingAction}
+          disabled={processingAction || !text}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
