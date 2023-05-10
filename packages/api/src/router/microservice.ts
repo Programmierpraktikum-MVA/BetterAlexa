@@ -11,13 +11,10 @@ export const microserviceRouter = createTRPCRouter({
       const data = input.replace("data:audio/webm;base64,", "");
       const audioBlob = Buffer.from(data, "base64");
 
-      const result = await fetch(
-        `${process.env.MICROSERVICE_URL}/speech-to-text`,
-        {
-          method: "POST",
-          body: audioBlob,
-        },
-      );
+      const result = await fetch(process.env.SPEECH_TO_TEXT_URL as string, {
+        method: "POST",
+        body: audioBlob,
+      });
 
       if (!result.ok) {
         throw new Error("Failed to process audio");
@@ -28,13 +25,10 @@ export const microserviceRouter = createTRPCRouter({
   callToAction: protectedProcedure
     .input(z.string().min(1, "Invalid request"))
     .mutation(async ({ input }) => {
-      const result = await fetch(
-        `${process.env.MICROSERVICE_URL}/call-to-action`,
-        {
-          method: "POST",
-          body: input,
-        },
-      );
+      const result = await fetch(process.env.CALL_TO_ACTION_URL as string, {
+        method: "POST",
+        body: input,
+      });
 
       if (!result.ok) {
         throw new Error("Failed to process action");
@@ -45,13 +39,10 @@ export const microserviceRouter = createTRPCRouter({
   textToSpeech: protectedProcedure
     .input(z.string().min(1, "Invalid request"))
     .mutation(async ({ input }) => {
-      const result = await fetch(
-        `${process.env.MICROSERVICE_URL}/text-to-speech`,
-        {
-          method: "POST",
-          body: input,
-        },
-      );
+      const result = await fetch(process.env.TEXT_TO_SPEECH_URL as string, {
+        method: "POST",
+        body: input,
+      });
 
       if (!result.ok) {
         throw new Error("Failed to generate speech");
