@@ -27,6 +27,7 @@ export const env = createEnv({
     NEXT_PUBLIC_STORAGE_BUCKET: z.string(),
     NEXT_PUBLIC_MESSAGING_SENDER_ID: z.string(),
     NEXT_PUBLIC_APP_ID: z.string(),
+    NEXT_PUBLIC_BASE_URL: z.string().url(),
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
@@ -47,5 +48,6 @@ export const env = createEnv({
     NEXT_PUBLIC_MESSAGING_SENDER_ID:
       process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
     NEXT_PUBLIC_APP_ID: process.env.NEXT_PUBLIC_APP_ID,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
   },
 });
