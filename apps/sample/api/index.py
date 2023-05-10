@@ -38,7 +38,7 @@ def process_audio():
         return {"error": "Internal Server Error"}, 500
 
 
-@app.route("/call-to-action", methods=["POST"])
+@app.route("/command-to-action", methods=["POST"])
 def generate_cta():
     try:
         # Check if request method is POST

@@ -64,8 +64,8 @@ const Hidden = () => {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
   const { mutateAsync: speechToText, isLoading: processingSpeech } =
     api.microservice.speechToText.useMutation();
-  const { mutateAsync: callToAction, isLoading: processingAction } =
-    api.microservice.callToAction.useMutation();
+  const { mutateAsync: commandToAction, isLoading: processingAction } =
+    api.microservice.commandToAction.useMutation();
   const { mutateAsync: textToSpeech, isLoading: processingText } =
     api.microservice.textToSpeech.useMutation();
   const [text, setText] = useState("");
@@ -122,7 +122,7 @@ const Hidden = () => {
           className="rounded-lg bg-gray-700 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:bg-gray-500"
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={async () => {
-            const data = await callToAction(text);
+            const data = await commandToAction(text);
             setResult(data.result.text);
           }}
           disabled={processingAction || !text}
