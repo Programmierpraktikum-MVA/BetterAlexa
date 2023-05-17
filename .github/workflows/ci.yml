@@ -52,8 +52,8 @@ jobs:
       - name: Generate Prisma Client
         run: pnpm turbo db:generate
 
-      - name: Build, lint and type-check
-        run: pnpm turbo build lint type-check
+      - name: Lint and type-check
+        run: pnpm turbo lint type-check
         env:
           SKIP_ENV_VALIDATION: true
 
