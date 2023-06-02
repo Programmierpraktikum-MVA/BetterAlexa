@@ -5,3 +5,10 @@
 ./apps/nextjs/node_modules
 # at first ignore expo until integrated
 ./apps/expo
+
+Dockerfile
+.github
+
+prettier.config.js
+LICENSE
+README.md
