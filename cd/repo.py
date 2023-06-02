@@ -37,8 +37,8 @@ if __name__ == "__main__":
     
     remote_url = "https://github.com/Programmierpraktikum-MVA/BetterAlexa.git"
         
-    production_path = "./production"
-    development_path = "./development"
+    PRODUCTION_PATH = "./production"
+    DEVELOPMENT_PATH = "./development"
     
     setup_repo(remote_url, production_path, "main")
     
