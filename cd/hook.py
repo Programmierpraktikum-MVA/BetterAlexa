@@ -1,4 +1,5 @@
-from flask import Flask, stream_with_context, Response, request
+from flask import Flask, stream_with_context, Response
+import docker
 import repo
 import os
 
