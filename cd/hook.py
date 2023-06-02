@@ -4,9 +4,10 @@ import os
 
 PORT = 58585
 REPO_URL = "https://github.com/Programmierpraktikum-MVA/BetterAlexa.git"
-REPO_PATH = "~/repo"
-PRODUCTION_PATH = "~/production"
-DEVELOPMENT_PATH = "~/development"
+HOME_PATH = os.path.expanduser("~")
+REPO_PATH = f"{HOME_PATH}/repo"
+PRODUCTION_PATH = f"{HOME_PATH}/production"
+DEVELOPMENT_PATH = f"{HOME_PATH}/development"
 
 app = Flask("betteralexa-CD-hook")
 
