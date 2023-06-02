@@ -49,3 +49,4 @@ yarn-error.log*
 
 # firebase
 service_account.json
+cd/__pycache__

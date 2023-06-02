@@ -1,12 +1,14 @@
 from flask import Flask, stream_with_context, Response, request
 import repo
+import os
 
 PORT = 58585
 REPO_URL = "https://github.com/Programmierpraktikum-MVA/BetterAlexa.git"
+REPO_PATH = "~/repo"
 PRODUCTION_PATH = "~/production"
 DEVELOPMENT_PATH = "~/development"
 
-app = Flask(__name__)
+app = Flask("betteralexa-CD-hook")
 
 @app.get("/deploy_production")
 def deploy_production():
@@ -17,7 +19,7 @@ def deploy_production():
         try:
             repo.setup_repo(
                 remote_url=REPO_URL,
-                path=PRODUCTION_PATH,
+                path=REPO_PATH,
                 branch="main"
             )
         except Exception as e:
@@ -25,12 +27,30 @@ def deploy_production():
             return
         
         yield "Successfully pulled latest changes\n"
-        # Todo delete build, install dependencies, prod secrets, build, start server
+
+        if os.path.exists(PRODUCTION_PATH):
+            yield "Stopping old server\n"
+            # Todo stop old server
+            yield "Deleting old build\n"
+            # Todo delete old build
+            
+        yield "Installing dependencies\n"
+        # Todo install dependencies
+        
+        yield "Applying production secrets/vars\n"
+        # Todo apply production secrets/vars
+        
+        yield "Building\n"
+        # Todo build
+        
+        yield "Starting server\n"
+        # Todo start server
+        
         yield "Deployment complete\n"
     return Response(stream_with_context(responseStream()))
 
 @app.get("/deploy_development")
-def deploy_production():
+def deploy_development():
     def responseStream():    
         yield "Deploying to development\n"
         yield "Getting latest changes\n"
@@ -38,7 +58,7 @@ def deploy_production():
         try:
             repo.setup_repo(
                 remote_url=REPO_URL,
-                path=DEVELOPMENT_PATH,
+                path=REPO_PATH,
                 branch="develop"
             )
         except Exception as e:
@@ -46,7 +66,25 @@ def deploy_production():
             return
         
         yield "Successfully pulled latest changes\n"
-        # Todo delete build, install dependencies, dev secrets, build, start server
+        
+        if os.path.exists(PRODUCTION_PATH):
+            yield "Stopping old server\n"
+            # Todo stop old server
+            yield "Deleting old build\n"
+            # Todo delete old build
+            
+        yield "Installing dependencies\n"
+        # Todo install dependencies
+        
+        yield "Applying production secrets/vars\n"
+        # Todo apply production secrets/vars
+        
+        yield "Building\n"
+        # Todo build
+        
+        yield "Starting server\n"
+        # Todo start server
+        
         yield "Deployment complete\n"
     return Response(stream_with_context(responseStream()))
 
