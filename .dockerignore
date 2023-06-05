@@ -3,7 +3,6 @@
 ./.github
 ./cd
 ./apps/nextjs/node_modules
-# at first ignore expo until integrated
 ./apps/expo
 
 Dockerfile
