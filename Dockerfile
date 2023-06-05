@@ -1,29 +1,20 @@
 FROM node:18.16.0
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package.json ./
-COPY pnpm-lock.yaml ./
+COPY . .
 
-COPY apps/nextjs/package.json ./apps/nextjs/package.json
+RUN npm i -g pnpm
 
-COPY apps/sample/package.json apps/sample/requirements.txt ./apps/sample/
+RUN apt -yqq update
 
-# RUN npm install -g pnpm
-RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
+RUN apt install -yqq python
 
-RUN pnpm install --frozen-lockfile --prod
+RUN apt install -yqq python3-pip
 
-RUN ls
-RUN ls ./apps/nextjs
-RUN ls ./apps/sample
+RUN pnpm install
+RUN pnpm db:generate
 
+RUN pnpm build
 
-
-# WORKDIR /usr/src/app/apps/sample
-
-# RUN pnpm install 
-
-# WORKDIR /usr/src/app/apps/nextjs
-
-# RUN pnpm install
+CMD ["pnpm", "start"] 
