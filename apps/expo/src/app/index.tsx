@@ -13,7 +13,7 @@ import {
   useSession,
 } from "@acme/auth";
 
-import { api } from "~/utils/api";
+// import { api } from "~/utils/api";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -65,28 +65,33 @@ const Index = () => {
   return (
     <SafeAreaView className="bg-[#150a18]">
       {/* Changes page title visible on the header */}
-      <Stack.Screen options={{ title: "Home Page" }} />
+      <Stack.Screen options={{ title: "Index" }} />
       <View className="mt-[25vh] h-full w-full p-4">
         <Text className="mx-auto pb-2 text-5xl font-bold text-white">
-          Better <Text className="text-pink-400">Alexa</Text>
+          Better<Text className="text-pink-400">Alexa</Text>
         </Text>
 
-        {session.user && (
-          <Text className="text-white">Welcome, {session.user?.email}</Text>
+        {session.loading && (
+          <Text className="mx-auto text-white">Loading...</Text>
         )}
 
-        {!session.user && (
+        {session.user && (
+          <Text className="mx-auto text-white">
+            Welcome, {session.user?.email}👋
+          </Text>
+        )}
+
+        {!session.loading && !session.user && (
           <Button
             disabled={!request}
             onPress={() => void promptAsync()}
-            title="Sign in"
+            title="Sign in with Google"
             color={"#f472b6"}
           />
         )}
 
         {session.user && (
           <View>
-            <Hidden />
             <Button
               onPress={() => {
                 void auth.signOut();
@@ -104,19 +109,6 @@ const Index = () => {
         )}
       </View>
     </SafeAreaView>
-  );
-};
-
-const Hidden = () => {
-  const { data, isLoading } = api.auth.getSecretMessage.useQuery();
-
-  return (
-    <View>
-      <Text className="text-xl text-white">Secret:</Text>
-      <Text className="text-white">
-        {isLoading ? "Loading..." : data ?? "error"}
-      </Text>
-    </View>
   );
 };
 
