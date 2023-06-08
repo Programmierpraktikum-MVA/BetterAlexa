@@ -20,6 +20,9 @@ const defineConfig = (): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.mva.betteralexa",
+    config: {
+      usesNonExemptEncryption: false,
+    },
   },
   android: {
     package: "com.mva.betteralexa",
