@@ -1,0 +1,22 @@
+name: Auto merge main to PR branch
+concurrency:
+  group: ${{ github.head_ref }}
+on:
+  pull_request:
+
+jobs:
+  merge:
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Checkout repository
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "Github Actions"
+      - name: Merge main to branch
+        run: |
+          git fetch --unshallow
+          git checkout ${{ github.head_ref }}
+          git merge --no-ff origin/main -m "Auto-merged main into ${{ github.head_ref }}"
+          git push
