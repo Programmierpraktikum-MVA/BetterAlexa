@@ -1,8 +1,8 @@
-name: Auto merge main to PR branch
-concurrency:
-  group: ${{ github.head_ref }}
+name: Auto merge main to dev
 on:
-  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   merge:
@@ -17,6 +17,6 @@ jobs:
       - name: Merge main to branch
         run: |
           git fetch --unshallow
-          git checkout ${{ github.head_ref }}
-          git merge --no-ff origin/main -m "Auto-merged main into ${{ github.head_ref }}"
+          git checkout develop
+          git merge --no-ff origin/main -m "Auto-merged main into dev"
           git push
