@@ -3,6 +3,7 @@ import { Button, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Google from "expo-auth-session/providers/google";
 import { Stack } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import * as WebBrowser from "expo-web-browser";
 
 import {
@@ -25,8 +26,34 @@ const Index = () => {
   });
 
   useEffect(() => {
+    Promise.all([
+      SecureStore.getItemAsync("idToken"),
+      SecureStore.getItemAsync("accessToken"),
+    ])
+      .then(([idToken, accessToken]) => {
+        if (idToken && accessToken) {
+          const credential = GoogleAuthProvider.credential(
+            idToken,
+            accessToken,
+          );
+          void signInWithCredential(auth, credential);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
+
+  useEffect(() => {
     if (response?.type === "success") {
       const { authentication } = response;
+      void Promise.all([
+        SecureStore.setItemAsync("idToken", authentication?.idToken ?? ""),
+        SecureStore.setItemAsync(
+          "accessToken",
+          authentication?.accessToken ?? "",
+        ),
+      ]);
       const credential = GoogleAuthProvider.credential(
         authentication?.idToken,
         authentication?.accessToken,
@@ -61,7 +88,15 @@ const Index = () => {
           <View>
             <Hidden />
             <Button
-              onPress={() => void auth.signOut()}
+              onPress={() => {
+                void auth.signOut();
+                Promise.all([
+                  SecureStore.deleteItemAsync("idToken"),
+                  SecureStore.deleteItemAsync("accessToken"),
+                ]).catch((err) => {
+                  console.error(err);
+                });
+              }}
               title="Sign out"
               color={"#f472b6"}
             />
