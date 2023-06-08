@@ -36,10 +36,10 @@ const Index = () => {
   }, [response]);
 
   return (
-    <SafeAreaView className="bg-[#1F104A]">
+    <SafeAreaView className="bg-[#150a18]">
       {/* Changes page title visible on the header */}
       <Stack.Screen options={{ title: "Home Page" }} />
-      <View className="h-full w-full p-4">
+      <View className="mt-[25vh] h-full w-full p-4">
         <Text className="mx-auto pb-2 text-5xl font-bold text-white">
           Better <Text className="text-pink-400">Alexa</Text>
         </Text>
