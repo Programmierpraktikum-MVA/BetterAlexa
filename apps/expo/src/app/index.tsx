@@ -1,5 +1,13 @@
-import React, { useEffect } from "react";
-import { Button, Text, View } from "react-native";
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableHighlight,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Google from "expo-auth-session/providers/google";
 import { Stack } from "expo-router";
@@ -13,7 +21,7 @@ import {
   useSession,
 } from "@acme/auth";
 
-// import { api } from "~/utils/api";
+import { api } from "~/utils/api";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -66,7 +74,7 @@ const Index = () => {
     <SafeAreaView className="bg-[#150a18]">
       {/* Changes page title visible on the header */}
       <Stack.Screen options={{ title: "Index" }} />
-      <View className="mt-[25vh] h-full w-full p-4">
+      <View className="mt-[20vh] h-full w-full p-4">
         <Text className="mx-auto pb-2 text-5xl font-bold text-white">
           Better<Text className="text-pink-400">Alexa</Text>
         </Text>
@@ -91,7 +99,7 @@ const Index = () => {
         )}
 
         {session.user && (
-          <View>
+          <View className="h-full">
             <Button
               onPress={() => {
                 void auth.signOut();
@@ -105,10 +113,53 @@ const Index = () => {
               title="Sign out"
               color={"#f472b6"}
             />
+            <Hidden />
           </View>
         )}
       </View>
     </SafeAreaView>
+  );
+};
+
+const Hidden = () => {
+  const { mutateAsync: commandToAction, isLoading: processingAction } =
+    api.microservice.commandToAction.useMutation();
+  const [text, setText] = useState("");
+  const [result, setResult] = useState("");
+
+  return (
+    <View className="mt-2">
+      <View className="flex flex-row gap-1">
+        <TextInput
+          placeholder="Hello, Alexa!"
+          className="max-h-[20vh] flex-1 rounded-md bg-white px-4 py-2"
+          onChangeText={(text) => setText(text)}
+          multiline
+        />
+        <TouchableHighlight
+          className="h-8 w-8 items-center rounded-md bg-pink-500 p-2"
+          onPress={async () => {
+            const data = await commandToAction(text);
+            setResult(data.result.text);
+          }}
+          disabled={processingAction || !text}
+        >
+          <Text className="text-white">▶</Text>
+        </TouchableHighlight>
+      </View>
+      {!!(result || processingAction) && (
+        <View className="mt-4 max-h-[30vh] rounded-md bg-black/40 p-4">
+          <ScrollView>
+            <Text
+              className="whitespace-pre-wrap break-normal text-sm text-gray-400"
+              selectable
+            >
+              {processingAction ? "Loading..." : result}
+            </Text>
+          </ScrollView>
+        </View>
+      )}
+    </View>
   );
 };
 
