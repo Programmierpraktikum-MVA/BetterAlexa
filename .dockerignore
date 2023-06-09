@@ -6,3 +6,8 @@ vercel.json
 cd/
 apps/expo/
 apps/sample/
+apps/nextjs/.turbo/
+apps/nextjs/.next/
+apps/nextjs/node_modules/
+apps/nextjs/README.md
+
