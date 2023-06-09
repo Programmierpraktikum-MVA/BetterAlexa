@@ -1,3 +1,4 @@
 Flask
 openai
 gTTS
+waitress
