@@ -1,9 +1,10 @@
 from flask import Flask, request
 from gtts import gTTS
+from waitress import serve
 
 import openai
+import sys
 import io
-import os
 
 app = Flask(__name__)
 
@@ -85,4 +86,8 @@ def process_text():
 
 
 if __name__ == "__main__":
-    app.run(host="::", port=3001, debug=os.environ.get("DEBUG", False))
+    if len(sys.argv) > 1 and sys.argv[1] == "dev":
+        app.run(host="::", port=3001, debug=True)
+    else:
+        print(" * Running production server on port 3001")
+        serve(app, host="::", port=3001)
