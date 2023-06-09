@@ -6,6 +6,8 @@ import openai
 import sys
 import io
 
+# stdout needs to be explicitly declared (only once) for docker logs
+print("Configuring Flask", file=sys.stdout)
 app = Flask(__name__)
 
 
@@ -90,4 +92,4 @@ if __name__ == "__main__":
         app.run(host="::", port=3001, debug=True)
     else:
         print(" * Running production server on port 3001")
-        serve(app, host="::", port=3001)
+        serve(app, host="0.0.0.0", port=3001)
