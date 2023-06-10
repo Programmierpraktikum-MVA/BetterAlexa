@@ -57,7 +57,7 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
           async headers() {
-            const token = (await auth.currentUser?.getIdToken()) || "";
+            const token = (await auth().currentUser?.getIdToken()) || "";
             return token
               ? {
                   Authorization: `Bearer ${token}`,
