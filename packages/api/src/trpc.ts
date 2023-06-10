@@ -60,7 +60,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const token = authorization.split("Bearer ")[1];
   if (!token) return createInnerTRPCContext({ session: null });
 
-  const decodedIdToken = await adminAuth().verifyIdToken(token);
+  const decodedIdToken = await adminAuth.verifyIdToken(token);
   if (!decodedIdToken || !decodedIdToken.email)
     return createInnerTRPCContext({ session: null });
 

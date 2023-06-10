@@ -36,11 +36,11 @@ const Home: NextPage = () => {
                   className="rounded-lg bg-gray-700 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-800"
                   onClick={() => {
                     if (session.user) {
-                      void auth().signOut();
+                      void auth.signOut();
                       return;
                     }
                     const provider = new GoogleAuthProvider();
-                    void signInWithPopup(auth(), provider);
+                    void signInWithPopup(auth, provider);
                   }}
                 >
                   {!session.user ? "Sign in" : "Sign out"}

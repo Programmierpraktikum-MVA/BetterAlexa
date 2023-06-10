@@ -44,7 +44,7 @@ const Index = () => {
             idToken,
             accessToken,
           );
-          void signInWithCredential(auth(), credential);
+          void signInWithCredential(auth, credential);
         }
       })
       .catch((err) => {
@@ -66,7 +66,7 @@ const Index = () => {
         authentication?.idToken,
         authentication?.accessToken,
       );
-      void signInWithCredential(auth(), credential);
+      void signInWithCredential(auth, credential);
     }
   }, [response]);
 
@@ -102,7 +102,7 @@ const Index = () => {
           <View className="h-full">
             <Button
               onPress={() => {
-                void auth().signOut();
+                void auth.signOut();
                 Promise.all([
                   SecureStore.deleteItemAsync("idToken"),
                   SecureStore.deleteItemAsync("accessToken"),
