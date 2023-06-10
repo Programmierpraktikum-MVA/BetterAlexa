@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  nextjs:
+    env_file: .env
+    restart: always
+    ports:
+      - 3000:3000
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_KEY: ${NEXT_PUBLIC_API_KEY}
+        NEXT_PUBLIC_AUTH_DOMAIN: ${NEXT_PUBLIC_AUTH_DOMAIN}
+        NEXT_PUBLIC_PROJECT_ID: ${NEXT_PUBLIC_PROJECT_ID}
+        NEXT_PUBLIC_APP_ID: ${NEXT_PUBLIC_APP_ID}
+        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
