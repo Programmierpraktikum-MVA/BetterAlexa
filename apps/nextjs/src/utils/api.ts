@@ -5,6 +5,8 @@ import superjson from "superjson";
 import type { AppRouter } from "@acme/api";
 import { auth } from "@acme/auth";
 
+import { toast } from "~/components/ui/use-toast";
+
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
   if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL;
@@ -13,6 +15,16 @@ const getBaseUrl = () => {
   return `http://localhost:3000`; // dev SSR should use localhost
 };
 
+function handleError<T>(err: T) {
+  if (err instanceof Error) {
+    toast({
+      variant: "destructive",
+      title: "Uh oh! Something went wrong.",
+      description: err.message,
+    });
+  }
+}
+
 export const api = createTRPCNext<AppRouter>({
   config() {
     return {
@@ -20,9 +32,11 @@ export const api = createTRPCNext<AppRouter>({
         defaultOptions: {
           queries: {
             retry: false,
+            onError: handleError,
           },
           mutations: {
             retry: false,
+            onError: handleError,
           },
         },
       },
