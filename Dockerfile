@@ -1,23 +1,47 @@
-FROM node:18.16.0-alpine AS base
-
+FROM node:18-alpine AS base
+ 
 FROM base AS builder
-RUN apk add --no-cache libc6-compat openssl1.1-compat
+RUN apk add --no-cache libc6-compat
 RUN apk update
-
+# Set working directory
 WORKDIR /app
-
-COPY package.json .
-COPY pnpm-lock.yaml .
-COPY apps/nextjs/package.json ./apps/nextjs/
-COPY packages/api/package.json ./packages/api/
-COPY packages/auth/package.json ./packages/auth/
-COPY packages/config/tailwind/package.json ./packages/config/tailwind/
-COPY packages/config/eslint/package.json ./packages/config/eslint/
-COPY packages/db/package.json ./packages/db/
-
-RUN yarn global add pnpm 
-RUN pnpm add turbo --global
-#TODO copy less
-COPY . .    
-#TODO package doesnt exist yet
-RUN turbo prune --scope=nextjs --docker
+RUN npm i -g turbo
+COPY . .
+RUN turbo prune --scope=@acme/nextjs --docker
+ 
+# Add lockfile and package.json's of isolated subworkspace
+FROM base AS installer
+RUN apk add --no-cache libc6-compat
+RUN apk update
+WORKDIR /app
+RUN corepack enable
+ 
+# First install the dependencies (as they change less often)
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=builder /app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
+RUN pnpm install
+ 
+# Build the project
+COPY --from=builder /app/tsconfig.json .
+COPY --from=builder /app/out/full/ .
+RUN pnpm turbo run build --filter=nextjs...
+ 
+FROM base AS runner
+WORKDIR /app
+ 
+# Don't run production as root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+USER nextjs
+ 
+COPY --from=installer /app/apps/nextjs/next.config.mjs .
+COPY --from=installer /app/apps/nextjs/package.json .
+ 
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=installer --chown=nextjs:nodejs /app/apps/nextjs/.next/standalone ./
+COPY --from=installer --chown=nextjs:nodejs /app/apps/nextjs/.next/static ./apps/nextjs/.next/static
+COPY --from=installer --chown=nextjs:nodejs /app/apps/nextjs/public ./apps/nextjs/public
+ 
+CMD node apps/nextjs/server.js
