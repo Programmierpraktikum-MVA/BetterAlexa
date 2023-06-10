@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { onAuthStateChanged, signOut, type User } from "firebase/auth";
+import { type User } from "firebase/auth";
 
 import { auth } from "./auth";
 
@@ -22,12 +22,12 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
   const [session, setSession] = useState<ISession>(init);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setSession({ loading: false, user: user });
       } else {
-        void signOut(auth);
-        setSession({ loading: false });
+        void auth.signOut();
+        setSession({ loading: false, user: undefined });
       }
     });
     return unsubscribe;
