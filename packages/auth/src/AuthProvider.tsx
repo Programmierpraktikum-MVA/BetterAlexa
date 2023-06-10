@@ -22,11 +22,11 @@ export const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
   const [session, setSession] = useState<ISession>(init);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth().onAuthStateChanged((user) => {
       if (user) {
         setSession({ loading: false, user: user });
       } else {
-        void auth.signOut();
+        void auth().signOut();
         setSession({ loading: false, user: undefined });
       }
     });

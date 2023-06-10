@@ -50,7 +50,7 @@ export const api = createTRPCNext<AppRouter>({
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
           async headers() {
-            const token = (await auth.currentUser?.getIdToken()) || "";
+            const token = (await auth().currentUser?.getIdToken()) || "";
             return token
               ? {
                   Authorization: `Bearer ${token}`,
