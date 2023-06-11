@@ -1,9 +1,11 @@
 from flask import Flask, request
-import os
+from waitress import serve
+import sys
 
 from langchain_integration import LangChainIntegration
 
 app = Flask(__name__)
+app.logger.setLevel("INFO")
 
 langchainIntegration = LangChainIntegration()
 
@@ -30,9 +32,13 @@ def generate_cta():
         # Respond with success message
         return {"result": result}, 200
     except Exception as e:
-        print(e)
+        app.logger.error(f"Command to action error: {e}")
         return {"error": "Internal Server Error"}, 500
 
 
 if __name__ == "__main__":
-    app.run(host="::", port=3001, debug=os.environ.get("DEBUG", False))
+    if len(sys.argv) > 1 and sys.argv[1] == "dev":
+        app.run(host="::", port=3002, debug=True)
+    else:
+        app.logger.info(" * Running command to action production server on port 3002")
+        serve(app, host="0.0.0.0", port=3002)

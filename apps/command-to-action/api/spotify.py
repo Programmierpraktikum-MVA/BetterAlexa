@@ -1,14 +1,9 @@
-from dotenv import load_dotenv
 import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 class SpotifyPlayer:
     def __init__(self):
-        # Load environment variables
-        load_dotenv(".env")
-        # load_dotenv("../../../.env")
-
         # Replace these with your own Spotify client ID, secret, and redirect URI
         self.spotify_client_id = os.getenv("SPOTIFY_CLIENT_ID")
         self.spotify_client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
