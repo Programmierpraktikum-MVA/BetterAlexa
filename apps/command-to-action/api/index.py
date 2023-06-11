@@ -23,6 +23,7 @@ def generate_cta():
 
         # Parse incoming data as binary
         data = request.get_data()
+        langchainIntegration.spotifyAuth = request.headers.get("x-spotify-access-token")
         text = data.decode("utf-8")
         response = langchainIntegration.agent_executor.run(input=text)
         result = {

@@ -24,9 +24,12 @@ export const microserviceRouter = createTRPCRouter({
     }),
   commandToAction: protectedProcedure
     .input(z.string().min(1, "Invalid request"))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx: { cookies } }) => {
       const result = await fetch(process.env.COMMAND_TO_ACTION_URL as string, {
         method: "POST",
+        headers: {
+          "x-spotify-access-token": cookies?.["spotify-access-token"] as string,
+        },
         body: input,
       });
 

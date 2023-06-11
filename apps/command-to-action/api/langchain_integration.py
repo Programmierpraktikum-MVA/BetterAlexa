@@ -4,12 +4,18 @@ from langchain import OpenAI, LLMChain
 from langchain.tools import StructuredTool
 from spotify import SpotifyPlayer
 
+import os
 
 class LangChainIntegration:
     def __init__(self):
+        self.spotifyAuth = None
+
         llm = OpenAI(temperature=0)
         tools = load_tools(
-            ["human", "llm-math"],
+            [
+                #"human",
+                "llm-math",
+                ],
             llm=llm,
             input_func=self.get_input
         )
@@ -53,7 +59,10 @@ class LangChainIntegration:
 
     def spotify_player(self, song_title=None, artist_name=None, album_name=None, playlist_name=None):
         """Lets you specify a song, artist, album, or playlist to play on Spotify."""
-        spotifyPlayer = SpotifyPlayer()
+        if self.spotifyAuth is None:
+            base_url = os.environ.get("NEXT_PUBLIC_BASE_URL")
+            return f"You need to authenticate with Spotify first. Go to {base_url}/spotify to do so."
+        spotifyPlayer = SpotifyPlayer(self.spotifyAuth)
         if song_title:
             spotifyPlayer.play_song(song_title)
             return "Playing " + song_title
