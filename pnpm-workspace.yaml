@@ -2,6 +2,7 @@ packages:
   - apps/expo
   - apps/nextjs
   - apps/sample
+  - apps/command-to-action
   - packages/api
   - packages/auth
   - packages/db

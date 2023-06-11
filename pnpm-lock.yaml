@@ -32,6 +32,12 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
 
+  apps/command-to-action:
+    devDependencies:
+      dotenv-cli:
+        specifier: ^7.2.1
+        version: 7.2.1
+
   apps/expo:
     dependencies:
       '@acme/auth':
