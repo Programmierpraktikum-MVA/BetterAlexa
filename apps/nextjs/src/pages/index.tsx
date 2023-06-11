@@ -130,14 +130,14 @@ const Hidden = () => {
           value={processingSpeech || !!recorder ? "Loading..." : text}
           onChange={(e) => setText(e.target.value)}
           type="text"
-          className="block w-full rounded-2xl border-0 px-4 py-1 backdrop-blur-xl bg-black/30 placeholder:text-white/30 leading-6"
+          className="block w-full rounded-2xl focus:outline-none focus:ring-white focus:ring-2 px-4 py-1 backdrop-blur-xl bg-black/30 placeholder:text-white/30 leading-6 duration-200"
           disabled={processingSpeech || !!recorder}
           placeholder="Alexa, play some music"
         />
 
         {recorder?.state !== "recording" && (
           <button
-            className="aspect-square rounded-full bg-white p-2 text-sm font-semibold hover:bg-black/40 disabled:bg-black/40 backdrop-blur-xl bg-black/30"
+            className="aspect-square rounded-full bg-white p-2 text-sm font-semibold hover:bg-black/40 disabled:bg-black/40 backdrop-blur-xl bg-black/30 duration-200"
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onClick={async () => {
               const stream = await navigator.mediaDevices.getUserMedia({
@@ -162,7 +162,7 @@ const Hidden = () => {
         )}
         {recorder?.state === "recording" && (
           <button
-            className="aspect-square rounded-full bg-red-500 p-2 text-sm font-semibold text-white hover:bg-red-600 disabled:bg-red-600"
+            className="aspect-square rounded-full bg-red-500 p-2 text-sm font-semibold text-white hover:bg-red-600 disabled:bg-red-600 duration-200"
             onClick={() => {
               recorder.stop();
             }}
@@ -171,7 +171,7 @@ const Hidden = () => {
           </button>
         )}
         <button
-          className="rounded-full bg-white px-3 py-2 text-sm font-semibold cursor-pointer backdrop-blur-xl bg-black/30 hover:bg-black/40 disabled:bg-black/30"
+          className="rounded-full bg-white px-3 py-2 text-sm font-semibold cursor-pointer backdrop-blur-xl bg-black/30 hover:bg-black/40 disabled:bg-black/30 duration-200"
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={async () => {
             const data = await commandToAction(text);
