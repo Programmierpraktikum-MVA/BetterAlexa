@@ -8,7 +8,7 @@ import os
 
 class LangChainIntegration:
     def __init__(self):
-        self.spotifyAuth = None
+        self.spotify_auth = None
 
         llm = OpenAI(temperature=0)
         tools = load_tools(
@@ -19,13 +19,19 @@ class LangChainIntegration:
             llm=llm,
             input_func=self.get_input
         )
-        spotify_tool = StructuredTool.from_function(self.spotify_player)
+        spotify_tool = StructuredTool.from_function(self.spotify_player, return_direct=True)
         tools.extend([
             spotify_tool,
             Tool(
+                name="introduction_without_name",
+                func=self.introduction_without_name,
+                description="Only to be used for when I am introducing myself without a name",
+                return_direct=True
+            ),
+            Tool(
                 name="introduction_with_name",
-                func=self.introduction,
-                description="Only to be used for when you're introducing yourself with a name",
+                func=self.introduction_with_name,
+                description="Only to be used for when I am introducing myself with a name",
                 return_direct=True
             ),
         ])
@@ -51,7 +57,10 @@ class LangChainIntegration:
         self.agent_executor = initialize_agent(tools=tools, llm=llm, agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
                                           verbose=True)
 
-    def introduction(self, name_input):
+    def introduction_without_name(self, _):
+        return "Hello, my name is Jarvis! How can I help you today?"
+
+    def introduction_with_name(self, name_input):
         return "Hello " + name_input + ", my name is Jarvis! How can I help you today?"
 
     def get_input(self):
@@ -59,20 +68,20 @@ class LangChainIntegration:
 
     def spotify_player(self, song_title=None, artist_name=None, album_name=None, playlist_name=None):
         """Lets you specify a song, artist, album, or playlist to play on Spotify."""
-        if self.spotifyAuth is None:
+        if self.spotify_auth is None:
             base_url = os.environ.get("NEXT_PUBLIC_BASE_URL")
             return f"You need to authenticate with Spotify first. Go to {base_url}/spotify to do so."
-        spotifyPlayer = SpotifyPlayer(self.spotifyAuth)
+        self.spotify_player = SpotifyPlayer(self.spotify_auth)
         if song_title:
-            spotifyPlayer.play_song(song_title)
+            self.spotify_player.play_song(song_title)
             return "Playing " + song_title
         if artist_name:
-            spotifyPlayer.play_artist(artist_name)
+            self.spotify_player.play_artist(artist_name)
             return "Playing songs by " + artist_name
         if album_name:
-            spotifyPlayer.play_album(album_name)
+            self.spotify_player.play_album(album_name)
             return "Playing the album " + album_name
         if playlist_name:
-            spotifyPlayer.play_playlist(playlist_name)
+            self.spotify_player.play_playlist(playlist_name)
             return "Playing songs from the playlist " + playlist_name
 
