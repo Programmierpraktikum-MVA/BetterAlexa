@@ -4,3 +4,5 @@ gTTS
 langchain
 google-search-results
 spotipy
+dotenv-python
+```
