@@ -1,11 +1,15 @@
 from flask import Flask, request
 from gtts import gTTS
+from waitress import serve
 
 import openai
+import sys
 import io
-import os
 
+# stdout needs to be explicitly declared (only once) for docker logs
+print("Configuring Flask", file=sys.stdout)
 app = Flask(__name__)
+app.logger.setLevel("INFO")
 
 
 @app.route("/")
@@ -34,7 +38,7 @@ def process_audio():
         # Respond with success message
         return {"result": transcript}, 200
     except Exception as e:
-        print(e)
+        app.logger.error(f"Speech to text error: {e}")
         return {"error": "Internal Server Error"}, 500
 
 
@@ -61,8 +65,8 @@ def generate_cta():
         # Respond with success message
         return {"result": result}, 200
     except Exception as e:
-        print(e)
-        return {"error": "Internal Server Error"}, 500
+        app.logger.error(f"Command to action error: {e}")
+        return {"error": f"Internal Server Error {e}"}, 500
 
 
 @app.route("/text-to-speech", methods=["POST"])
@@ -80,9 +84,13 @@ def process_text():
         # return tts audio stream
         return tts.stream()
     except Exception as e:
-        print(e)
+        app.logger.error(f"Text to speech error: {e}")
         return {"error": "Internal Server Error"}, 500
 
 
 if __name__ == "__main__":
-    app.run(host="::", port=3001, debug=os.environ.get("DEBUG", False))
+    if len(sys.argv) > 1 and sys.argv[1] == "dev":
+        app.run(host="::", port=3001, debug=True)
+    else:
+        app.logger.info(" * Running production server on port 3001")
+        serve(app, host="0.0.0.0", port=3001)

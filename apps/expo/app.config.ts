@@ -11,7 +11,7 @@ const defineConfig = (): ExpoConfig => ({
   splash: {
     image: "./assets/icon.png",
     resizeMode: "contain",
-    backgroundColor: "#1F104A",
+    backgroundColor: "#150a18",
   },
   updates: {
     fallbackToCacheTimeout: 0,
@@ -20,12 +20,15 @@ const defineConfig = (): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.mva.betteralexa",
+    config: {
+      usesNonExemptEncryption: false,
+    },
   },
   android: {
     package: "com.mva.betteralexa",
     adaptiveIcon: {
       foregroundImage: "./assets/icon.png",
-      backgroundColor: "#1F104A",
+      backgroundColor: "#150a18",
     },
   },
   extra: {
