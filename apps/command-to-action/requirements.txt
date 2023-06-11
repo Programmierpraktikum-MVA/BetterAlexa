@@ -3,3 +3,4 @@ openai
 gTTS
 langchain
 google-search-results
+spotipy

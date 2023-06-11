@@ -2,6 +2,7 @@ from langchain.agents import ZeroShotAgent, Tool, AgentExecutor, load_tools, ini
 from langchain.memory import ConversationBufferMemory
 from langchain import OpenAI, LLMChain
 from langchain.tools import StructuredTool
+from spotify import SpotifyPlayer
 
 
 class LangChainIntegration:
@@ -12,7 +13,9 @@ class LangChainIntegration:
             llm=llm,
             input_func=self.get_input
         )
+        spotify_tool = StructuredTool.from_function(self.spotify_player)
         tools.extend([
+            spotify_tool,
             Tool(
                 name="introduction_with_name",
                 func=self.introduction,
@@ -47,4 +50,20 @@ class LangChainIntegration:
 
     def get_input(self):
         return "Test input"
+
+    def spotify_player(self, song_title=None, artist_name=None, album_name=None, playlist_name=None):
+        """Lets you specify a song, artist, album, or playlist to play on Spotify."""
+        spotifyPlayer = SpotifyPlayer()
+        if song_title:
+            spotifyPlayer.play_song(song_title)
+            return "Playing " + song_title
+        if artist_name:
+            spotifyPlayer.play_artist(artist_name)
+            return "Playing songs by " + artist_name
+        if album_name:
+            spotifyPlayer.play_album(album_name)
+            return "Playing the album " + album_name
+        if playlist_name:
+            spotifyPlayer.play_playlist(playlist_name)
+            return "Playing songs from the playlist " + playlist_name
 
