@@ -15,6 +15,8 @@ export const env = createEnv({
     SPEECH_TO_TEXT_URL: z.string().url(),
     COMMAND_TO_ACTION_URL: z.string().url(),
     TEXT_TO_SPEECH_URL: z.string().url(),
+    SPOTIFY_CLIENT_ID: z.string(),
+    SPOTIFY_CLIENT_SECRET: z.string(),
   },
   /**
    * Specify your client-side environment variables schema here.
@@ -41,6 +43,8 @@ export const env = createEnv({
     SPEECH_TO_TEXT_URL: process.env.SPEECH_TO_TEXT_URL,
     COMMAND_TO_ACTION_URL: process.env.COMMAND_TO_ACTION_URL,
     TEXT_TO_SPEECH_URL: process.env.TEXT_TO_SPEECH_URL,
+    SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID,
+    SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET,
     NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY,
     NEXT_PUBLIC_AUTH_DOMAIN: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
     NEXT_PUBLIC_PROJECT_ID: process.env.NEXT_PUBLIC_PROJECT_ID,

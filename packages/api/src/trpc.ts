@@ -27,6 +27,7 @@ import { adminAuth } from "./utils/firebase";
  */
 type CreateContextOptions = {
   session: DecodedIdToken | null;
+  cookies?: Record<string, string | undefined>;
 };
 
 /**
@@ -41,6 +42,7 @@ type CreateContextOptions = {
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
+    cookies: opts.cookies,
     prisma,
   };
 };
@@ -66,6 +68,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 
   return createInnerTRPCContext({
     session: decodedIdToken,
+    cookies: req.cookies,
   });
 };
 
