@@ -74,10 +74,10 @@ class LangChainIntegration:
         self.spotify_player = SpotifyPlayer(self.spotify_auth)
         if song_title and artist_name and song_title != "null" and artist_name != "null":
             song_info = self.spotify_player.play_song_from_artist(song_title, artist_name)
-            return f"Playing  {song_info['name']}  by  {song_info['artists'][0]['name']}"
+            return f"Playing {song_info['name']} by {song_info['artists'][0]['name']}"
         if song_title and song_title != "null":
             song_info = self.spotify_player.play_song(song_title)
-            return f"Playing  {song_info['name']}  by  {song_info['artists'][0]['name']}"
+            return f"Playing {song_info['name']} by {song_info['artists'][0]['name']}"
         if artist_name and artist_name != "null":
             song_info = self.spotify_player.play_artist(artist_name)
             return "Playing songs by " + artist_name
