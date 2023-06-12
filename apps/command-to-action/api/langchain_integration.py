@@ -68,20 +68,23 @@ class LangChainIntegration:
 
     def spotify_player(self, song_title=None, artist_name=None, album_name=None, playlist_name=None):
         """Lets you specify a song, artist, album, or playlist to play on Spotify."""
-        if self.spotify_auth is None:
+        if self.spotify_auth == "undefined" or self.spotify_auth is None:
             base_url = os.environ.get("NEXT_PUBLIC_BASE_URL")
             return f"You need to authenticate with Spotify first. Go to {base_url}/spotify to do so."
         self.spotify_player = SpotifyPlayer(self.spotify_auth)
-        if song_title:
-            self.spotify_player.play_song(song_title)
-            return "Playing " + song_title
-        if artist_name:
-            self.spotify_player.play_artist(artist_name)
+        if song_title and artist_name and song_title != "null" and artist_name != "null":
+            song_info = self.spotify_player.play_song_from_artist(song_title, artist_name)
+            return f"Playing  {song_info['name']}  by  {song_info['artists'][0]['name']}"
+        if song_title and song_title != "null":
+            song_info = self.spotify_player.play_song(song_title)
+            return f"Playing  {song_info['name']}  by  {song_info['artists'][0]['name']}"
+        if artist_name and artist_name != "null":
+            song_info = self.spotify_player.play_artist(artist_name)
             return "Playing songs by " + artist_name
-        if album_name:
-            self.spotify_player.play_album(album_name)
+        if album_name and album_name != "null":
+            song_info = self.spotify_player.play_album(album_name)
             return "Playing the album " + album_name
-        if playlist_name:
-            self.spotify_player.play_playlist(playlist_name)
+        if playlist_name and playlist_name != "null":
+            song_info = self.spotify_player.play_playlist(playlist_name)
             return "Playing songs from the playlist " + playlist_name
 
