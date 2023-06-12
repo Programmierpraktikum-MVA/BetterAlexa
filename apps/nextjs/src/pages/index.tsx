@@ -12,7 +12,8 @@ import {
 import { api } from "~/utils/api";
 import { blobToBase64 } from "~/utils/blobToBase64";
 import { createMediaRecorder } from "~/utils/mediaRecorder";
-import { MicrophoneIcon } from "~/components/MicrophoneIcon";
+import { MicrophoneIcon} from "~/components/MicrophoneIcon";
+import { SendIcon} from "~/components/SendIcon";
 
 const Home: NextPage = () => {
   const session = useSession();
@@ -157,7 +158,7 @@ const Hidden = () => {
             }}
             disabled={processingSpeech}
           >
-            <MicrophoneIcon className="h-4 w-4" />
+            <MicrophoneIcon className="h-4 w-4 stroke-gray-500" />
           </button>
         )}
         {recorder?.state === "recording" && (
@@ -167,7 +168,7 @@ const Hidden = () => {
               recorder.stop();
             }}
           >
-            <MicrophoneIcon className="h-4 w-4" />
+            <MicrophoneIcon className="h-4 w-4 stroke-gray-500" />
           </button>
         )}
         <button
@@ -179,20 +180,7 @@ const Hidden = () => {
           }}
           disabled={processingAction || !text}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="h-4 w-4"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
-            />
-          </svg>
+          <SendIcon className= "h-4 w-6 stroke-gray-500"/>
         </button>
       </div>
       <div>
