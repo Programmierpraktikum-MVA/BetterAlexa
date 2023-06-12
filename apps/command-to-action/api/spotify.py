@@ -9,6 +9,8 @@ class SpotifyPlayer:
         self.device_id = devices["devices"][0][
             "id"
         ]  # assuming the first device is the one we want
+        if not self.device_id:
+            raise Exception("No device found")
 
     def play_song_from_artist(self, song_name, artist_name):
         # Search for the song
