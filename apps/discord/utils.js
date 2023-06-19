@@ -27,7 +27,7 @@ function createVoiceConnectionData(connection,
         connection: connection,
         textChannel: textChannel,
         voiceRecognition: VoiceRecognition,
-        listeningTo: user,
+        listeningTo: [user],
         dispatcher: undefined,
         queue: [],
         playing: undefined
