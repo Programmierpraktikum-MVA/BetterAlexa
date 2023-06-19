@@ -7,6 +7,12 @@ services:
     build:
       context: apps/sample
       dockerfile: Dockerfile
+  cta:
+    env_file: .env
+    restart: always
+    build:
+      context: apps/command-to-action
+      dockerfile: Dockerfile
   nextjs:
     env_file: .env
     restart: always
@@ -27,3 +33,4 @@ services:
       - TEXT_TO_SPEECH_URL=http://sample:3001/text-to-speech
     depends_on:
       - sample
+      - cta
