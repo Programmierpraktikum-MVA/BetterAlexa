@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   sample:
@@ -10,8 +10,6 @@ services:
   nextjs:
     env_file: .env
     restart: always
-    ports:
-      - 3000:3000
     build:
       context: .
       dockerfile: Dockerfile
@@ -27,5 +25,5 @@ services:
       - SPEECH_TO_TEXT_URL=http://sample:3001/speech-to-text
       - COMMAND_TO_ACTION_URL=http://sample:3001/command-to-action
       - TEXT_TO_SPEECH_URL=http://sample:3001/text-to-speech
-    depends_on: 
+    depends_on:
       - sample
