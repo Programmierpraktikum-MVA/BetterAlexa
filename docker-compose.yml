@@ -29,7 +29,7 @@ services:
         NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
     environment:
       - SPEECH_TO_TEXT_URL=http://sample:3001/speech-to-text
-      - COMMAND_TO_ACTION_URL=http://sample:3001/command-to-action
+      - COMMAND_TO_ACTION_URL=http://cta:3002/command-to-action
       - TEXT_TO_SPEECH_URL=http://sample:3001/text-to-speech
     depends_on:
       - sample
