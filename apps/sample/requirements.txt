@@ -2,4 +2,3 @@ Flask
 openai
 gTTS
 waitress
-python-dotenv
