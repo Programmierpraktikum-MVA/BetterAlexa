@@ -37,7 +37,7 @@ const SpotifyConnect: NextPage = () => {
           href="/favicon-16x16.png"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#0891b2" />
+        <meta name="theme-color" content="#2e026d" />
         <link rel="manifest" href="/site.webmanifest" />
       </Head>
       <main className="flex h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
