@@ -21,11 +21,14 @@ const Login: NextPage = () => {
   }, [session]);
 
   const logIn = async () => {
-    if (session.user) return;
+    if (session.user) {
+      window.location.href = "/";
+      return;
+    }
 
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
-    
+
     if (result.user) {
       window.location.href = "/";
     }
