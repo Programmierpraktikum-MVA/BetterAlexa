@@ -13,6 +13,8 @@ import { blobToBase64 } from "~/utils/blobToBase64";
 import { createMediaRecorder } from "~/utils/mediaRecorder";
 import BetterAlexaHead from "~/components/BetterAlexaHead";
 import RouteGuard from "~/components/RouteGuard";
+import BetterAlexaBackground from "~/components/ui/BetterAlexaBackground";
+import BetterAlexaLogo from "~/components/ui/BetterAlexaLogo";
 import { AudioIcon } from "~/components/ui/icons/AudioIcon";
 import { MicrophoneIcon } from "~/components/ui/icons/MicrophoneIcon";
 import { SendIcon } from "~/components/ui/icons/SendIcon";
@@ -34,11 +36,12 @@ const Home: NextPage = () => {
   return (
     <>
       <BetterAlexaHead />
+      
       <RouteGuard>
-        <main className="flex h-screen flex-col items-center bg-gradient-to-b from-cyan-600 from-0% via-blue-500 via-35% to-blue-950 to-100% font-['Helvetica'] text-sm text-white/70">
-          <h1 className="mt-16 text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Better<span className="text-blue-800">Alexa</span>
-          </h1>
+        <BetterAlexaBackground>
+
+          <BetterAlexaLogo />
+
           {session.loading && <div>Loading...</div>}
           {!session.loading && (
             <>
@@ -57,7 +60,7 @@ const Home: NextPage = () => {
               {session.user && <Hidden />}
             </>
           )}
-        </main>
+        </BetterAlexaBackground>
       </RouteGuard>
     </>
   );
