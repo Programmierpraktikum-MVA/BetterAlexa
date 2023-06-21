@@ -19,6 +19,12 @@ import { SendIcon } from "~/components/ui/icons/SendIcon";
 
 const Home: NextPage = () => {
   const session = useSession();
+
+  const logOut = async () => {
+    await auth.signOut();
+    window.location.href = "/login";
+  };
+
   return (
     <>
       <BetterAlexaHead />
@@ -36,16 +42,9 @@ const Home: NextPage = () => {
 
                   <button
                     className="mx-5 rounded-3xl bg-black/30 px-4 py-2 backdrop-blur-xl hover:bg-black/40"
-                    onClick={() => {
-                      if (session.user) {
-                        void auth.signOut();
-                        return;
-                      }
-                      const provider = new GoogleAuthProvider();
-                      void signInWithPopup(auth, provider);
-                    }}
+                    onClick={logOut}
                   >
-                    <p>{!session.user ? "Sign in" : "Sign out"}</p>
+                    <p>Sign out</p>
                   </button>
                 </div>
               </div>
