@@ -20,9 +20,15 @@ import { SendIcon } from "~/components/ui/icons/SendIcon";
 const Home: NextPage = () => {
   const session = useSession();
 
-  const logOut = async () => {
-    await auth.signOut();
-    window.location.href = "/login";
+  const logOut = () => {
+    auth
+      .signOut()
+      .then(() => {
+        window.location.href = "/login";
+      })
+      .catch((error) => {
+        console.error("Error signing out: ", error);
+      });
   };
 
   return (

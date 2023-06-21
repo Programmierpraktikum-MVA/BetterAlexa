@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { NextPage } from "next";
 
 import {
@@ -20,18 +20,20 @@ const Login: NextPage = () => {
     }
   }, [session]);
 
-  const logIn = async () => {
+  const logIn = () => {
     if (session.user) {
       window.location.href = "/";
       return;
     }
 
     const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-
-    if (result.user) {
-      window.location.href = "/";
-    }
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        if (result.user) window.location.href = "/";
+      })
+      .catch((_) => {
+        console.error("Error signing in");
+      });
   };
 
   return (
