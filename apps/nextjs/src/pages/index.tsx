@@ -12,6 +12,7 @@ import { api } from "~/utils/api";
 import { blobToBase64 } from "~/utils/blobToBase64";
 import { createMediaRecorder } from "~/utils/mediaRecorder";
 import BetterAlexaHead from "~/components/BetterAlexaHead";
+import RouteGuard from "~/components/RouteGuard";
 import { AudioIcon } from "~/components/ui/icons/AudioIcon";
 import { MicrophoneIcon } from "~/components/ui/icons/MicrophoneIcon";
 import { SendIcon } from "~/components/ui/icons/SendIcon";
@@ -21,36 +22,38 @@ const Home: NextPage = () => {
   return (
     <>
       <BetterAlexaHead />
-      <main className="flex h-screen flex-col items-center bg-gradient-to-b from-cyan-600 from-0% via-blue-500 via-35% to-blue-950 to-100% font-['Helvetica'] text-sm text-white/70">
-        <h1 className="mt-16 text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Better<span className="text-blue-800">Alexa</span>
-        </h1>
-        {session.loading && <div>Loading...</div>}
-        {!session.loading && (
-          <>
-            <div>
-              <div className="fixed right-0 top-0 flex h-16 items-center">
-                {session.user && <span>{session.user.email}</span>}
+      <RouteGuard>
+        <main className="flex h-screen flex-col items-center bg-gradient-to-b from-cyan-600 from-0% via-blue-500 via-35% to-blue-950 to-100% font-['Helvetica'] text-sm text-white/70">
+          <h1 className="mt-16 text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+            Better<span className="text-blue-800">Alexa</span>
+          </h1>
+          {session.loading && <div>Loading...</div>}
+          {!session.loading && (
+            <>
+              <div>
+                <div className="fixed right-0 top-0 flex h-16 items-center">
+                  {session.user && <span>{session.user.email}</span>}
 
-                <button
-                  className="mx-5 rounded-3xl bg-black/30 px-4 py-2 backdrop-blur-xl hover:bg-black/40"
-                  onClick={() => {
-                    if (session.user) {
-                      void auth.signOut();
-                      return;
-                    }
-                    const provider = new GoogleAuthProvider();
-                    void signInWithPopup(auth, provider);
-                  }}
-                >
-                  <p>{!session.user ? "Sign in" : "Sign out"}</p>
-                </button>
+                  <button
+                    className="mx-5 rounded-3xl bg-black/30 px-4 py-2 backdrop-blur-xl hover:bg-black/40"
+                    onClick={() => {
+                      if (session.user) {
+                        void auth.signOut();
+                        return;
+                      }
+                      const provider = new GoogleAuthProvider();
+                      void signInWithPopup(auth, provider);
+                    }}
+                  >
+                    <p>{!session.user ? "Sign in" : "Sign out"}</p>
+                  </button>
+                </div>
               </div>
-            </div>
-            {session.user && <Hidden />}
-          </>
-        )}
-      </main>
+              {session.user && <Hidden />}
+            </>
+          )}
+        </main>
+      </RouteGuard>
     </>
   );
 };
