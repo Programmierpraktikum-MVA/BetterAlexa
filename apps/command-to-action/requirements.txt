@@ -4,3 +4,4 @@ gTTS
 langchain
 google-search-results
 spotipy
+waitress
