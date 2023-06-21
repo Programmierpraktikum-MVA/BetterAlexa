@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { NextPage } from "next";
-import Head from "next/head";
 
 import {
   GoogleAuthProvider,
@@ -15,38 +14,13 @@ import { createMediaRecorder } from "~/utils/mediaRecorder";
 import { AudioIcon } from "~/components/AudioIcon";
 import { MicrophoneIcon } from "~/components/MicrophoneIcon";
 import { SendIcon } from "~/components/SendIcon";
+import BetterAlexaHead from "~/components/BetterAlexaHead";
 
 const Home: NextPage = () => {
   const session = useSession();
   return (
     <>
-      <Head>
-        <title>BetterAlexa</title>
-        <meta
-          name="description"
-          content="BetterAlexa - OpenAI with Langchain Integration"
-        />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/favicon-32x32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/favicon-16x16.png"
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#0891b2" />
-        <link rel="manifest" href="/site.webmanifest" />
-      </Head>
+      <BetterAlexaHead />
       <main className="flex h-screen flex-col items-center bg-gradient-to-b from-cyan-600 from-0% via-blue-500 via-35% to-blue-950 to-100% font-['Helvetica'] text-sm text-white/70">
         <h1 className="mt-16 text-5xl font-extrabold tracking-tight sm:text-[5rem]">
           Better<span className="text-blue-800">Alexa</span>
