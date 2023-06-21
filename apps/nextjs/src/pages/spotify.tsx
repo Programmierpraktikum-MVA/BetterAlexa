@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { useSession } from "@acme/auth";
 
 import { api } from "~/utils/api";
+import RouteGuard from "~/components/RouteGuard";
 
 const SpotifyConnect: NextPage = () => {
   const session = useSession();
@@ -13,6 +14,8 @@ const SpotifyConnect: NextPage = () => {
   const { mutateAsync } = api.auth.createSpotifyAuth.useMutation();
   return (
     <>
+    <RouteGuard/>
+    
       <Head>
         <title>BetterAlexa | Connect Spotify</title>
         <meta

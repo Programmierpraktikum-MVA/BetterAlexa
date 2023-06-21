@@ -1,8 +1,8 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect } from "react";
 
 import { useSession } from "@acme/auth/src/useSession";
 
-const RouteGuard = ({ children }: { children: ReactNode }) => {
+const RouteGuard = () => {
   const session = useSession();
 
   useEffect(() => {
@@ -11,7 +11,7 @@ const RouteGuard = ({ children }: { children: ReactNode }) => {
     }
   }, [session]);
 
-  return <>{children}</>;
+  return <></>;
 };
 
 export default RouteGuard;
