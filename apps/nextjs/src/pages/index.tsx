@@ -11,10 +11,10 @@ import {
 import { api } from "~/utils/api";
 import { blobToBase64 } from "~/utils/blobToBase64";
 import { createMediaRecorder } from "~/utils/mediaRecorder";
-import { AudioIcon } from "~/components/AudioIcon";
-import { MicrophoneIcon } from "~/components/MicrophoneIcon";
-import { SendIcon } from "~/components/SendIcon";
 import BetterAlexaHead from "~/components/BetterAlexaHead";
+import { AudioIcon } from "~/components/ui/icons/AudioIcon";
+import { MicrophoneIcon } from "~/components/ui/icons/MicrophoneIcon";
+import { SendIcon } from "~/components/ui/icons/SendIcon";
 
 const Home: NextPage = () => {
   const session = useSession();
