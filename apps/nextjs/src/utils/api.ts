@@ -5,7 +5,7 @@ import superjson from "superjson";
 import type { AppRouter } from "@acme/api";
 import { auth } from "@acme/auth";
 
-import { toast } from "~/components/ui/use-toast";
+import { toast } from "~/components/ui/toast/use-toast";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
