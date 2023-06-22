@@ -4,7 +4,7 @@ import "../styles/globals.css";
 import type { AppType } from "next/app";
 
 import { api } from "~/utils/api";
-import { Toaster } from "~/components/ui/toaster";
+import { Toaster } from "~/components/ui/toast/toaster";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
