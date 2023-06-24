@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import Router from "next/router";
 
 import { useSession } from "@acme/auth/src/useSession";
 
@@ -7,7 +8,7 @@ const RouteGuard = () => {
 
   useEffect(() => {
     if (!session.loading && !session.user) {
-      window.location.href = "/login";
+      void Router.push("/login");
     }
   }, [session]);
 

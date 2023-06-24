@@ -12,14 +12,7 @@ const Home: NextPage = () => {
   const session = useSession();
 
   const logOut = () => {
-    auth
-      .signOut()
-      .then(() => {
-        window.location.href = "/login";
-      })
-      .catch((error) => {
-        console.error("Error signing out: ", error);
-      });
+    void auth.signOut();
   };
 
   return (
@@ -27,7 +20,7 @@ const Home: NextPage = () => {
       <BetterAlexaHead />
 
       <RouteGuard />
-      
+
       <BetterAlexaBackground>
         <BetterAlexaLogo />
 

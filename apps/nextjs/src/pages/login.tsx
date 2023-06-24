@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import type { NextPage } from "next";
+import Router from "next/router";
 
 import {
   GoogleAuthProvider,
   auth,
-  signInWithPopup,
+  signInWithRedirect,
   useSession,
 } from "@acme/auth";
 
@@ -18,24 +19,13 @@ const Login: NextPage = () => {
   // Redirect to index if already logged in
   useEffect(() => {
     if (session.user) {
-      window.location.href = "/";
+      void Router.push("/");
     }
   }, [session]);
 
   const logIn = () => {
-    if (session.user) {
-      window.location.href = "/";
-      return;
-    }
-
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        if (result.user) window.location.href = "/";
-      })
-      .catch((_) => {
-        console.error("Error signing in");
-      });
+    void signInWithRedirect(auth, provider);
   };
 
   return (
