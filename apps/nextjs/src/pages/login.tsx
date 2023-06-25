@@ -5,6 +5,7 @@ import Router from "next/router";
 import {
   GoogleAuthProvider,
   auth,
+  signInWithCredential,
   signInWithRedirect,
   useSession,
 } from "@acme/auth";
@@ -24,8 +25,19 @@ const Login: NextPage = () => {
   }, [session]);
 
   const logIn = () => {
-    const provider = new GoogleAuthProvider();
-    void signInWithRedirect(auth, provider);
+    if (process.env.NEXT_PUBLIC_IS_EXTENSION === "true" && chrome?.identity) {
+      chrome.identity.getAuthToken({ interactive: true }, (token) => {
+        if (chrome.runtime.lastError || !token) {
+          console.error(chrome?.runtime?.lastError?.message);
+          return;
+        }
+        const credential = GoogleAuthProvider.credential(null, token);
+        void signInWithCredential(auth, credential);
+      });
+    } else {
+      const provider = new GoogleAuthProvider();
+      void signInWithRedirect(auth, provider);
+    }
   };
 
   return (
