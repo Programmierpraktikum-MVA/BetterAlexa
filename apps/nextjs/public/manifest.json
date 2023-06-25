@@ -14,6 +14,7 @@
   "action": {
     "default_popup": "index.html"
   },
+  "permissions": ["identity"],
   "host_permissions": ["<all_urls>"],
   "oauth2": {
     "client_id": "{{CRX_GOOGLE_CLIENT_ID}}",
