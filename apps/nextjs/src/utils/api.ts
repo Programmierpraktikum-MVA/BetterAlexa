@@ -8,8 +8,7 @@ import { auth } from "@acme/auth";
 import { toast } from "~/components/ui/toast/use-toast";
 
 const getBaseUrl = () => {
-  // eslint-disable-next-line turbo/no-undeclared-env-vars
-  if (process.env.IS_EXTENSION) {
+  if (process.env.NEXT_PUBLIC_IS_EXTENSION === "true") {
     if (!process.env.NEXT_PUBLIC_BASE_URL)
       throw new Error("Missing NEXT_PUBLIC_BASE_URL for building extension!");
     return process.env.NEXT_PUBLIC_BASE_URL;
