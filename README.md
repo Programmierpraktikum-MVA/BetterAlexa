@@ -1,7 +1,6 @@
 # BetterAlexa Monorepo
 
 ## About
-test
 
 Welcome to BetterAlexa monorepo, we use create t3 turbo to create this monorepo.
 
