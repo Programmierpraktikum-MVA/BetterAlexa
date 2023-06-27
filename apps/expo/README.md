@@ -1,6 +1,4 @@
-# expo
-
-this is for mobile apps
+# Expo
 
 ## Configure Expo `dev`-script
 
