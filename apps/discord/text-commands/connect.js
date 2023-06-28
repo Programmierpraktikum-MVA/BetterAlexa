@@ -1,5 +1,5 @@
 const env = require('dotenv').config({path: '../../.env'});
-const {createCommand, fixVoiceReceive, createVoiceConnectionData} = require('../utils.js');
+const {createCommand, createVoiceConnectionData} = require('../utils.js');
 const {
     entersState,
     joinVoiceChannel,
@@ -7,6 +7,9 @@ const {
     VoiceConnectionStatus,
     EndBehaviorType
 } = require('@discordjs/voice');
+const ffmpeg = require('fluent-ffmpeg');
+const fs = require('fs');
+const {exec} = require('child_process');
 
 if (env.error) throw env.error;
 
@@ -98,16 +101,15 @@ function createListeningStream(receiver, userId, user) {
 
     const oggStream = new prism.opus.OggLogicalBitstream({
         opusHead: new prism.opus.OpusHead({
-            channelCount: 2,
-            sampleRate: 48000,
+            channelCount: 1,
+            sampleRate: 16000,
         }),
         pageSizeControl: {
             maxPackets: 10,
         },
-        crc: false
     });
 
-    const filename =
+    const filename = //'./recordings/test.ogg';
         `./recordings/${new Date().toJSON().replaceAll(":", "-")}-${getDisplayName(userId, user)}.ogg`;
 
     const out = createWriteStream(filename);
@@ -115,10 +117,48 @@ function createListeningStream(receiver, userId, user) {
     console.log(`👂 Started recording ${filename}`);
 
     pipeline(opusStream, oggStream, out, (err) => {
-        if (err) {
-            console.warn(`❌ Error recording file ${filename} - ${err.message}`);
-        } else {
-            console.log(`✅ Recorded ${filename}`);
+            if (err) {
+                console.warn(`❌ Error recording file ${filename} - ${err.message}`);
+            } else {
+                //
+                // exec("ffmpeg -i " + filename + " " + filename.replace(".ogg", ".wav"),
+                //     (error) => {
+                //         if (error) {
+                //             console.error('Error converting file:', error);
+                //         } else {
+                //             console.log('File converted successfully!');
+                //         }
+                //     });
+                let wav_filename = filename.replace(".ogg", ".wav");
+                let outStream = fs.createWriteStream(wav_filename);
+                ffmpeg()
+                    .input(filename)
+                    .inputFormat("ogg")
+                    .audioQuality(128)
+                    .audioChannels(1)
+                    .audioFrequency(16000)
+                    .toFormat("wav")
+                    .on('error', error => console.log(`Encoding Error: ${error.message}`))
+                    .on('exit', () => console.log('Audio recorder exited'))
+                    .on('close', () => console.log('Audio recorder closed'))
+                    .on('end', () => {
+                        console.log(`✅ Recorded ${filename}`);
+                        console.log(`Transcoding to ${wav_filename} succeeded!`)
+                        fs.unlink(filename, function (err) {
+                            if (err) {
+                                console.error(err);
+                            } else {
+                                console.log("File removed:", filename);
+                            }
+                        });
+                    })
+                    .save(outStream);
+
+            }
         }
-    });
+    );
+}
+
+function playSound(path) {
+
 }
