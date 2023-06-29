@@ -7,6 +7,14 @@ import { AudioIcon } from "~/components/ui/icons/AudioIcon";
 import { MicrophoneIcon } from "~/components/ui/icons/MicrophoneIcon";
 import { SendIcon } from "~/components/ui/icons/SendIcon";
 
+interface ChatHistoryModel {
+  messages: ChatMessageModel[];
+}
+interface ChatMessageModel {
+  text: string;
+  fromSelf: boolean;
+}
+
 const Recorder = ({
   setText,
   setRecording,
@@ -74,10 +82,59 @@ const BetterAlexaInterface = () => {
   const { mutateAsync: textToSpeech, isLoading: processingText } =
     api.microservice.textToSpeech.useMutation();
   const [text, setText] = useState("");
-  const [result, setResult] = useState("");
+
+  const transformResultToSpeech = async (text: string) => {
+    const data = await textToSpeech(text);
+    const audioBlob = Buffer.from(data.result.base64, "base64");
+    const audioUrl = URL.createObjectURL(
+      new Blob([audioBlob], { type: "audio/webm" }),
+    );
+    const audio = new Audio(audioUrl);
+    void audio.play();
+  };
+
+  const [chatHistory, setChatHistory] = useState<ChatHistoryModel>({
+    messages: [],
+  });
+
+  const pushMessage = (message: ChatMessageModel) => {
+    setChatHistory((prev) => ({
+      messages: [...prev.messages, message],
+    }));
+  };
+
+  const sendCommand = () => {
+    pushMessage({
+      text: text,
+      fromSelf: true,
+    });
+    setText("");
+    commandToAction(text)
+      .then((data) => {
+        pushMessage({
+          text: data.result.text,
+          fromSelf: false,
+        });
+      })
+      .catch((error) => {
+        //todo: show error
+      });
+  };
 
   return (
-    <div>
+    <div className="flex flex-col max-md:w-full md:w-1/4">
+      {chatHistory.messages.map((message, index) => (
+        <div className="my-1" key={index}>
+          <div className="w-auto bg-slate-700 p-2 font-black">
+            {`${message.fromSelf ? "Me" : "AI"}: ${message.text}`}
+          </div>
+        </div>
+      ))}
+      {processingText && (
+        <div className="my-1">
+          <div className="w-auto bg-slate-700 p-2 font-black">asdfsadf</div>
+        </div>
+      )}
       <div className="my-8 flex items-center gap-1">
         <input
           value={isRecording ? "Loading..." : text}
@@ -90,46 +147,11 @@ const BetterAlexaInterface = () => {
         <Recorder setText={setText} setRecording={setRecording} />
         <button
           className="cursor-pointer rounded-full bg-black/30 bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-black/40 disabled:bg-black/30"
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          onClick={async () => {
-            const data = await commandToAction(text);
-            setResult(data.result.text);
-          }}
+          onClick={sendCommand}
           disabled={processingAction || !text}
         >
           <SendIcon className="h-4 w-6 stroke-gray-500" />
         </button>
-      </div>
-      <div>
-        {!!(result || processingAction) && (
-          <div className="flex items-center gap-1">
-            <div className="block w-full rounded-2xl bg-black/30 pr-2 backdrop-blur-xl">
-              <div className="max-h-96 overflow-auto px-4 py-3">
-                <pre className="whitespace-pre-wrap font-['Helvetica'] text-sm">
-                  {processingAction ? "Loading..." : result}
-                </pre>
-              </div>
-            </div>
-            {!processingAction && (
-              <button
-                className="aspect-square rounded-full bg-black/30 bg-white p-2 font-semibold text-white/70 backdrop-blur-xl hover:bg-black/40 disabled:bg-black/40"
-                // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                onClick={async () => {
-                  const data = await textToSpeech(result);
-                  const audioBlob = Buffer.from(data.result.base64, "base64");
-                  const audioUrl = URL.createObjectURL(
-                    new Blob([audioBlob], { type: "audio/webm" }),
-                  );
-                  const audio = new Audio(audioUrl);
-                  void audio.play();
-                }}
-                disabled={processingText}
-              >
-                <AudioIcon className="h-4 w-4 stroke-gray-500" />
-              </button>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
