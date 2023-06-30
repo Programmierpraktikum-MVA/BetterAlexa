@@ -86,7 +86,7 @@ const ChatHistory = ({
     <>
       <div
         className={`${
-          chatHistory.messages.length > 0 ? "visible h-[62vh]" : "invisible h-0"
+          chatHistory.messages.length > 0 ? "visible h-[61vh]" : "invisible h-0"
         } chathistory-scrollbar overflow-y-scroll pr-4 transition-[height] duration-500`}
       >
         {chatHistory.messages.map((message, index) => (
@@ -169,8 +169,8 @@ const BetterAlexaInterface = () => {
   };
 
   return (
-    <div className="flex flex-col px-10 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
-      <div className="rounded-xl bg-[#66336699] p-2">
+    <div className="flex flex-col px-2 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
+      <div className="rounded-xl bg-[#66336699] p-4">
         <ChatHistory
           chatHistory={chatHistory}
           processingAction={processingAction}
