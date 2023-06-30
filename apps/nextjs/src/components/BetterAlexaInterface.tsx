@@ -114,7 +114,7 @@ const ChatHistory = ({
       >
         {chatHistory.messages.map((message, index) => (
           <>
-            <div className="my-1" key={index}>
+            <div className="my-4" key={index}>
               {!message.fromSelf && (
                 <div className="flex">
                   <div className="inline-block max-w-[70%] rounded-xl border border-slate-800 bg-slate-700 p-2">
