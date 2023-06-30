@@ -84,22 +84,40 @@ const ChatHistory = ({
 }) => {
   return (
     <>
-      {chatHistory.messages.map((message, index) => (
-        <div className="my-1" key={index}>
-          <div className="inline-block max-w-full rounded-xl bg-slate-700 p-2">
-            <span className="break-words font-black">
-              {`${message.fromSelf ? "Me" : "AI"}: ${message.text}`}
-            </span>
+      <div
+        className={`${
+          chatHistory.messages.length > 0 ? "visible h-[62vh]" : "invisible h-0"
+        } chathistory-scrollbar overflow-y-scroll pr-4 transition-[height] duration-500`}
+      >
+        {chatHistory.messages.map((message, index) => (
+          <div className="my-1" key={index}>
+            {!message.fromSelf && (
+              <div className="inline-block max-w-[70%] rounded-xl border border-slate-800 bg-slate-700 p-2">
+                <span className="break-words font-black text-white">
+                  {message.text}
+                </span>
+              </div>
+            )}
+
+            {message.fromSelf && (
+              <div className="flex flex-col items-end">
+                <div className="inline-block max-w-[70%] rounded-xl border border-slate-700 bg-slate-600 p-2">
+                  <span className="break-words font-black text-white">
+                    {message.text}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      ))}
-      {processingAction && (
-        <div className="my-1">
-          <div className="inline-block max-w-full rounded-full bg-slate-700 p-2">
-            <div className="font-black">...</div>
+        ))}
+        {processingAction && (
+          <div className="my-1">
+            <div className="inline-block max-w-full rounded-full bg-slate-700 p-2">
+              <div className="font-black">...</div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 };
@@ -151,29 +169,31 @@ const BetterAlexaInterface = () => {
   };
 
   return (
-    <div className="flex flex-col px-10 max-md:w-full md:w-3/4 lg:max-w-3xl">
-      <ChatHistory
-        chatHistory={chatHistory}
-        processingAction={processingAction}
-      />
-
-      <div className="my-8 flex w-full justify-center gap-1">
-        <input
-          value={isRecording ? "Recording..." : text}
-          onChange={(e) => setText(e.target.value)}
-          type="text"
-          className="block w-full min-w-[16rem] rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white sm:w-96"
-          disabled={isRecording}
-          placeholder="Alexa, play some music"
+    <div className="flex flex-col px-10 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
+      <div className="rounded-xl bg-[#66336699] p-2">
+        <ChatHistory
+          chatHistory={chatHistory}
+          processingAction={processingAction}
         />
-        <Recorder setText={setText} setRecording={setRecording} />
-        <button
-          className="cursor-pointer rounded-full bg-black/30 bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-black/40 disabled:bg-black/30"
-          onClick={sendCommand}
-          disabled={processingAction || !text}
-        >
-          <SendIcon className="h-4 w-6 stroke-gray-500" />
-        </button>
+
+        <div className="my-8 flex w-full justify-center gap-1">
+          <input
+            value={isRecording ? "Recording..." : text}
+            onChange={(e) => setText(e.target.value)}
+            type="text"
+            className="block w-full min-w-[16rem] rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white sm:w-96"
+            disabled={isRecording}
+            placeholder="Alexa, play some music"
+          />
+          <Recorder setText={setText} setRecording={setRecording} />
+          <button
+            className="cursor-pointer rounded-full bg-black/30 bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-black/40 disabled:bg-black/30"
+            onClick={sendCommand}
+            disabled={processingAction || !text}
+          >
+            <SendIcon className="h-4 w-6 stroke-gray-500" />
+          </button>
+        </div>
       </div>
     </div>
   );
