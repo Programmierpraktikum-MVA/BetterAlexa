@@ -170,20 +170,7 @@ const BetterAlexaInterface = () => {
   const [text, setText] = useState("");
 
   const [chatHistory, setChatHistory] = useState<ChatHistoryModel>({
-    messages: [
-      {
-        text: "Hi, how can I help you?",
-        fromSelf: false,
-      },
-      {
-        text: "Alexa, play some music",
-        fromSelf: true,
-      },
-      {
-        text: "Playing some music",
-        fromSelf: false,
-      },
-    ],
+    messages: [],
   });
 
   const pushMessage = (message: ChatMessageModel) => {
