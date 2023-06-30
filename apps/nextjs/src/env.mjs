@@ -23,6 +23,7 @@ export const env = createEnv({
    * For them to be exposed to the client, prefix them with `NEXT_PUBLIC_`.
    */
   client: {
+    NEXT_PUBLIC_IS_EXTENSION: z.string().optional(),
     NEXT_PUBLIC_API_KEY: z.string(),
     NEXT_PUBLIC_AUTH_DOMAIN: z.string(),
     NEXT_PUBLIC_PROJECT_ID: z.string(),
@@ -45,6 +46,7 @@ export const env = createEnv({
     TEXT_TO_SPEECH_URL: process.env.TEXT_TO_SPEECH_URL,
     SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID,
     SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET,
+    NEXT_PUBLIC_IS_EXTENSION: process.env.NEXT_PUBLIC_IS_EXTENSION,
     NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY,
     NEXT_PUBLIC_AUTH_DOMAIN: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
     NEXT_PUBLIC_PROJECT_ID: process.env.NEXT_PUBLIC_PROJECT_ID,
