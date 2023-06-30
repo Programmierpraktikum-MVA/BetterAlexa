@@ -6,6 +6,7 @@ import { createMediaRecorder } from "~/utils/mediaRecorder";
 import { AudioIcon } from "~/components/ui/icons/AudioIcon";
 import { MicrophoneIcon } from "~/components/ui/icons/MicrophoneIcon";
 import { SendIcon } from "~/components/ui/icons/SendIcon";
+import LoadingSpinner from "./ui/LoadingSpinner";
 
 interface ChatHistoryModel {
   messages: ChatMessageModel[];
@@ -82,6 +83,28 @@ const ChatHistory = ({
   chatHistory: ChatHistoryModel;
   processingAction: boolean;
 }) => {
+  const { mutateAsync: textToSpeech, isLoading: processingTextToSpeech } =
+    api.microservice.textToSpeech.useMutation();
+
+  const playTextToSpeech = async (text: string) => {
+    const data = await textToSpeech(text);
+    const audioBlob = Buffer.from(data.result.base64, "base64");
+    const audioUrl = URL.createObjectURL(
+      new Blob([audioBlob], { type: "audio/webm" }),
+    );
+    const audio = new Audio(audioUrl);
+    void audio.play();
+  };
+
+  const onPlayAudioClicked = () => {
+    const lastMessage =
+      chatHistory.messages[chatHistory.messages.length - 1]?.text;
+
+    if (!lastMessage || lastMessage == "") return;
+
+    void playTextToSpeech(lastMessage);
+  };
+
   return (
     <>
       <div
@@ -90,25 +113,42 @@ const ChatHistory = ({
         } chathistory-scrollbar overflow-y-scroll pr-4 transition-[height] duration-500`}
       >
         {chatHistory.messages.map((message, index) => (
-          <div className="my-1" key={index}>
-            {!message.fromSelf && (
-              <div className="inline-block max-w-[70%] rounded-xl border border-slate-800 bg-slate-700 p-2">
-                <span className="break-words font-black text-white">
-                  {message.text}
-                </span>
-              </div>
-            )}
+          <>
+            <div className="my-1" key={index}>
+              {!message.fromSelf && (
+                <div className="flex">
+                  <div className="inline-block max-w-[70%] rounded-xl border border-slate-800 bg-slate-700 p-2">
+                    <span className="break-words font-black text-white">
+                      {message.text}
+                    </span>
+                  </div>
+                  {chatHistory.messages.indexOf(message) ===
+                    chatHistory.messages.length - 1 && (
+                    <>
+                      <AudioIcon
+                        className="ms-4 w-8"
+                        onClick={onPlayAudioClicked}
+                      />
 
-            {message.fromSelf && (
-              <div className="flex flex-col items-end">
-                <div className="inline-block max-w-[70%] rounded-xl border border-slate-700 bg-slate-600 p-2">
-                  <span className="break-words font-black text-white">
-                    {message.text}
-                  </span>
+                      {processingTextToSpeech && (
+                        <LoadingSpinner className="" />
+                      )}
+                    </>
+                  )}
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+
+              {message.fromSelf && (
+                <div className="flex flex-col items-end">
+                  <div className="inline-block max-w-[70%] rounded-xl border border-slate-700 bg-slate-600 p-2">
+                    <span className="break-words font-black text-white">
+                      {message.text}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
         ))}
         {processingAction && (
           <div className="my-1">
@@ -126,22 +166,24 @@ const BetterAlexaInterface = () => {
   const [isRecording, setRecording] = useState(false);
   const { mutateAsync: commandToAction, isLoading: processingAction } =
     api.microservice.commandToAction.useMutation();
-  const { mutateAsync: textToSpeech, isLoading: processingText } =
-    api.microservice.textToSpeech.useMutation();
+
   const [text, setText] = useState("");
 
-  const transformToSpeech = async (text: string) => {
-    const data = await textToSpeech(text);
-    const audioBlob = Buffer.from(data.result.base64, "base64");
-    const audioUrl = URL.createObjectURL(
-      new Blob([audioBlob], { type: "audio/webm" }),
-    );
-    const audio = new Audio(audioUrl);
-    void audio.play();
-  };
-
   const [chatHistory, setChatHistory] = useState<ChatHistoryModel>({
-    messages: [],
+    messages: [
+      {
+        text: "Hi, how can I help you?",
+        fromSelf: false,
+      },
+      {
+        text: "Alexa, play some music",
+        fromSelf: true,
+      },
+      {
+        text: "Playing some music",
+        fromSelf: false,
+      },
+    ],
   });
 
   const pushMessage = (message: ChatMessageModel) => {
@@ -156,16 +198,12 @@ const BetterAlexaInterface = () => {
       fromSelf: true,
     });
     setText("");
-    commandToAction(text)
-      .then((data) => {
-        pushMessage({
-          text: data.result.text,
-          fromSelf: false,
-        });
-      })
-      .catch((error) => {
-        //todo: show error
+    void commandToAction(text).then((data) => {
+      pushMessage({
+        text: data.result.text,
+        fromSelf: false,
       });
+    });
   };
 
   return (
