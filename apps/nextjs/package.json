@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "pnpm with-env next build",
+    "build:ext": "pnpm with-env bash build-ext.sh",
     "clean": "git clean -xdf .next .turbo node_modules",
     "dev": "pnpm with-env next dev",
     "lint": "dotenv -v SKIP_ENV_VALIDATION=1 next lint",
@@ -24,6 +25,7 @@
     "@trpc/next": "^10.20.0",
     "@trpc/react-query": "^10.20.0",
     "@trpc/server": "^10.20.0",
+    "@types/chrome": "^0.0.238",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
     "lucide-react": "^0.220.0",
