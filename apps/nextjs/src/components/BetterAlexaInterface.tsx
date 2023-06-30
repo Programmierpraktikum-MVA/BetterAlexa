@@ -125,18 +125,20 @@ const BetterAlexaInterface = () => {
     <div className="flex flex-col px-10 max-md:w-full md:w-3/4 lg:max-w-3xl">
       {chatHistory.messages.map((message, index) => (
         <div className="my-1 " key={index}>
-          <div className="w-auto bg-slate-700 p-2 font-black">
-            {`${message.fromSelf ? "Me" : "AI"}: ${message.text}`}
+          <div className="box-border rounded-xl bg-slate-700 p-2">
+            <span className="whitespace-pre-wrap break-words font-black">
+              {`${message.fromSelf ? "Me" : "AI"}: ${message.text}`}
+            </span>
           </div>
         </div>
       ))}
-      {processingAction && 
+      {processingAction && (
         <div className="my-1">
           <div className="inline-block rounded-full bg-slate-700 p-2">
             <div className="font-black">...</div>
           </div>
         </div>
-      }
+      )}
       <div className="my-8 flex items-center gap-1">
         <input
           value={isRecording ? "Recording..." : text}
