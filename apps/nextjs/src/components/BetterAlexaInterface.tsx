@@ -83,7 +83,7 @@ const BetterAlexaInterface = () => {
     api.microservice.textToSpeech.useMutation();
   const [text, setText] = useState("");
 
-  const transformResultToSpeech = async (text: string) => {
+  const transformToSpeech = async (text: string) => {
     const data = await textToSpeech(text);
     const audioBlob = Buffer.from(data.result.base64, "base64");
     const audioUrl = URL.createObjectURL(
@@ -122,22 +122,24 @@ const BetterAlexaInterface = () => {
   };
 
   return (
-    <div className="flex flex-col max-md:w-full md:w-1/4">
+    <div className="flex flex-col px-10 max-md:w-full md:w-3/4 lg:max-w-3xl">
       {chatHistory.messages.map((message, index) => (
-        <div className="my-1" key={index}>
+        <div className="my-1 " key={index}>
           <div className="w-auto bg-slate-700 p-2 font-black">
             {`${message.fromSelf ? "Me" : "AI"}: ${message.text}`}
           </div>
         </div>
       ))}
-      {processingText && (
+      {processingAction && 
         <div className="my-1">
-          <div className="w-auto bg-slate-700 p-2 font-black">asdfsadf</div>
+          <div className="inline-block rounded-full bg-slate-700 p-2">
+            <div className="font-black">...</div>
+          </div>
         </div>
-      )}
+      }
       <div className="my-8 flex items-center gap-1">
         <input
-          value={isRecording ? "Loading..." : text}
+          value={isRecording ? "Recording..." : text}
           onChange={(e) => setText(e.target.value)}
           type="text"
           className="block w-full min-w-[16rem] rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white sm:w-96"
