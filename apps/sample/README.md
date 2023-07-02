@@ -13,5 +13,5 @@ If you face issues make sure packages are installed (`pip show <packagename>`). 
 
 Isolated Deployment
 
-1. Build Dockerimage: `docker build -t cta`
-2. Run: `docker run --env-file ../../.env cta`
+1. Build Dockerimage: `docker build -t microservices`
+2. Run: `docker run --env-file ../../.env microservices`
