@@ -34,7 +34,7 @@ const Home: NextPage = () => {
                 {session.user && <span>{session.user.email}</span>}
 
                 <button
-                  className="mx-5 rounded-3xl bg-black/30 dark:bg-white/20 px-4 py-2 backdrop-blur-xl hover:bg-black/40"
+                  className="mx-5 rounded-3xl bg-black/30 dark:bg-white/20  hover:bg-black/40 dark:hover:bg-white/40 px-4 py-2 backdrop-blur-xl"
                   onClick={logOut}
                 >
                   <p>Sign out</p>
