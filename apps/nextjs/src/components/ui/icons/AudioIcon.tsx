@@ -1,5 +1,6 @@
-export const AudioIcon: React.FC<{ className?: string }> = ({
-    className
+export const AudioIcon: React.FC<{ className?: string, onClick: () => void }> = ({
+    className,
+    onClick
 }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -8,6 +9,7 @@ export const AudioIcon: React.FC<{ className?: string }> = ({
         strokeWidth={1.5}
         stroke="currentColor"
         className={className}
+        onClick={onClick}
     >
         <path
             strokeLinecap="round"

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
 import { blobToBase64 } from "~/utils/blobToBase64";
@@ -6,109 +6,219 @@ import { createMediaRecorder } from "~/utils/mediaRecorder";
 import { AudioIcon } from "~/components/ui/icons/AudioIcon";
 import { MicrophoneIcon } from "~/components/ui/icons/MicrophoneIcon";
 import { SendIcon } from "~/components/ui/icons/SendIcon";
+import LoadingSpinner from "./ui/LoadingSpinner";
 
+interface ChatHistoryModel {
+  messages: ChatMessageModel[];
+}
+interface ChatMessageModel {
+  text: string;
+  fromSelf: boolean;
+}
 
-
-const BetterAlexaInterface = () => {
+const Recorder = ({
+  setText,
+  setRecording,
+}: {
+  setText: (text: string) => void;
+  setRecording: (recording: boolean) => void;
+}) => {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
   const { mutateAsync: speechToText, isLoading: processingSpeech } =
     api.microservice.speechToText.useMutation();
-  const { mutateAsync: commandToAction, isLoading: processingAction } =
-    api.microservice.commandToAction.useMutation();
-  const { mutateAsync: textToSpeech, isLoading: processingText } =
-    api.microservice.textToSpeech.useMutation();
-  const [text, setText] = useState("");
-  const [result, setResult] = useState("");
+
+  useEffect(() => {
+    setRecording(processingSpeech || !!recorder);
+  }, [processingSpeech, recorder, setRecording]);
+
+  const startRecording = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+    });
+    const recorder = createMediaRecorder({
+      stream,
+      processAudio: async (blob) => {
+        const base64 = await blobToBase64(blob);
+        setRecorder(null);
+        const data = await speechToText(base64);
+        setText(data.result.text);
+      },
+    });
+    setRecorder(recorder);
+    recorder.start();
+  };
+
+  const stopRecording = () => {
+    recorder?.stop();
+  };
 
   return (
-    <div>
-      <div className="my-8 flex items-center gap-1">
-        <input
-          value={processingSpeech || !!recorder ? "Loading..." : text}
-          onChange={(e) => setText(e.target.value)}
-          type="text"
-          className="block w-full min-w-[16rem] rounded-2xl bg-black/30 dark:bg-white/20 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white sm:w-96"
-          disabled={processingSpeech || !!recorder}
-          placeholder="Alexa, play some music"
-        />
-
-        {recorder?.state !== "recording" && (
-          <button
-            className="aspect-square rounded-full bg-black/30 bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-black/40 disabled:bg-black/40"
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            onClick={async () => {
-              const stream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-              });
-              const recorder = createMediaRecorder({
-                stream,
-                processAudio: async (blob) => {
-                  const base64 = await blobToBase64(blob);
-                  setRecorder(null);
-                  const data = await speechToText(base64);
-                  setText(data.result.text);
-                },
-              });
-              setRecorder(recorder);
-              recorder.start();
-            }}
-            disabled={processingSpeech}
-          >
-            <MicrophoneIcon className="h-4 w-4 stroke-gray-500" />
-          </button>
-        )}
-        {recorder?.state === "recording" && (
-          <button
-            className="aspect-square rounded-full bg-red-500 p-2 text-sm font-semibold text-white duration-200 hover:bg-red-600 disabled:bg-red-600"
-            onClick={() => {
-              recorder.stop();
-            }}
-          >
-            <MicrophoneIcon className="h-4 w-4 stroke-gray-500" />
-          </button>
-        )}
+    <>
+      {recorder?.state !== "recording" && (
         <button
-          className="cursor-pointer rounded-full bg-black/30 bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-black/40 disabled:bg-black/30 dark:bg-white/20"
+          className="aspect-square rounded-full bg-black/30 bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-black/40 disabled:bg-black/40"
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          onClick={async () => {
-            const data = await commandToAction(text);
-            setResult(data.result.text);
-          }}
-          disabled={processingAction || !text}
+          onClick={startRecording}
+          disabled={processingSpeech}
         >
-          <SendIcon className="h-4 w-6 stroke-gray-500 dark:stroke-white" />
+          <MicrophoneIcon className="h-4 w-4 stroke-gray-500" />
         </button>
-      </div>
-      <div>
-        {!!(result || processingAction) && (
-          <div className="flex items-center gap-1">
-            <div className="block w-full rounded-2xl bg-black/30 dark:bg-white/20 pr-2 backdrop-blur-xl">
-              <div className="max-h-96 overflow-auto px-4 py-3">
-                <pre className="whitespace-pre-wrap font-['Helvetica'] text-sm">
-                  {processingAction ? "Loading..." : result}
-                </pre>
-              </div>
+      )}
+      {recorder?.state === "recording" && (
+        <button
+          className="aspect-square rounded-full bg-red-500 p-2 text-sm font-semibold text-white duration-200 hover:bg-red-600 disabled:bg-red-600"
+          onClick={stopRecording}
+        >
+          <MicrophoneIcon className="h-4 w-4 stroke-gray-500" />
+        </button>
+      )}
+    </>
+  );
+};
+
+const ChatHistory = ({
+  chatHistory,
+  processingAction,
+}: {
+  chatHistory: ChatHistoryModel;
+  processingAction: boolean;
+}) => {
+  const { mutateAsync: textToSpeech, isLoading: processingTextToSpeech } =
+    api.microservice.textToSpeech.useMutation();
+
+  const playTextToSpeech = async (text: string) => {
+    const data = await textToSpeech(text);
+    const audioBlob = Buffer.from(data.result.base64, "base64");
+    const audioUrl = URL.createObjectURL(
+      new Blob([audioBlob], { type: "audio/webm" }),
+    );
+    const audio = new Audio(audioUrl);
+    void audio.play();
+  };
+
+  const onPlayAudioClicked = () => {
+    const lastMessage =
+      chatHistory.messages[chatHistory.messages.length - 1]?.text;
+
+    if (!lastMessage || lastMessage == "") return;
+
+    void playTextToSpeech(lastMessage);
+  };
+
+  return (
+    <>
+      <div
+        className={`${
+          chatHistory.messages.length > 0 ? "visible h-[61vh]" : "invisible h-0"
+        } chathistory-scrollbar overflow-y-scroll pr-4 transition-[height] duration-500`}
+      >
+        {chatHistory.messages.map((message, index) => (
+          <>
+            <div className="my-4" key={index}>
+              {!message.fromSelf && (
+                <div className="flex">
+                  <div className="inline-block max-w-[70%] rounded-xl border border-slate-800 bg-slate-700 p-2">
+                    <span className="break-words text-white">
+                      {message.text}
+                    </span>
+                  </div>
+                  {chatHistory.messages.indexOf(message) ===
+                    chatHistory.messages.length - 1 && (
+                    <>
+                      <AudioIcon
+                        className="ms-4 w-8"
+                        onClick={onPlayAudioClicked}
+                      />
+
+                      {processingTextToSpeech && (
+                        <LoadingSpinner className="" />
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+
+              {message.fromSelf && (
+                <div className="flex flex-col items-end">
+                  <div className="inline-block max-w-[70%] rounded-xl border border-slate-700 bg-slate-600 p-2">
+                    <span className="break-words text-white">
+                      {message.text}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
-            {!processingAction && (
-              <button
-                className="aspect-square rounded-full bg-black/30  bg-white p-2 font-semibold text-white/70 backdrop-blur-xl hover:bg-black/40 disabled:bg-black/40"
-                // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                onClick={async () => {
-                  const data = await textToSpeech(result);
-                  const audioBlob = Buffer.from(data.result.base64, "base64");
-                  const audioUrl = URL.createObjectURL(
-                    new Blob([audioBlob], { type: "audio/webm" }),
-                  );
-                  const audio = new Audio(audioUrl);
-                  void audio.play();
-                }}
-                disabled={processingText}
-              >
-                <AudioIcon className="h-4 w-4 stroke-gray-500" />
-              </button>
-            )}
+          </>
+        ))}
+        {processingAction && (
+          <div className="my-1">
+            <div className="inline-block max-w-full rounded-full bg-slate-700 p-2">
+              <div className="font-black">...</div>
+            </div>
           </div>
         )}
+      </div>
+    </>
+  );
+};
+
+const BetterAlexaInterface = () => {
+  const [isRecording, setRecording] = useState(false);
+  const { mutateAsync: commandToAction, isLoading: processingAction } =
+    api.microservice.commandToAction.useMutation();
+
+  const [text, setText] = useState("");
+
+  const [chatHistory, setChatHistory] = useState<ChatHistoryModel>({
+    messages: [],
+  });
+
+  const pushMessage = (message: ChatMessageModel) => {
+    setChatHistory((prev) => ({
+      messages: [...prev.messages, message],
+    }));
+  };
+
+  const sendCommand = () => {
+    pushMessage({
+      text: text,
+      fromSelf: true,
+    });
+    setText("");
+    void commandToAction(text).then((data) => {
+      pushMessage({
+        text: data.result.text,
+        fromSelf: false,
+      });
+    });
+  };
+
+  return (
+    <div className="flex flex-col px-2 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
+      <div className="rounded-xl bg-[#66336699] p-4">
+        <ChatHistory
+          chatHistory={chatHistory}
+          processingAction={processingAction}
+        />
+
+        <div className="my-8 flex w-full justify-center gap-1">
+          <input
+            value={isRecording ? "Recording..." : text}
+            onChange={(e) => setText(e.target.value)}
+            type="text"
+            className="block w-full min-w-[16rem] rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
+            disabled={isRecording}
+            placeholder="Alexa, play some music"
+          />
+          <Recorder setText={setText} setRecording={setRecording} />
+          <button
+            className="cursor-pointer rounded-full bg-black/30 bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-black/40 disabled:bg-black/30 dark:bg-white/20"
+            onClick={sendCommand}
+            disabled={processingAction || !text}
+          >
+            <SendIcon className="h-4 w-6 stroke-gray-500 dark:stroke-white" />
+          </button>
+        </div>
       </div>
     </div>
   );
