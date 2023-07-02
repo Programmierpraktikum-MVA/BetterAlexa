@@ -76,13 +76,13 @@ const BetterAlexaInterface = () => {
           }}
           disabled={processingAction || !text}
         >
-          <SendIcon className="h-4 w-6 stroke-white" />
+          <SendIcon className="h-4 w-6 stroke-gray-500 dark:stroke-white" />
         </button>
       </div>
       <div>
         {!!(result || processingAction) && (
           <div className="flex items-center gap-1">
-            <div className="block w-full rounded-2xl bg-black/30 pr-2 backdrop-blur-xl">
+            <div className="block w-full rounded-2xl bg-black/30 dark:bg-white/20 pr-2 backdrop-blur-xl">
               <div className="max-h-96 overflow-auto px-4 py-3">
                 <pre className="whitespace-pre-wrap font-['Helvetica'] text-sm">
                   {processingAction ? "Loading..." : result}
@@ -91,7 +91,7 @@ const BetterAlexaInterface = () => {
             </div>
             {!processingAction && (
               <button
-                className="aspect-square rounded-full bg-black/30 bg-white p-2 font-semibold text-white/70 backdrop-blur-xl hover:bg-black/40 disabled:bg-black/40"
+                className="aspect-square rounded-full bg-black/30  bg-white p-2 font-semibold text-white/70 backdrop-blur-xl hover:bg-black/40 disabled:bg-black/40"
                 // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 onClick={async () => {
                   const data = await textToSpeech(result);
