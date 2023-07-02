@@ -27,7 +27,7 @@ const BetterAlexaInterface = () => {
           value={processingSpeech || !!recorder ? "Loading..." : text}
           onChange={(e) => setText(e.target.value)}
           type="text"
-          className="block w-full min-w-[16rem] rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white sm:w-96"
+          className="block w-full min-w-[16rem] rounded-2xl bg-black/30 dark:bg-white/20 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white sm:w-96"
           disabled={processingSpeech || !!recorder}
           placeholder="Alexa, play some music"
         />
@@ -68,7 +68,7 @@ const BetterAlexaInterface = () => {
           </button>
         )}
         <button
-          className="cursor-pointer rounded-full bg-black/30 bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-black/40 disabled:bg-black/30"
+          className="cursor-pointer rounded-full bg-black/30 bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-black/40 disabled:bg-black/30 dark:bg-white/20"
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={async () => {
             const data = await commandToAction(text);
@@ -76,7 +76,7 @@ const BetterAlexaInterface = () => {
           }}
           disabled={processingAction || !text}
         >
-          <SendIcon className="h-4 w-6 stroke-gray-500" />
+          <SendIcon className="h-4 w-6 stroke-white" />
         </button>
       </div>
       <div>
