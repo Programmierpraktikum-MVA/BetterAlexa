@@ -57,7 +57,7 @@ cp .env.example .env
 #### Prerequisites
 
 We will be using MongoDB as our database, and Firebase for our authentication.
-
+<!-- TODO update -->
 1. Create a MongoDB database and get the connection string. You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) for this.
 2. Go to [Firebase Console](https://console.firebase.google.com/) and create a new Firebase project.
 3. Create 3 apps for your Firebase project, a Web app, an Android app, and an iOS app. For the Android and iOS app, you can just use the package name from the Expo app (com.mva.betteralexa), you also need to generate a SHA1 for the Android app later.
