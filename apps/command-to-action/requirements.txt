@@ -1,5 +1,5 @@
 Flask
-openai
+llama-cpp-python
 gTTS
 langchain
 google-search-results
