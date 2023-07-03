@@ -45,6 +45,7 @@ const Login: NextPage = () => {
       <BetterAlexaHead />
 
       <BetterAlexaBackground>
+        
         <BetterAlexaLogo />
 
         {session.loading && <div>Loading...</div>}

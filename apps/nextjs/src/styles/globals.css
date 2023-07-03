@@ -85,9 +85,10 @@
 }
 
 .chathistory-scrollbar::-webkit-scrollbar-track {
-  background: #aa555555;
+  background: #fafafa;
   border-radius: 10px;
 }
+
 .chathistory-scrollbar::-webkit-scrollbar-thumb {
   background: #444;
   border-radius: 10px;
