@@ -1,7 +1,7 @@
 from langchain.agents import ZeroShotAgent, Tool, AgentExecutor, load_tools, initialize_agent, AgentType
 from langchain.memory import ConversationBufferMemory
-from langchain import LLMChain, LLMMathChain
-from llama_cpp import Llama
+from langchain import LLMChain
+from langchain.llms import LlamaCpp
 from langchain.tools import StructuredTool
 from spotify import SpotifyPlayer
 
@@ -11,7 +11,7 @@ class LangChainIntegration:
     def __init__(self):
         self.spotify_auth = None
 
-        llm = Llama(model_path=os.environ.get("LLAMA_MODEL_PATH"))
+        llm = LlamaCpp(model_path=os.environ.get("LLAMA_MODEL_PATH"))
         tools = load_tools(
             [],
             llm=llm,
