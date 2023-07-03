@@ -76,7 +76,10 @@ class LangChainIntegration:
         if self.spotify_auth == "undefined" or self.spotify_auth is None:
             base_url = os.environ.get("NEXT_PUBLIC_BASE_URL")
             return f"You need to authenticate with Spotify first. Go to {base_url}/spotify to do so."
-        self.spotify_player = SpotifyPlayer(self.spotify_auth)
+        try:
+            self.spotify_player = SpotifyPlayer(self.spotify_auth)
+        except Exception as e:
+            return f"Error: {e}"
         if song_title and artist_name and song_title != "null" and artist_name != "null":
             song_info = self.spotify_player.play_song_from_artist(song_title, artist_name)
             return f"Playing {song_info['name']} by {song_info['artists'][0]['name']}"
