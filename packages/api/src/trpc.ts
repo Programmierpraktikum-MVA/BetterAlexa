@@ -12,7 +12,7 @@ import { type DecodedIdToken } from "firebase-admin/auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { prisma } from "@acme/db";
+import { redis } from "@acme/db";
 
 import { adminAuth } from "./utils/firebase";
 
@@ -43,7 +43,7 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     cookies: opts.cookies,
-    prisma,
+    redis,
   };
 };
 
