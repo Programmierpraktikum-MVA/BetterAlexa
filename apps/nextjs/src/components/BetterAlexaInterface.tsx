@@ -57,12 +57,12 @@ const Recorder = ({
     <>
       {recorder?.state !== "recording" && (
         <button
-          className="aspect-square rounded-full bg-black/30 bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-black/40 disabled:bg-black/40"
+          className="aspect-square rounded-full bg-white dark:bg-white/20 p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 dark:hover:bg-white/40 disabled:bg-black/40"
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={startRecording}
           disabled={processingSpeech}
         >
-          <MicrophoneIcon className="h-4 w-4 stroke-gray-500" />
+          <MicrophoneIcon className="h-4 w-4 stroke-gray-500 dark:stroke-white" />
         </button>
       )}
       {recorder?.state === "recording" && (
@@ -70,7 +70,7 @@ const Recorder = ({
           className="aspect-square rounded-full bg-red-500 p-2 text-sm font-semibold text-white duration-200 hover:bg-red-600 disabled:bg-red-600"
           onClick={stopRecording}
         >
-          <MicrophoneIcon className="h-4 w-4 stroke-gray-500" />
+          <MicrophoneIcon className="h-4 w-4 stroke-white-500" />
         </button>
       )}
     </>
@@ -111,15 +111,15 @@ const ChatHistory = ({
       <div
         className={`${
           chatHistory.messages.length > 0 ? "visible h-[61vh]" : "invisible h-0"
-        } chathistory-scrollbar overflow-y-scroll pr-4 transition-[height] duration-500`}
+        } chathistory-scrollbar dark:chathistory-scrollbarDark overflow-y-scroll pr-4 transition-[height] duration-500`}
       >
         {chatHistory.messages.map((message, index) => (
           <>
             <div className="my-4" key={index}>
               {!message.fromSelf && (
                 <div className="flex">
-                  <div className="inline-block max-w-[70%] rounded-xl border border-slate-800 bg-slate-700 p-2">
-                    <span className="break-words font-black text-white">
+                  <div className="inline-block  max-w-[70%] rounded-xl border border-slate-800 bg-slate-700 p-2">
+                    <span className="break-words text-white">
                       <ReactMarkdown>{message.text}</ReactMarkdown>
                     </span>
                   </div>
@@ -127,7 +127,7 @@ const ChatHistory = ({
                     chatHistory.messages.length - 1 && (
                     <>
                       <AudioIcon
-                        className="ms-4 w-8"
+                        className="ms-4 w-8 hover:text-blue-800 dark:hover:text-gray-400"
                         onClick={onPlayAudioClicked}
                       />
 
@@ -142,7 +142,7 @@ const ChatHistory = ({
               {message.fromSelf && (
                 <div className="flex flex-col items-end">
                   <div className="inline-block max-w-[70%] rounded-xl border border-slate-700 bg-slate-600 p-2">
-                    <span className="break-words font-black text-white">
+                    <span className="break-words text-white">
                       <ReactMarkdown>{message.text}</ReactMarkdown>
                     </span>
                   </div>
@@ -196,7 +196,7 @@ const BetterAlexaInterface = () => {
 
   return (
     <div className="flex flex-col px-2 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
-      <div className="rounded-xl bg-[#66336699] p-4">
+      <div className="rounded-xl bg-gray-800/30 dark:bg-gray-700/30 p-4">
         <ChatHistory
           chatHistory={chatHistory}
           processingAction={processingAction}
@@ -207,17 +207,17 @@ const BetterAlexaInterface = () => {
             value={isRecording ? "Recording..." : text}
             onChange={(e) => setText(e.target.value)}
             type="text"
-            className="block w-full min-w-[16rem] rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white sm:w-96"
+            className="block w-full min-w-[16rem] rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
             disabled={isRecording}
             placeholder="Alexa, play some music"
           />
           <Recorder setText={setText} setRecording={setRecording} />
           <button
-            className="cursor-pointer rounded-full bg-black/30 bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-black/40 disabled:bg-black/30"
+            className="cursor-pointer rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 dark:hover:bg-white/40 dark:bg-white/20"
             onClick={sendCommand}
             disabled={processingAction || !text}
           >
-            <SendIcon className="h-4 w-6 stroke-gray-500" />
+            <SendIcon className="h-4 w-6 stroke-gray-500 dark:stroke-white" />
           </button>
         </div>
       </div>
