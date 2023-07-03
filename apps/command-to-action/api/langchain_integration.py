@@ -72,7 +72,7 @@ class LangChainIntegration:
         return "Test input"
 
     def spotify_player(self, song_title=None, artist_name=None, album_name=None, playlist_name=None):
-        """Lets you specify a song, artist, album, or playlist to play on Spotify."""
+        """Lets you specify a song, artist, album, or playlist to play on Spotify. The input is passed as a simple string of the song title, artist name, album name, or playlist name without json formatting."""
         if self.spotify_auth == "undefined" or self.spotify_auth is None:
             base_url = os.environ.get("NEXT_PUBLIC_BASE_URL")
             return f"You need to authenticate with Spotify first. Go to {base_url}/spotify to do so."
