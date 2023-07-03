@@ -13,6 +13,8 @@ services:
     build:
       context: apps/command-to-action
       dockerfile: Dockerfile
+    volumes:
+      - /usr/src/llama/weights:/usr/app/llama/weights
   nextjs:
     env_file: .env
     restart: always
