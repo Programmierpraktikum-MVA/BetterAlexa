@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 import { api } from "~/utils/api";
 import { blobToBase64 } from "~/utils/blobToBase64";
@@ -119,7 +120,7 @@ const ChatHistory = ({
                 <div className="flex">
                   <div className="inline-block max-w-[70%] rounded-xl border border-slate-800 bg-slate-700 p-2">
                     <span className="break-words font-black text-white">
-                      {message.text}
+                      <ReactMarkdown>{message.text}</ReactMarkdown>
                     </span>
                   </div>
                   {chatHistory.messages.indexOf(message) ===
@@ -142,7 +143,7 @@ const ChatHistory = ({
                 <div className="flex flex-col items-end">
                   <div className="inline-block max-w-[70%] rounded-xl border border-slate-700 bg-slate-600 p-2">
                     <span className="break-words font-black text-white">
-                      {message.text}
+                      <ReactMarkdown>{message.text}</ReactMarkdown>
                     </span>
                   </div>
                 </div>
