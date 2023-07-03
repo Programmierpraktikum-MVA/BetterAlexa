@@ -18,7 +18,6 @@ class LangChainIntegration:
             input_func=self.get_input
         )
         spotify_tool = StructuredTool.from_function(self.spotify_player, return_direct=True)
-        llm_math_chain = LLMMathChain(llm=llm)
         tools.extend([
             spotify_tool,
             Tool(
@@ -32,12 +31,6 @@ class LangChainIntegration:
                 func=self.introduction_with_name,
                 description="Only to be used for when I am introducing myself with a name",
                 return_direct=True
-            ),
-            Tool(
-                name="Custom_Calculator",
-                func=llm_math_chain.run,
-                description="useful for when you need to answer questions about math",
-                return_direct=False
             )
         ])
 
