@@ -5,7 +5,7 @@ import baseConfig from "@acme/tailwind-config";
 export default {
   content: ["./src/**/*.tsx"],
   presets: [baseConfig],
-  darkMode: ["class"],
+  darkMode: "class",
   theme: {
     container: {
       center: true,
