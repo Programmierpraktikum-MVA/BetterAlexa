@@ -3,13 +3,19 @@ const {createCommand, createVoiceConnectionData} = require('../utils.js');
 const {
     entersState,
     joinVoiceChannel,
-    VoiceConnection,
+    createAudioPlayer,
+    StreamType,
+    createAudioResource,
     VoiceConnectionStatus,
+    AudioPlayerStatus,
     EndBehaviorType
 } = require('@discordjs/voice');
+const Discord = require('discord.js');
 const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
 const {exec} = require('child_process');
+const WakeWordDetection = require('../wake-word/wake-word-detection.js');
+wwd = new WakeWordDetection();
 
 if (env.error) throw env.error;
 
@@ -58,7 +64,8 @@ module.exports = createCommand("connect",
                 joinVoiceChannel({
                     channelId: member.voice.channel.id,
                     guildId: message.guild.id,
-                    adapterCreator: message.guild.voiceAdapterCreator
+                    adapterCreator: message.guild.voiceAdapterCreator,
+                    selfDeaf: false
                 });
             message.channel.send(`Connected to ${member.voice.channel}.`);
 
@@ -67,12 +74,13 @@ module.exports = createCommand("connect",
 
         try {
             await entersState(connection, VoiceConnectionStatus.Ready, 20e3);
+
             const receiver = connection.receiver;
 
             receiver.speaking.on('start', (userId) => {
                 let user = message.client.users.cache.get(userId);
                 if (!message.client.voiceConnections.get(message.guild.id).listeningTo.includes(user)) return;
-                createListeningStream(receiver, userId, user);
+                createListeningStream(receiver, userId, user, message.channel);
             });
 
             message.client.voiceConnections.set(message.guild.id,
@@ -87,7 +95,7 @@ function getDisplayName(userId, user) {
     return user ? `${user.username}_${user.discriminator}` : userId;
 }
 
-function createListeningStream(receiver, userId, user) {
+function createListeningStream(receiver, userId, user, textChannel) {
     const {createWriteStream} = require('fs');
     const {pipeline} = require('stream');
     const prism = require('prism-media');
@@ -147,18 +155,35 @@ function createListeningStream(receiver, userId, user) {
                         fs.unlink(filename, function (err) {
                             if (err) {
                                 console.error(err);
-                            } else {
-                                console.log("File removed:", filename);
                             }
                         });
+                        if (wwd.classify(wav_filename)) {
+                            textChannel.send("WAKE WORD DETECTED")
+                            playSound(receiver, "../audio/detected.mp3");
+                        } else {
+                            textChannel.send("NO WAKE WORD DETECTED")
+                            // fs.unlink(wav_filename, function (err) {
+                            //     if (err) {
+                            //         console.error(err);
+                            //     }
+                            // });
+                        }
                     })
                     .save(outStream);
-
             }
         }
     );
 }
 
-function playSound(path) {
-
+function playSound(connection, path) {
+    const player = createAudioPlayer();
+    const resource = createAudioResource(path, {
+        inputType: StreamType.Arbitrary,
+    });
+    player.on(AudioPlayerStatus.Idle, () => {
+        player.play(resource);
+    });
+    entersState(player, AudioPlayerStatus.Playing, 5e3).then(() => {
+        connection.subscribe(player);
+    }).catch(console.error);
 }
