@@ -30,7 +30,7 @@ packages
  ├─ api
  |   └─ tRPC v10 router definition
  ├─ auth
-     └─ authentication using firebase auth
+ |   └─ authentication using firebase auth
  └─ db
      └─ typesafe db-calls using Prisma -> optional, we can also just use mongodb client
 ```
