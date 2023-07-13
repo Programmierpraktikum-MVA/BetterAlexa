@@ -150,13 +150,13 @@ const ChatHistory = ({
             </div>
           </>
         ))}
-        {processingAction && (
           <div className="my-1">
-            <div className="inline-block max-w-full rounded-full bg-slate-700 p-2">
-              <div className="font-black">...</div>
+            <div className="inline-block rounded-full bg-slate-700 p-2">
+              <div className="flex flex-row items-center justify-center">
+                <LoadingSpinner />
+              </div>
             </div>
           </div>
-        )}
       </div>
     </>
   );
