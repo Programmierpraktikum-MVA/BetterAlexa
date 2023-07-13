@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { KeyboardEvent, useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
 import { blobToBase64 } from "~/utils/blobToBase64";
@@ -192,6 +192,11 @@ const BetterAlexaInterface = () => {
       });
     });
   };
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      sendCommand();
+    }
+  };
 
   return (
     <div className="flex flex-col px-2 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
@@ -209,6 +214,7 @@ const BetterAlexaInterface = () => {
             className="block w-full min-w-[16rem] rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
             disabled={isRecording}
             placeholder="Alexa, play some music"
+            onKeyDown={handleKeyPress}
           />
           <Recorder setText={setText} setRecording={setRecording} />
           <button
