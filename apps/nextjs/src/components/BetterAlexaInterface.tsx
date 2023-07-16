@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { api } from "~/utils/api";
@@ -89,6 +89,13 @@ const ChatHistory = ({
   const { mutateAsync: textToSpeech, isLoading: processingTextToSpeech } =
     api.microservice.textToSpeech.useMutation();
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [scrollRef, chatHistory]);
+
   const playTextToSpeech = async (text: string) => {
     const data = await textToSpeech(text);
     const audioBlob = Buffer.from(data.result.base64, "base64");
@@ -111,6 +118,7 @@ const ChatHistory = ({
   return (
     <>
       <div
+        ref={scrollRef}
         className={`${
           chatHistory.messages.length > 0
             ? "visible max-h-[61vh]"
@@ -185,6 +193,7 @@ const BetterAlexaInterface = () => {
   };
 
   const sendCommand = () => {
+    if (text === "" || processingAction) return;
     pushMessage({
       text: text,
       fromSelf: true,
@@ -198,7 +207,8 @@ const BetterAlexaInterface = () => {
     });
   };
   const handleKeyPress = (event: KeyboardEvent) => {
-    if (event.key === "Enter") {
+    if (event.key === "Enter" && text !== "" && event.shiftKey === false) {
+      event.preventDefault();
       sendCommand();
     }
   };
@@ -224,7 +234,7 @@ const BetterAlexaInterface = () => {
           <button
             className="cursor-pointer rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 dark:bg-white/20 dark:hover:bg-white/40"
             onClick={sendCommand}
-            disabled={processingAction || !text}  
+            disabled={processingAction || !text}
           >
             <SendIcon className="h-4 w-6 stroke-gray-500 dark:stroke-white" />
           </button>
