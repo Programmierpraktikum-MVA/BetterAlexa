@@ -57,7 +57,7 @@ const Recorder = ({
     <>
       {recorder?.state !== "recording" && (
         <button
-          className="aspect-square rounded-full bg-white dark:bg-white/20 p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 dark:hover:bg-white/40 disabled:bg-black/40"
+          className="aspect-square rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 disabled:bg-black/40 dark:bg-white/20 dark:hover:bg-white/40"
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={startRecording}
           disabled={processingSpeech}
@@ -70,7 +70,7 @@ const Recorder = ({
           className="aspect-square rounded-full bg-red-500 p-2 text-sm font-semibold text-white duration-200 hover:bg-red-600 disabled:bg-red-600"
           onClick={stopRecording}
         >
-          <MicrophoneIcon className="h-4 w-4 stroke-white-500" />
+          <MicrophoneIcon className="stroke-white-500 h-4 w-4" />
         </button>
       )}
     </>
@@ -110,7 +110,9 @@ const ChatHistory = ({
     <>
       <div
         className={`${
-          chatHistory.messages.length > 0 ? "visible h-[61vh]" : "invisible h-0"
+          chatHistory.messages.length > 0
+            ? "visible max-h-[61vh]"
+            : "invisible h-0"
         } chathistory-scrollbar dark:chathistory-scrollbarDark overflow-y-scroll pr-4 transition-[height] duration-500`}
       >
         {chatHistory.messages.map((message, index) => (
@@ -195,25 +197,25 @@ const BetterAlexaInterface = () => {
   };
 
   return (
-    <div className="flex flex-col px-2 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
-      <div className="rounded-xl bg-gray-800/30 dark:bg-gray-700/30 p-4">
+    <div className="flex flex-col px-4 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
+      <div className="rounded-xl bg-gray-800/30 p-4 dark:bg-gray-700/30">
         <ChatHistory
           chatHistory={chatHistory}
           processingAction={processingAction}
         />
 
-        <div className="my-8 flex w-full justify-center gap-1">
+        <div className="mt-8 flex w-full justify-center gap-1">
           <input
             value={isRecording ? "Recording..." : text}
             onChange={(e) => setText(e.target.value)}
             type="text"
-            className="block w-full min-w-[16rem] rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
+            className="block w-full min-w-[14rem] rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
             disabled={isRecording}
             placeholder="Alexa, play some music"
           />
           <Recorder setText={setText} setRecording={setRecording} />
           <button
-            className="cursor-pointer rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 dark:hover:bg-white/40 dark:bg-white/20"
+            className="cursor-pointer rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 dark:bg-white/20 dark:hover:bg-white/40"
             onClick={sendCommand}
             disabled={processingAction || !text}
           >
