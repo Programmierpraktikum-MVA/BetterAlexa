@@ -1,16 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import Redis from "ioredis";
 
-export * from "@prisma/client";
+const globalForRedis = globalThis as unknown as { redis: Redis };
 
-const globalForPrisma = globalThis as { prisma?: PrismaClient };
+export const redis: Redis =
+  globalForRedis.redis || new Redis(process.env.DATABASE_URL as string);
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
-  });
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalForRedis.redis = redis;
