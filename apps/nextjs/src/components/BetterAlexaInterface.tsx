@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { api } from "~/utils/api";
@@ -20,9 +20,11 @@ interface ChatMessageModel {
 const Recorder = ({
   setText,
   setRecording,
+  className,
 }: {
   setText: (text: string) => void;
   setRecording: (recording: boolean) => void;
+  className?: string;
 }) => {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
   const { mutateAsync: speechToText, isLoading: processingSpeech } =
@@ -54,7 +56,7 @@ const Recorder = ({
   };
 
   return (
-    <>
+    <div className={className ?? ""}>
       {recorder?.state !== "recording" && (
         <button
           className="aspect-square rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 disabled:bg-black/40 dark:bg-white/20 dark:hover:bg-white/40"
@@ -73,7 +75,7 @@ const Recorder = ({
           <MicrophoneIcon className="stroke-white-500 h-4 w-4" />
         </button>
       )}
-    </>
+    </div>
   );
 };
 
@@ -155,8 +157,8 @@ const ChatHistory = ({
         ))}
         {processingAction && (
           <div className="my-1">
-            <div className="inline-block max-w-full rounded-full bg-slate-700 p-2">
-              <div className="font-black">...</div>
+            <div className="inline-block rounded-full bg-slate-700 px-4 py-2">
+              <LoadingSpinner />
             </div>
           </div>
         )}
@@ -195,6 +197,11 @@ const BetterAlexaInterface = () => {
       });
     });
   };
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      sendCommand();
+    }
+  };
 
   return (
     <div className="flex flex-col px-4 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
@@ -204,20 +211,20 @@ const BetterAlexaInterface = () => {
           processingAction={processingAction}
         />
 
-        <div className="mt-8 flex w-full justify-center gap-1">
-          <input
+        <div className="mt-8 flex w-full items-center justify-center gap-1">
+          <textarea
             value={isRecording ? "Recording..." : text}
             onChange={(e) => setText(e.target.value)}
-            type="text"
-            className="block w-full min-w-[14rem] rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
+            className="inputscroll block w-full min-w-[14rem] resize-none rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl transition-all duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
             disabled={isRecording}
             placeholder="Alexa, play some music"
+            onKeyDown={handleKeyPress}
           />
           <Recorder setText={setText} setRecording={setRecording} />
           <button
             className="cursor-pointer rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 dark:bg-white/20 dark:hover:bg-white/40"
             onClick={sendCommand}
-            disabled={processingAction || !text}
+            disabled={processingAction || !text}  
           >
             <SendIcon className="h-4 w-6 stroke-gray-500 dark:stroke-white" />
           </button>
