@@ -185,6 +185,7 @@ const BetterAlexaInterface = () => {
   };
 
   const sendCommand = () => {
+    if (text === "" || processingAction) return;
     pushMessage({
       text: text,
       fromSelf: true,
@@ -198,7 +199,8 @@ const BetterAlexaInterface = () => {
     });
   };
   const handleKeyPress = (event: KeyboardEvent) => {
-    if (event.key === "Enter") {
+    if (event.key === "Enter" && text !== "" && event.shiftKey === false) {
+      event.preventDefault();
       sendCommand();
     }
   };
@@ -224,7 +226,7 @@ const BetterAlexaInterface = () => {
           <button
             className="cursor-pointer rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 dark:bg-white/20 dark:hover:bg-white/40"
             onClick={sendCommand}
-            disabled={processingAction || !text}  
+            disabled={processingAction || !text}
           >
             <SendIcon className="h-4 w-6 stroke-gray-500 dark:stroke-white" />
           </button>
