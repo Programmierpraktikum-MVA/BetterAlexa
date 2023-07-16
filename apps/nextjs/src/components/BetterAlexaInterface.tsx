@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import ReactMarkdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 
 import { api } from "~/utils/api";
 import { blobToBase64 } from "~/utils/blobToBase64";
@@ -8,6 +11,7 @@ import { AudioIcon } from "~/components/ui/icons/AudioIcon";
 import { MicrophoneIcon } from "~/components/ui/icons/MicrophoneIcon";
 import { SendIcon } from "~/components/ui/icons/SendIcon";
 import LoadingSpinner from "./ui/LoadingSpinner";
+import "katex/dist/katex.min.css";
 
 interface ChatHistoryModel {
   messages: ChatMessageModel[];
@@ -132,7 +136,11 @@ const ChatHistory = ({
                 <div className="flex">
                   <div className="inline-block  max-w-[70%] rounded-xl border border-slate-800 bg-slate-700 p-2">
                     <span className="break-words text-white">
-                      <ReactMarkdown>{message.text}</ReactMarkdown>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm, remarkMath, rehypeKatex]}
+                      >
+                        {message.text}
+                      </ReactMarkdown>
                     </span>
                   </div>
                   {chatHistory.messages.indexOf(message) ===
@@ -155,7 +163,11 @@ const ChatHistory = ({
                 <div className="flex flex-col items-end">
                   <div className="inline-block max-w-[70%] rounded-xl border border-slate-700 bg-slate-600 p-2">
                     <span className="break-words text-white">
-                      <ReactMarkdown>{message.text}</ReactMarkdown>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm, remarkMath, rehypeKatex]}
+                      >
+                        {message.text}
+                      </ReactMarkdown>
                     </span>
                   </div>
                 </div>
