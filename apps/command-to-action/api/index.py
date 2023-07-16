@@ -103,7 +103,6 @@ def generate_cta():
             function_call="auto",
         )
         response_message = response["choices"][0]["message"]
-        app.logger.info(f"Response message: {response_message}")
 
         if response_message.get("function_call"):
             function_call = response_message["function_call"]
