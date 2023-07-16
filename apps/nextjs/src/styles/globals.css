@@ -101,3 +101,7 @@
 .chathistory-scrollbar::-webkit-scrollbar-thumb:active {
   background: #222;
 }
+
+.inputscroll::-webkit-scrollbar {
+  display: none;
+}
