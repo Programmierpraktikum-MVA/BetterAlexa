@@ -1,5 +1,5 @@
 Flask
-openai
+openai==0.27.8
 gTTS
 langchain==0.0.234
 google-search-results

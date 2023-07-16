@@ -1,26 +1,37 @@
 import spotipy
+import os
+
 
 class SpotifyPlayer:
     def __init__(self, auth):
         self.auth = auth
         self.sp = spotipy.Spotify(self.auth)
         # Get the user's available devices
-        try :
+        try:
             self.devices = self.sp.devices()
         except Exception as e:
-            raise Exception("Error getting devices: " + str(e))
-        
+            if str(e).find("The access token expired") != -1:
+                base_url = os.environ.get("NEXT_PUBLIC_BASE_URL")
+                raise Exception(
+                    f"Your Spotify access token has expired. Please reauthenticate at {base_url}/spotify."
+                )
+            raise Exception("Can't get devices list: " + str(e))
+
         # assuming the first device is the one we want
         try:
-            self.device_id = self.devices["devices"][0]["id"]  
+            self.device_id = self.devices["devices"][0]["id"]
             if not self.device_id:
-                raise Exception("No device found")
+                raise Exception(
+                    "No device found, please make sure you have one connected"
+                )
         except Exception as e:
-            raise Exception("Error getting device id: " + str(e))
+            raise Exception("Can't get device id: " + str(e))
 
     def play_song_from_artist(self, song_name, artist_name):
         # Search for the song
-        results = self.sp.search(q=f"track:{song_name} artist:{artist_name}", limit=1, type="track,artist")
+        results = self.sp.search(
+            q=f"track:{song_name} artist:{artist_name}", limit=1, type="track,artist"
+        )
 
         # Get the first song from the search results
         song_uri = results["tracks"]["items"][0]["uri"]
@@ -49,7 +60,7 @@ class SpotifyPlayer:
 
         # Start playback
         self.sp.start_playback(device_id=self.device_id, context_uri=artist_uri)
-        return results["tracks"]["items"][0]
+        return results["artists"]["items"][0]
 
     def play_album(self, album_name):
         # Search for the album
@@ -60,7 +71,7 @@ class SpotifyPlayer:
 
         # Start playback
         self.sp.start_playback(device_id=self.device_id, context_uri=album_uri)
-        return results["tracks"]["items"][0]
+        return results["albums"]["items"][0]
 
     def play_playlist(self, playlist_name):
         # Search for the playlist
@@ -71,3 +82,4 @@ class SpotifyPlayer:
 
         # Start playback
         self.sp.start_playback(device_id=self.device_id, context_uri=playlist_uri)
+        return results["playlists"]["items"][0]
