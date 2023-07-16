@@ -1,4 +1,5 @@
 import { useEffect, useState, type KeyboardEvent } from "react";
+import ReactMarkdown from "react-markdown";
 
 import { api } from "~/utils/api";
 import { blobToBase64 } from "~/utils/blobToBase64";
@@ -111,7 +112,9 @@ const ChatHistory = ({
     <>
       <div
         className={`${
-          chatHistory.messages.length > 0 ? "visible h-[61vh]" : "invisible h-0"
+          chatHistory.messages.length > 0
+            ? "visible max-h-[61vh]"
+            : "invisible h-0"
         } chathistory-scrollbar dark:chathistory-scrollbarDark overflow-y-scroll pr-4 transition-[height] duration-500`}
       >
         {chatHistory.messages.map((message, index) => (
@@ -121,7 +124,7 @@ const ChatHistory = ({
                 <div className="flex">
                   <div className="inline-block  max-w-[70%] rounded-xl border border-slate-800 bg-slate-700 p-2">
                     <span className="break-words text-white">
-                      {message.text}
+                      <ReactMarkdown>{message.text}</ReactMarkdown>
                     </span>
                   </div>
                   {chatHistory.messages.indexOf(message) ===
@@ -144,7 +147,7 @@ const ChatHistory = ({
                 <div className="flex flex-col items-end">
                   <div className="inline-block max-w-[70%] rounded-xl border border-slate-700 bg-slate-600 p-2">
                     <span className="break-words text-white">
-                      {message.text}
+                      <ReactMarkdown>{message.text}</ReactMarkdown>
                     </span>
                   </div>
                 </div>
@@ -201,18 +204,18 @@ const BetterAlexaInterface = () => {
   };
 
   return (
-    <div className="flex flex-col px-2 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
+    <div className="flex flex-col px-4 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
       <div className="rounded-xl bg-gray-800/30 p-4 dark:bg-gray-700/30">
         <ChatHistory
           chatHistory={chatHistory}
           processingAction={processingAction}
         />
 
-        <div className="my-8 flex w-full items-center justify-center gap-1">
+        <div className="mt-8 flex w-full items-center justify-center gap-1">
           <textarea
             value={isRecording ? "Recording..." : text}
             onChange={(e) => setText(e.target.value)}
-            className="inputscroll block w-full min-w-[16rem] resize-none rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl transition-colors duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
+            className="inputscroll block w-full min-w-[14rem] resize-none rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl transition-colors duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
             disabled={isRecording}
             placeholder="Alexa, play some music"
             onKeyDown={handleKeyPress}
