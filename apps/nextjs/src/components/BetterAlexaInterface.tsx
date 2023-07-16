@@ -1,4 +1,4 @@
-import { KeyboardEvent, useEffect, useState } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 
 import { api } from "~/utils/api";
 import { blobToBase64 } from "~/utils/blobToBase64";
@@ -56,7 +56,7 @@ const Recorder = ({
     <>
       {recorder?.state !== "recording" && (
         <button
-          className="aspect-square rounded-full bg-white dark:bg-white/20 p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 dark:hover:bg-white/40 disabled:bg-black/40"
+          className="aspect-square rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 disabled:bg-black/40 dark:bg-white/20 dark:hover:bg-white/40"
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={startRecording}
           disabled={processingSpeech}
@@ -69,7 +69,7 @@ const Recorder = ({
           className="aspect-square rounded-full bg-red-500 p-2 text-sm font-semibold text-white duration-200 hover:bg-red-600 disabled:bg-red-600"
           onClick={stopRecording}
         >
-          <MicrophoneIcon className="h-4 w-4 stroke-white-500" />
+          <MicrophoneIcon className="stroke-white-500 h-4 w-4" />
         </button>
       )}
     </>
@@ -150,13 +150,13 @@ const ChatHistory = ({
             </div>
           </>
         ))}
+        {processingAction && (
           <div className="my-1">
-            <div className="inline-block rounded-full bg-slate-700 p-2">
-              <div className="flex flex-row items-center justify-center">
-                <LoadingSpinner />
-              </div>
+            <div className="inline-block rounded-full bg-slate-700 px-4 py-2">
+              <LoadingSpinner />
             </div>
           </div>
+        )}
       </div>
     </>
   );
@@ -193,14 +193,14 @@ const BetterAlexaInterface = () => {
     });
   };
   const handleKeyPress = (event: KeyboardEvent) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       sendCommand();
     }
   };
 
   return (
     <div className="flex flex-col px-2 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
-      <div className="rounded-xl bg-gray-800/30 dark:bg-gray-700/30 p-4">
+      <div className="rounded-xl bg-gray-800/30 p-4 dark:bg-gray-700/30">
         <ChatHistory
           chatHistory={chatHistory}
           processingAction={processingAction}
@@ -218,7 +218,7 @@ const BetterAlexaInterface = () => {
           />
           <Recorder setText={setText} setRecording={setRecording} />
           <button
-            className="cursor-pointer rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 dark:hover:bg-white/40 dark:bg-white/20"
+            className="cursor-pointer rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 dark:bg-white/20 dark:hover:bg-white/40"
             onClick={sendCommand}
             disabled={processingAction || !text}
           >
