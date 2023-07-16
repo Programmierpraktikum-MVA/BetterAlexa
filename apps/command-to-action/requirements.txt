@@ -1,7 +1,7 @@
 Flask
 openai
 gTTS
-langchain
+langchain==0.0.234
 google-search-results
 spotipy
 waitress
