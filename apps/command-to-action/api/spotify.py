@@ -15,6 +15,11 @@ class SpotifyPlayer:
                 raise Exception(
                     f"Your Spotify access token has expired. Please reauthenticate at {base_url}/spotify."
                 )
+            elif str(e).find("Invalid access token") != -1:
+                base_url = os.environ.get("NEXT_PUBLIC_BASE_URL")
+                raise Exception(
+                    f"Invalid spotify access token, please go to {base_url}/spotify to reauthenticate."
+                )
             raise Exception("Can't get devices list: " + str(e))
 
         # assuming the first device is the one we want

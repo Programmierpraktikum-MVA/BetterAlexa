@@ -109,8 +109,8 @@ def generate_cta():
             function_name = function_call["name"]
             arguments = json.loads(function_call["arguments"])
             if function_name == "spotify_player":
-                if request.headers.get("x-spotify-access-token"):
-                    access_token = request.headers["x-spotify-access-token"]
+                access_token = request.headers.get("x-spotify-access-token")
+                if access_token and access_token != "undefined":
                     response_text = spotify_player(arguments, access_token)
                 else:
                     base_url = os.environ.get("NEXT_PUBLIC_BASE_URL")
