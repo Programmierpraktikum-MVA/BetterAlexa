@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { api } from "~/utils/api";
@@ -89,6 +89,13 @@ const ChatHistory = ({
   const { mutateAsync: textToSpeech, isLoading: processingTextToSpeech } =
     api.microservice.textToSpeech.useMutation();
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [scrollRef, chatHistory]);
+
   const playTextToSpeech = async (text: string) => {
     const data = await textToSpeech(text);
     const audioBlob = Buffer.from(data.result.base64, "base64");
@@ -111,6 +118,7 @@ const ChatHistory = ({
   return (
     <>
       <div
+        ref={scrollRef}
         className={`${
           chatHistory.messages.length > 0
             ? "visible max-h-[61vh]"
