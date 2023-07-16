@@ -30,7 +30,7 @@ class SpotifyPlayer:
     def play_song_from_artist(self, song_name, artist_name):
         # Search for the song
         results = self.sp.search(
-            q=f"track:{song_name} artist:{artist_name}", limit=1, type="track,artist"
+            q=f"track:{song_name} artist:{artist_name}", limit=1, type="track"
         )
 
         # Get the first song from the search results
@@ -61,6 +61,19 @@ class SpotifyPlayer:
         # Start playback
         self.sp.start_playback(device_id=self.device_id, context_uri=artist_uri)
         return results["artists"]["items"][0]
+
+    def play_album_from_artist(self, album_name, artist_name):
+        # Search for the album
+        results = self.sp.search(
+            q=f"{album_name} artist:{artist_name}", limit=1, type="album"
+        )
+
+        # Get the first album from the search results
+        album_uri = results["albums"]["items"][0]["uri"]
+
+        # Start playback
+        self.sp.start_playback(device_id=self.device_id, context_uri=album_uri)
+        return results["albums"]["items"][0]
 
     def play_album(self, album_name):
         # Search for the album

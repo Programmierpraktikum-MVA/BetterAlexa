@@ -42,26 +42,38 @@ def spotify_player(args, token):
     try:
         spotify_player = SpotifyPlayer(token)
         if args.get("song_title") and args.get("artist_name"):
-            song_title = args["song_title"]
-            artist_name = args["artist_name"]
-            spotify_player.play_song_from_artist(song_title, artist_name)
+            spotify_result = spotify_player.play_song_from_artist(
+                args["song_title"], args["artist_name"]
+            )
+            song_title = spotify_result["name"]
+            artist_name = spotify_result["artists"][0]["name"]
             return f"Playing {song_title} by {artist_name} on Spotify."
+        elif args.get("album_name") and args.get("artist_name"):
+            spotify_result = spotify_player.play_album_from_artist(
+                args["album_name"], args["artist_name"]
+            )
+            album_name = spotify_result["name"]
+            artist_name = spotify_result["artists"][0]["name"]
+            return f"Playing Album {album_name} by {artist_name} on Spotify."
         elif args.get("song_title"):
-            song_title = args["song_title"]
-            spotify_player.play_song(song_title)
-            return f"Playing {song_title} on Spotify."
+            spotify_result = spotify_player.play_song(args["song_title"])
+            song_title = spotify_result["name"]
+            artist_name = spotify_result["artists"][0]["name"]
+            return f"Playing {song_title} by {artist_name} on Spotify."
         elif args.get("artist_name"):
-            artist_name = args["artist_name"]
-            spotify_player.play_artist(artist_name)
-            return f"Playing {artist_name} on Spotify."
+            spotify_result = spotify_player.play_artist(args["artist_name"])
+            artist_name = spotify_result["name"]
+            return f"Playing songs by {artist_name} on Spotify."
         elif args.get("album_name"):
-            album_name = args["album_name"]
-            spotify_player.play_album(album_name)
-            return f"Playing {album_name} on Spotify."
+            spotify_result = spotify_player.play_album(args["album_name"])
+            album_name = spotify_result["name"]
+            artist_name = spotify_result["artists"][0]["name"]
+            return f"Playing {album_name} by {artist_name} on Spotify."
         elif args.get("playlist_name"):
-            playlist_name = args["playlist_name"]
-            spotify_player.play_playlist(playlist_name)
-            return f"Playing {playlist_name} on Spotify."
+            spotify_result = spotify_player.play_playlist(args["playlist_name"])
+            playlist_name = spotify_result["name"]
+            owner_name = spotify_result["owner"]["display_name"]
+            return f"Playing Playlist {playlist_name} by {owner_name} on Spotify."
         else:
             return "You need to specify a song, artist, album, or playlist to play on Spotify."
     except Exception as e:
