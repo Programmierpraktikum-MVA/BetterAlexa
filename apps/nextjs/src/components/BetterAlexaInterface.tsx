@@ -19,9 +19,11 @@ interface ChatMessageModel {
 const Recorder = ({
   setText,
   setRecording,
+  className,
 }: {
   setText: (text: string) => void;
   setRecording: (recording: boolean) => void;
+  className?: string;
 }) => {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
   const { mutateAsync: speechToText, isLoading: processingSpeech } =
@@ -53,7 +55,7 @@ const Recorder = ({
   };
 
   return (
-    <>
+    <div className={className ?? ""}>
       {recorder?.state !== "recording" && (
         <button
           className="aspect-square rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 disabled:bg-black/40 dark:bg-white/20 dark:hover:bg-white/40"
@@ -72,7 +74,7 @@ const Recorder = ({
           <MicrophoneIcon className="stroke-white-500 h-4 w-4" />
         </button>
       )}
-    </>
+    </div>
   );
 };
 
@@ -206,12 +208,11 @@ const BetterAlexaInterface = () => {
           processingAction={processingAction}
         />
 
-        <div className="my-8 flex w-full justify-center gap-1">
-          <input
+        <div className="my-8 flex w-full items-center justify-center gap-1">
+          <textarea
             value={isRecording ? "Recording..." : text}
             onChange={(e) => setText(e.target.value)}
-            type="text"
-            className="block w-full min-w-[16rem] rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
+            className="inputscroll block w-full min-w-[16rem] resize-none rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl transition-colors duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
             disabled={isRecording}
             placeholder="Alexa, play some music"
             onKeyDown={handleKeyPress}
