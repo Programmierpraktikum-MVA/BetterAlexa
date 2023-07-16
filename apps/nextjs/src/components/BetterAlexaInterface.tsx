@@ -215,7 +215,7 @@ const BetterAlexaInterface = () => {
           <textarea
             value={isRecording ? "Recording..." : text}
             onChange={(e) => setText(e.target.value)}
-            className="inputscroll block w-full min-w-[14rem] resize-none rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl transition-colors duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
+            className="inputscroll block w-full min-w-[14rem] resize-none rounded-2xl bg-black/30 px-4 py-1 leading-6 backdrop-blur-xl transition-all duration-200 placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/20 sm:w-96"
             disabled={isRecording}
             placeholder="Alexa, play some music"
             onKeyDown={handleKeyPress}
@@ -224,7 +224,7 @@ const BetterAlexaInterface = () => {
           <button
             className="cursor-pointer rounded-full bg-white p-2 text-sm font-semibold backdrop-blur-xl duration-200 hover:bg-white/40 dark:bg-white/20 dark:hover:bg-white/40"
             onClick={sendCommand}
-            disabled={processingAction || !text}
+            disabled={processingAction || !text}  
           >
             <SendIcon className="h-4 w-6 stroke-gray-500 dark:stroke-white" />
           </button>
