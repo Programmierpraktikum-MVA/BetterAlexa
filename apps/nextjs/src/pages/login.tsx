@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import type { NextPage } from "next";
+import Router from "next/router";
 
 import {
   GoogleAuthProvider,
   auth,
-  signInWithPopup,
+  signInWithCredential,
+  signInWithRedirect,
   useSession,
 } from "@acme/auth";
 
@@ -18,24 +20,24 @@ const Login: NextPage = () => {
   // Redirect to index if already logged in
   useEffect(() => {
     if (session.user) {
-      window.location.href = "/";
+      void Router.push("/");
     }
   }, [session]);
 
   const logIn = () => {
-    if (session.user) {
-      window.location.href = "/";
-      return;
-    }
-
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        if (result.user) window.location.href = "/";
-      })
-      .catch((_) => {
-        console.error("Error signing in");
+    if (process.env.NEXT_PUBLIC_IS_EXTENSION === "true" && chrome?.identity) {
+      chrome.identity.getAuthToken({ interactive: true }, (token) => {
+        if (chrome.runtime.lastError || !token) {
+          console.error(chrome?.runtime?.lastError?.message);
+          return;
+        }
+        const credential = GoogleAuthProvider.credential(null, token);
+        void signInWithCredential(auth, credential);
       });
+    } else {
+      const provider = new GoogleAuthProvider();
+      void signInWithRedirect(auth, provider);
+    }
   };
 
   return (
@@ -43,6 +45,7 @@ const Login: NextPage = () => {
       <BetterAlexaHead />
 
       <BetterAlexaBackground>
+        
         <BetterAlexaLogo />
 
         {session.loading && <div>Loading...</div>}

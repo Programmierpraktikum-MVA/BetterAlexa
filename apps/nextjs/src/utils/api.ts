@@ -8,6 +8,11 @@ import { auth } from "@acme/auth";
 import { toast } from "~/components/ui/toast/use-toast";
 
 const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_IS_EXTENSION === "true") {
+    if (!process.env.NEXT_PUBLIC_BASE_URL)
+      throw new Error("Missing NEXT_PUBLIC_BASE_URL for building extension!");
+    return process.env.NEXT_PUBLIC_BASE_URL;
+  }
   if (typeof window !== "undefined") return ""; // browser should use relative url
   if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL;
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
