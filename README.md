@@ -41,7 +41,7 @@ To get it running, follow the steps below:
 
 ### Setup dependencies
 
-```txt
+```sh
 # Install dependencies
 pnpm i
 
@@ -56,16 +56,27 @@ cp .env.example .env
 
 #### Prerequisites
 
-We will be using MongoDB as our database, and Firebase for our authentication.
-<!-- TODO update -->
-1. Create a MongoDB database and get the connection string. You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) for this.
-2. Go to [Firebase Console](https://console.firebase.google.com/) and create a new Firebase project.
-3. Create 3 apps for your Firebase project, a Web app, an Android app, and an iOS app. For the Android and iOS app, you can just use the package name from the Expo app (com.mva.betteralexa), you also need to generate a SHA1 for the Android app later.
-4. Enable Firebase authentication with Google as a sign-in method. You can follow [this guide](https://firebase.google.com/docs/auth/web/google-signin) for this. We can add more sign-in method later.
-5. Create a Service Account for your Firebase project. You can follow [this guide](https://firebase.google.com/docs/admin/setup#initialize-sdk) for this. Download the credentials file and paste the config to the `.env` file in the root directory, match it with our `.env.example`.
-6. Get your Firebase config. You can follow [this guide](https://firebase.google.com/docs/web/setup#config-object) for this. Paste the config to the `.env` file in the root directory, match it with our `.env.example`.
-7. To generate SHA1 for Expo Google sign in, you need to have an expo account. Link the project to your account, and generate a credentials with `expo credentials`
-8. (OPTIONAL) if you want to use the current sample API, you need to have an OpenAI api key, paste it to the `.env` file in the root directory, match it with our `.env.example`.
+We are using Redis as our database, and Firebase for our authentication. We're running everything on a VPS.
+
+- Create a [Redis DB](https://redis.io/docs/getting-started/installation/install-redis-on-linux/) on your VPS.
+- Go to [Firebase Console](https://console.firebase.google.com/) and create a new Firebase project.
+  - Create 3 apps for your Firebase project, a Web app, an Android app, and an iOS app. For the Android and iOS app, you can just use the package name from the Expo app (com.mva.betteralexa), you also need to generate a SHA1 for the Android app later.
+  - Enable Firebase authentication with Google as a sign-in method. You can follow [this guide](https://firebase.google.com/docs/auth/web/google-signin) for this. We can add more sign-in method later.
+  - Create a Service Account for your Firebase project. You can follow [this guide](https://firebase.google.com/docs/admin/setup#initialize-sdk) for this. Download the credentials file and paste the config to the `.env` file in the root directory, match it with our `.env.example`.
+  - Get your Firebase config. You can follow [this guide](https://firebase.google.com/docs/web/setup#config-object) for this. Paste the config to the `.env` file in the root directory, match it with our `.env.example`.
+- To generate SHA1 for Expo Google sign in, you need to have an expo account. Link the project to your account, and generate a credentials with `expo credentials`
+- (OPTIONAL) if you want to use the current sample API, you need to have an OpenAI api key, paste it to the `.env` file in the root directory, match it with our `.env.example`.
+- (OPTIONAL) if you want to use the spotify:
+  - Go to [Spotify Dashboard](https://developer.spotify.com/dashboard) and create an app
+  - put `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` in your `.env`
+  - If you dont want to use it, remove the tool from [cta](./apps/command-to-action/api/)
+
+## Development
+Use `pnpm dev`
+
+## Production
+Use `docker compose up`
+
 ## References
 
 The stack originates from [create-t3-app](https://github.com/t3-oss/create-t3-app).
