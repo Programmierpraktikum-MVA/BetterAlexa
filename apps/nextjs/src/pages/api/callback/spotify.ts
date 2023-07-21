@@ -1,5 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 
+import { redis } from "@acme/db";
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -30,6 +32,8 @@ export default async function handler(
     expires_in: number;
     scope: string;
   };
+
+  await redis.set(`${state}:spotify:access_token`, response.access_token);
 
   res.setHeader("Set-Cookie", [
     `spotify-access-token=${response.access_token}; Path=/; HttpOnly`,
