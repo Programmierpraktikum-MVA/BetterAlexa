@@ -13,6 +13,10 @@ Folder structure:
 .vscode
   └─ Recommended extensions and settings for VSCode users
 apps
+  ├─ command-to-action
+  |   ├─ Flask
+  |   ├─ OpenAI GPT
+  |   └─ Langchain / OpenAI Functioncalling
   ├─ expo
   |   ├─ Expo SDK 48
   |   ├─ React Native using React 18
@@ -25,14 +29,16 @@ apps
   |   ├─ Tailwind CSS
   |   └─ E2E Typesafe API Server & Client
   └─ sample
-      └─ Sample api for frontend
+      ├─ Flask
+      ├─ Google Text2Speech
+      └─ OpenAI Whisper
 packages
  ├─ api
  |   └─ tRPC v10 router definition
  ├─ auth
- |   └─ authentication using firebase auth
+ |   └─ Authentication using Firebase Auth
  └─ db
-     └─ typesafe db-calls using Prisma -> optional, we can also just use mongodb client
+     └─ Redis
 ```
 
 ## Quick Start
