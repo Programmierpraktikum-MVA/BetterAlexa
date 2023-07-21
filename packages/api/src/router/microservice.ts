@@ -24,11 +24,15 @@ export const microserviceRouter = createTRPCRouter({
     }),
   commandToAction: protectedProcedure
     .input(z.string().min(1, "Invalid request"))
-    .mutation(async ({ input, ctx: { cookies } }) => {
+    .mutation(async ({ input, ctx: { cookies, redis, session } }) => {
+      const spotifyAccessToken = await redis.get(
+        `${session.email}:spotify:access_token`,
+      );
       const result = await fetch(process.env.COMMAND_TO_ACTION_URL as string, {
         method: "POST",
         headers: {
-          "x-spotify-access-token": cookies?.["spotify-access-token"] as string,
+          "x-spotify-access-token":
+            spotifyAccessToken ?? (cookies?.["spotify-access-token"] as string),
         },
         body: input,
       });
