@@ -41,7 +41,9 @@ export const microserviceRouter = createTRPCRouter({
         throw new Error("Failed to process action");
       }
 
-      return (await result.json()) as { result: { text: string } };
+      type MessageType = "spotify-connect" | "error" | "normal";
+
+      return (await result.json()) as { result: { text: string, message_type: MessageType } };
     }),
   textToSpeech: protectedProcedure
     .input(z.string().min(1, "Invalid request"))

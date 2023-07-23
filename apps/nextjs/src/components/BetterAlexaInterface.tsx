@@ -19,7 +19,10 @@ interface ChatHistoryModel {
 interface ChatMessageModel {
   text: string;
   fromSelf: boolean;
+  messageType: MessageType;
 }
+
+type MessageType = "spotify-connect" | "error" | "normal";
 
 const Recorder = ({
   setText,
@@ -139,7 +142,7 @@ const ChatHistory = ({
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm, remarkMath, rehypeKatex]}
                       >
-                        {message.text}
+                        {message.text + message.messageType}
                       </ReactMarkdown>
                     </span>
                   </div>
@@ -209,12 +212,14 @@ const BetterAlexaInterface = () => {
     pushMessage({
       text: text,
       fromSelf: true,
+      messageType: "normal",
     });
     setText("");
     void commandToAction(text).then((data) => {
       pushMessage({
         text: data.result.text,
         fromSelf: false,
+        messageType: data.result.message_type,
       });
     });
   };

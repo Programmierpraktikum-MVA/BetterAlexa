@@ -1,6 +1,9 @@
 import spotipy
 import os
 
+class SpotifyUnauthorizedException(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
 
 class SpotifyPlayer:
     def __init__(self, auth):
@@ -11,7 +14,7 @@ class SpotifyPlayer:
             self.devices = self.sp.devices()
         except Exception as e:
             if str(e).find("The access token expired") != -1:
-                base_url = os.environ.get("NEXT_PUBLIC_BASE_URL")
+                raise SpotifyUnauthorizedException()
                 raise Exception(
                     f"Your Spotify access token has expired. Please reauthenticate at {base_url}/spotify."
                 )

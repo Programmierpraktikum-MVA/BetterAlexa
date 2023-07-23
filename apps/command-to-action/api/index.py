@@ -4,7 +4,7 @@ import sys
 import openai
 import json
 import os
-from spotify import SpotifyPlayer
+from spotify import SpotifyPlayer, SpotifyUnauthorizedException
 
 app = Flask(__name__)
 app.logger.setLevel("INFO")
@@ -47,37 +47,40 @@ def spotify_player(args, token):
             )
             song_title = spotify_result["name"]
             artist_name = spotify_result["artists"][0]["name"]
-            return f"Playing {song_title} by {artist_name} on Spotify."
+            return f"Playing {song_title} by {artist_name} on Spotify.", "normal"
         elif args.get("album_name") and args.get("artist_name"):
             spotify_result = spotify_player.play_album_from_artist(
                 args["album_name"], args["artist_name"]
             )
             album_name = spotify_result["name"]
             artist_name = spotify_result["artists"][0]["name"]
-            return f"Playing Album {album_name} by {artist_name} on Spotify."
+            return f"Playing Album {album_name} by {artist_name} on Spotify.", "normal"
         elif args.get("song_title"):
             spotify_result = spotify_player.play_song(args["song_title"])
             song_title = spotify_result["name"]
             artist_name = spotify_result["artists"][0]["name"]
-            return f"Playing {song_title} by {artist_name} on Spotify."
+            return f"Playing {song_title} by {artist_name} on Spotify.", "normal"
         elif args.get("artist_name"):
             spotify_result = spotify_player.play_artist(args["artist_name"])
             artist_name = spotify_result["name"]
-            return f"Playing songs by {artist_name} on Spotify."
+            return f"Playing songs by {artist_name} on Spotify.", "normal"
         elif args.get("album_name"):
             spotify_result = spotify_player.play_album(args["album_name"])
             album_name = spotify_result["name"]
             artist_name = spotify_result["artists"][0]["name"]
-            return f"Playing {album_name} by {artist_name} on Spotify."
+            return f"Playing {album_name} by {artist_name} on Spotify.", "normal"
         elif args.get("playlist_name"):
             spotify_result = spotify_player.play_playlist(args["playlist_name"])
             playlist_name = spotify_result["name"]
             owner_name = spotify_result["owner"]["display_name"]
-            return f"Playing Playlist {playlist_name} by {owner_name} on Spotify."
+            return f"Playing Playlist {playlist_name} by {owner_name} on Spotify.", "normal"
         else:
             return "You need to specify a song, artist, album, or playlist to play on Spotify."
+    except SpotifyUnauthorizedException as e:
+        base_url = os.environ.get("NEXT_PUBLIC_BASE_URL")
+        return f"Your Spotify access token has expired. Please reauthenticate at {base_url}/spotify.", "spotify-connect"
     except Exception as e:
-        return f"Error: {e}"
+        return f"Error: {e}", "error"
 
 
 @app.route("/")
@@ -103,6 +106,7 @@ def generate_cta():
             function_call="auto",
         )
         response_message = response["choices"][0]["message"]
+        response_message_type = "normal"
 
         if response_message.get("function_call"):
             function_call = response_message["function_call"]
@@ -111,10 +115,11 @@ def generate_cta():
             if function_name == "spotify_player":
                 access_token = request.headers.get("x-spotify-access-token")
                 if access_token and access_token != "undefined":
-                    response_text = spotify_player(arguments, access_token)
+                    response_text, response_message_type = spotify_player(arguments, access_token)
                 else:
                     base_url = os.environ.get("NEXT_PUBLIC_BASE_URL")
                     response_text = f"You need to authenticate with Spotify first. Go to {base_url}/spotify to do so."
+                    response_message_type = "spotify-connect"
             else:
                 response_text = "I don't know how to do that yet."
         else:
@@ -122,6 +127,7 @@ def generate_cta():
 
         result = {
             "text": response_text,
+            "message_type": response_message_type
         }
 
         # Respond with success message
