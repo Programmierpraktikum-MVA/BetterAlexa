@@ -4,6 +4,8 @@
 
 Welcome to BetterAlexa monorepo, we use create t3 turbo to create this monorepo.
 
+[Architecture](BetterAlexa.drawio-2.drawio.png)
+
 Folder structure:
 
 ```txt
