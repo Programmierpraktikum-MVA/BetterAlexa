@@ -4,7 +4,7 @@
 
 Welcome to BetterAlexa monorepo, we use create t3 turbo to create this monorepo.
 
-[Architecture](BetterAlexa-achitecture-drawio.png)
+![Architecture](docs/static/BetterAlexa-achitecture-drawio.png)
 
 Folder structure:
 
@@ -80,9 +80,11 @@ We are using Redis as our database, and Firebase for our authentication. We're r
   - If you dont want to use it, remove the tool from [cta](./apps/command-to-action/api/)
 
 ## Development
+
 Use `pnpm dev`
 
 ## Production
+
 Use `docker compose up`
 
 ## References
