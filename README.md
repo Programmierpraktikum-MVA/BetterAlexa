@@ -40,7 +40,7 @@ packages
  └─ db
      └─ Redis
 ```
-<!-- Test -->
+
 ## Quick Start
 
 To get it running, follow the steps below:
