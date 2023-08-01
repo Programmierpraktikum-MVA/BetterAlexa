@@ -2,7 +2,7 @@
 
 ## Techstack
 
-- [Langchain](https://python.langchain.com/docs/get_started/introduction.html)
+- [Langchain](https://python.langchain.com/docs/get_started/introduction.html) / [OpenAI functions](https://openai.com/blog/function-calling-and-other-api-updates)
 - [GPT](https://platform.openai.com/docs/api-reference/introduction)
 - [Flask](https://flask.palletsprojects.com/en/2.3.x/)
 
@@ -23,5 +23,3 @@ Isolated Deployment
 
 1. Build Dockerimage: `docker build -t cta`
 2. Run: `docker run --env-file ../../.env cta`
-
-<!-- TODO ## Current Tools -->

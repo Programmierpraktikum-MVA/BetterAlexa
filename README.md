@@ -3,6 +3,7 @@
 ## About
 
 Welcome to BetterAlexa monorepo, we use create t3 turbo to create this monorepo.
+Implementation only supports chromium-browsers.
 
 ## Architecture
 
