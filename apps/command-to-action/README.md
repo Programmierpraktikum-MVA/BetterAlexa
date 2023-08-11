@@ -1,10 +1,10 @@
-# Microservices (STT, TTS)
+# Command to Action Microservice
 
 ## Techstack
 
+- [Langchain](https://python.langchain.com/docs/get_started/introduction.html) / [OpenAI functions](https://openai.com/blog/function-calling-and-other-api-updates)
+- [GPT](https://platform.openai.com/docs/api-reference/introduction)
 - [Flask](https://flask.palletsprojects.com/en/2.3.x/)
-- [Google-TTS](https://cloud.google.com/speech-to-text)
-- [Whisper-STT](https://openai.com/research/whisper)
 
 ## Requirements
 
@@ -21,5 +21,5 @@ If you face issues make sure packages are installed (`pip show <packagename>`). 
 
 Isolated Deployment
 
-1. Build Dockerimage: `docker build -t microservices`
-2. Run: `docker run --env-file ../../.env microservices`
+1. Build Dockerimage: `docker build -t cta`
+2. Run: `docker run --env-file ../../.env cta`
