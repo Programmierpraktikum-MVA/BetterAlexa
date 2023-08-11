@@ -15,5 +15,6 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 ## Deployment
 **Development**\
 `pnpm dev:web` from project scope. Will also launch required microservices.
+
 **Production**\
 `docker compose up` from project scope.
