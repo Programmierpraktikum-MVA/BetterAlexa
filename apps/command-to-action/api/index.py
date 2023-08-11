@@ -4,38 +4,61 @@ import sys
 import openai
 import json
 import os
+
 from spotify import SpotifyPlayer
+
+# uncomment to allow langchain integration
+# from langchain_integration import LangChainIntegration
 
 app = Flask(__name__)
 app.logger.setLevel("INFO")
 
-functions = [
-    {
-        "name": "spotify_player",
-        "description": "Plays a song, artist, album, or playlist on Spotify.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "song_title": {
-                    "type": "string",
-                    "description": "The title of the song to play.",
-                },
-                "artist_name": {
-                    "type": "string",
-                    "description": "The name of the artist to play.",
-                },
-                "album_name": {
-                    "type": "string",
-                    "description": "The name of the album to play.",
-                },
-                "playlist_name": {
-                    "type": "string",
-                    "description": "The name of the playlist to play.",
+# uncomment to allow langchain integration
+# langchainIntegration = LangChainIntegration()
+
+def generate_response_from_openai_functions(text):
+    functions = [
+        {
+            "name": "spotify_player",
+            "description": "Plays a song, artist, album, or playlist on Spotify.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "song_title": {
+                        "type": "string",
+                        "description": "The title of the song to play.",
+                    },
+                    "artist_name": {
+                        "type": "string",
+                        "description": "The name of the artist to play.",
+                    },
+                    "album_name": {
+                        "type": "string",
+                        "description": "The name of the album to play.",
+                    },
+                    "playlist_name": {
+                        "type": "string",
+                        "description": "The name of the playlist to play.",
+                    },
                 },
             },
-        },
-    }
-]
+        }
+    ]
+    messages = [{"role": "user", "content": text}]
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo-0613",
+        messages=messages,
+        functions=functions,
+        function_call="auto",
+    )
+    response_message = response["choices"][0]["message"]
+    
+    return response_message
+# uncomment to use langchain integration
+# def generate_response_from_langchain(text):
+#     langchainIntegration.spotify_auth = request.headers.get("x-spotify-access-token")
+#     response = langchainIntegration.agent_executor.run(input=text)
+#     return response
 
 
 def spotify_player(args, token):
@@ -88,21 +111,14 @@ def home():
 @app.route("/command-to-action", methods=["POST"])
 def generate_cta():
     try:
-        # Check if request method is POST
         if request.method != "POST":
             return "Method Not Allowed", 405
 
-        # Parse incoming data as binary
         data = request.get_data()
         text = data.decode("utf-8")
-        messages = [{"role": "user", "content": text}]
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0613",
-            messages=messages,
-            functions=functions,
-            function_call="auto",
-        )
-        response_message = response["choices"][0]["message"]
+        response_message = generate_response_from_openai_functions(text)
+        # swrap to use langchain
+        # response_message = generate_response_from_langchain(text)
 
         if response_message.get("function_call"):
             function_call = response_message["function_call"]
@@ -124,7 +140,6 @@ def generate_cta():
             "text": response_text,
         }
 
-        # Respond with success message
         return {"result": result}, 200
     except Exception as e:
         app.logger.error(f"Command to action error: {e}")
