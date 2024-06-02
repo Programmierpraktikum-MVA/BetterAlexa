@@ -19,7 +19,7 @@ class LLama3:
         system = {"role": "system", "content": "You are a helpful assistant with access to the following functions. Use them if required -\n{\n" + functions + "\n}"}
         self.chat = []
         self.chat.append(system)
-        if drive_link != None and not (os.path.exists(destination_path) and os.path.isdir(destination_path)):
+        if drive_link is not None and not (os.path.exists(destination_path) and os.path.isdir(destination_path)):
             download_google_drive_folder(re.search(r'/folders/(.*?)(\?|$)', drive_link).group(1), self.path_to_model)
         self.prepare()
     
@@ -37,7 +37,10 @@ class LLama3:
             torch_dtype=torch.bfloat16,
             quantization_config=bnb_config
         )
-        tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B', token="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")
+        if os.getenv("HF_TOKEN") is None:
+            print("You need to set the HF_TOKEN environment variable!")
+            return
+        tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B', token=os.getenv("HF_TOKEN"))
         tokenizer.padding_side = "right"
         self.model, self.tokenizer = setup_chat_format(model, tokenizer)
         self.pipeline = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer)
