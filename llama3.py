@@ -20,11 +20,16 @@ class LLama3:
         self.chat = []
         self.chat.append(system)
         if drive_link is not None and not (os.path.exists(destination_path) and os.path.isdir(destination_path)):
-            download_google_drive_folder(re.search(r'/folders/(.*?)(\?|$)', drive_link).group(1), self.path_to_model)
+            download_google_drive_folder(drive_link, self.path_to_model)
         self.prepare()
     
 
     def prepare(self):
+        if os.getenv("HF_TOKEN") is None:
+            print("You need to set the HF_TOKEN environment variable!")
+            return
+        tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B', token=os.getenv("HF_TOKEN"))
+        tokenizer.padding_side = "right"
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_use_double_quant=True,
@@ -36,12 +41,7 @@ class LLama3:
             device_map='auto',
             torch_dtype=torch.bfloat16,
             quantization_config=bnb_config
-        )
-        if os.getenv("HF_TOKEN") is None:
-            print("You need to set the HF_TOKEN environment variable!")
-            return
-        tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B', token=os.getenv("HF_TOKEN"))
-        tokenizer.padding_side = "right"
+        )      
         self.model, self.tokenizer = setup_chat_format(model, tokenizer)
         self.pipeline = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer)
     
@@ -84,4 +84,4 @@ if __name__ == "__main__":
     while True:
         user_input = input("User: ")
         print("Assistant: " + model.generate(user_input))
-    
+        
