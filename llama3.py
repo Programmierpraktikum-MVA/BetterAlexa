@@ -1,11 +1,14 @@
 import torch
 import os
 import re
+
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Pipeline
 from transformers import pipeline
 from download_drive import download_google_drive_folder
 from trl import setup_chat_format
 
+from wolfram import ask_wolfram_question, ask_wolfram_followup
+from wikipedia import getWikiPageInfo
 
 class LLama3:
     path_to_model: str
@@ -57,29 +60,84 @@ class LLama3:
         self.chat.append({"role": "assistant", "content": response})
         return response
 
+#Mapping to solve import problem
+function_map = {
+    'ask_wolfram_question': ask_wolfram_question,
+    'ask_wolfram_followup': ask_wolfram_followup,
+    'getWikiPageInfo': getWikiPageInfo
+}
+
+def call_function_by_name(name, *args, **kwargs):
+    func = function_map.get(name)
+    if func:
+        return func(*args, **kwargs)
+    else:
+        raise ValueError(f"No function found for {name}")
+
+# Usage example (assuming the necessary parameters are correctly passed)
+response = call_function_by_name('ask_wolfram_question', 'What is the speed of light?')
 
 if __name__ == "__main__":
     functions = """
-    ""name"": ""get_exchange_rate"",
-    ""description"": ""Get the exchange rate between two currencies"",
-    ""parameters"": {
-        ""type"": ""object"",
-        ""properties"": {
-            ""base_currency"": {
-                ""type"": ""string"",
-                ""description"": ""The currency to convert from""
+        [
+    
+            {
+                "name": "ask_wolfram_question",
+                "description": "Asks a question to Wolfram Alpha and gets the answer, returning both the result and conversation ID for potential follow-up queries",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "question": {
+                            "type": "string",
+                            "description": "The question to be asked to Wolfram Alpha"
+                        }
+                    },
+                    "required": ["question"]
+                }
             },
-            ""target_currency"": {
-                ""type"": ""string"",
-                ""description"": ""The currency to convert to""
+            {
+                "name": "ask_wolfram_followup",
+                "description": "Continues an ongoing conversation with Wolfram Alpha by sending a follow-up question, using the conversation ID obtained from the initial question",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "followup_question": {
+                            "type": "string",
+                            "description": "The follow-up question for Wolfram Alpha"
+                        },
+                        "conversation_id": {
+                            "type": "string",
+                            "description": "The conversation ID from the initial Wolfram Alpha response"
+                        }
+                    },
+                    "required": ["followup_question", "conversation_id"]
+                }
+            },
+            {
+                "name": "getWikiPageInfo",
+                "description": "Retrieves a specified number of sentences from the summary of a Wikipedia page in a given language",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "description": "The title of the Wikipedia page to retrieve"
+                        },
+                        "language": {
+                            "type": "string",
+                            "description": "The language version of Wikipedia to use ('english' or 'german')"
+                        },
+                        "number_of_sentences": {
+                            "type": "integer",
+                            "description": "The number of sentences to retrieve from the page summary"
+                        }
+                    },
+                    "required": ["title", "language", "number_of_sentences"]
+                }
             }
-        },
-        ""required"": [
-            ""base_currency"",
-            ""target_currency""
         ]
-    }
-    """
+        """
+
     model = LLama3("Llama-3-8B-function-calling", functions, "https://drive.google.com/drive/folders/1Q-EV7D7pEeYl1On_d2JzxFEB67-KmEm3?usp=sharing")
     while True:
         user_input = input("User: ")
