@@ -9,6 +9,7 @@ from trl import setup_chat_format
 
 from wolfram import ask_wolfram_question, ask_wolfram_followup
 from wikipedia import getWikiPageInfo
+from spotify import play,set_volume_to,pause,next,prev,turn_on_shuffle,turn_off_shuffle,decrease_volume,increase_volume,play_song,play_album,play_artist,add_to_queue
 
 class LLama3:
     path_to_model: str
@@ -64,8 +65,22 @@ class LLama3:
 function_map = {
     'ask_wolfram_question': ask_wolfram_question,
     'ask_wolfram_followup': ask_wolfram_followup,
-    'getWikiPageInfo': getWikiPageInfo
+    'getWikiPageInfo': getWikiPageInfo,
+    'play': play,
+    'set_volume_to': set_volume_to,
+    'pause': pause,
+    'next': next,
+    'prev': prev,
+    'turn_off_shuffle': turn_off_shuffle,
+    'turn_on_shuffle': turn_on_shuffle,
+    'decrease_volume': decrease_volume,
+    'increase_volume': increase_volume,
+    'play_song': play_song,
+    'play_artist': play_artist,
+    'play_album': play_album,
+    'add_to_queue': add_to_queue
 }
+
 
 def call_function_by_name(name, *args, **kwargs):
     func = function_map.get(name)
@@ -74,14 +89,137 @@ def call_function_by_name(name, *args, **kwargs):
     else:
         raise ValueError(f"No function found for {name}")
 
-# Usage example (assuming the necessary parameters are correctly passed)
-response = call_function_by_name('ask_wolfram_question', 'What is the speed of light?')
 
 if __name__ == "__main__":
     functions = """
         [
-    
-            {
+                {
+                "name": "play",
+                "description": "Start or resume playback.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                },
+                "name": "set_volume_to",
+                "description": "Set the playback volume to a certain value",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "volume": {
+                            "type": "integer",
+                            "description": "value of desired volume in percent, 0-100"
+                        }
+                    },
+                    "required": [
+                        "volume"
+                    ]
+                },
+                "name": "pause",
+                "description": "Pause playback.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                },
+                "name": "next",
+                "description": "Skip to the next song.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                },
+                "name": "prev",
+                "description": "Skip to the previous song.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                },
+                "name": "turn_off_shuffle",
+                "description": "Turn off shuffle.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                },
+                "name": "turn_on_shuffle",
+                "description": "Turn on shuffle.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                },
+                "name": "decrease_volume",
+                "description": "Slightly lower the playback volume. No parameters",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                },
+                "name": "increase_volume",
+                "description": "Slightly increase the playback volume. No parameters",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                },
+                "name": "play_song",
+                "description": "Play a song on Spotify.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "song_name": {
+                            "type": "string",
+                            "description": "Name of the song to be played"
+                        }
+                    },
+                    "required": [
+                        "song_name"
+                    ]
+                },
+                "name": "play_artist",
+                "description": "Play an artist profile on Spotify.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "artist_name": {
+                            "type": "string",
+                            "description": "Name of the artist to be played"
+                        }
+                    },
+                    "required": [
+                        "artist_name"
+                    ]
+                },
+                "name": "play_album",
+                "description": "Play an album on Spotify.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "album_name": {
+                            "type": "string",
+                            "description": "Name of the album to be played"
+                        }
+                    },
+                    "required": [
+                        "album_name"
+                    ]
+                },
+                "name": "add_to_queue",
+                "description": "Add a song to the playback queue on Spotify.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "song_name": {
+                            "type": "string",
+                            "description": "Name of the song to be added to the queue"
+                        }
+                    },
+                    "required": [
+                        "song_name"
+                    ]
+                },
                 "name": "ask_wolfram_question",
                 "description": "Asks a question to Wolfram Alpha and gets the answer, returning both the result and conversation ID for potential follow-up queries",
                 "parameters": {
@@ -93,9 +231,7 @@ if __name__ == "__main__":
                         }
                     },
                     "required": ["question"]
-                }
-            },
-            {
+                },
                 "name": "ask_wolfram_followup",
                 "description": "Continues an ongoing conversation with Wolfram Alpha by sending a follow-up question, using the conversation ID obtained from the initial question",
                 "parameters": {
@@ -111,9 +247,7 @@ if __name__ == "__main__":
                         }
                     },
                     "required": ["followup_question", "conversation_id"]
-                }
-            },
-            {
+                },
                 "name": "getWikiPageInfo",
                 "description": "Retrieves a specified number of sentences from the summary of a Wikipedia page in a given language",
                 "parameters": {
@@ -135,6 +269,9 @@ if __name__ == "__main__":
                     "required": ["title", "language", "number_of_sentences"]
                 }
             }
+
+    
+            
         ]
         """
 
