@@ -1,11 +1,11 @@
 import torch
 import os
-import re
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Pipeline
 from transformers import pipeline
 from download_drive import download_google_drive_folder
 from trl import setup_chat_format
 
+os.environ["HF_TOKEN"] = "hf_AdBdWrcrVkKcYwzTCzUkEycfsjQZamuDg"
 
 class LLama3:
     path_to_model: str
@@ -45,7 +45,7 @@ class LLama3:
         self.model, self.tokenizer = setup_chat_format(model, tokenizer)
         self.pipeline = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer)
     
-    def generate(self, input: str):
+    def generate(self, input: str) -> str:
         self.chat.append({"role": "user", "content": input})
         prompt = self.pipeline.tokenizer.apply_chat_template(self.chat, tokenize=False, add_generation_prompt=True)
 
@@ -58,30 +58,8 @@ class LLama3:
         return response
 
 
-if __name__ == "__main__":
-    functions = """
-    ""name"": ""get_exchange_rate"",
-    ""description"": ""Get the exchange rate between two currencies"",
-    ""parameters"": {
-        ""type"": ""object"",
-        ""properties"": {
-            ""base_currency"": {
-                ""type"": ""string"",
-                ""description"": ""The currency to convert from""
-            },
-            ""target_currency"": {
-                ""type"": ""string"",
-                ""description"": ""The currency to convert to""
-            }
-        },
-        ""required"": [
-            ""base_currency"",
-            ""target_currency""
-        ]
-    }
-    """
-    model = LLama3("Llama-3-8B-function-calling", functions, "https://drive.google.com/drive/folders/1Q-EV7D7pEeYl1On_d2JzxFEB67-KmEm3?usp=sharing")
-    while True:
-        user_input = input("User: ")
-        print("Assistant: " + model.generate(user_input))
+
+
+
+
         
