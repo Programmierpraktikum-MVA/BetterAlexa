@@ -10,7 +10,7 @@ from starlette.responses import RedirectResponse, FileResponse
 from main import process_input
 
 # define model size (tiny, base, medium, large)
-WHISPER_MODEL = "tiny"
+WHISPER_MODEL = "base"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

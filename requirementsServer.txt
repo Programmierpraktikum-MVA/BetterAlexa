@@ -1,0 +1,14 @@
+torch
+transformers
+bitsandbytes
+accelerate 
+trl
+uvicorn
+openai-whisper
+fastapi
+gtts
+playsound
+wikipedia-api
+elevenlabs
+flask
+beautifulsoup4
