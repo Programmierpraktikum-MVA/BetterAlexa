@@ -6,3 +6,6 @@ output.mp3
 /__pycache__
 /.vscode
 /venv
+/audio_files/*
+/myenv/
+.DS_Store
