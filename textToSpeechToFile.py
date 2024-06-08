@@ -45,7 +45,7 @@ def text_to_speech_file(text: str, language: str, gender: str) -> str:
             if chunk:
                 f.write(chunk)
 
-    print(f"{save_file_path}: A new audio file was saved successfully!")
+    #print(f"{save_file_path}: A new audio file was saved successfully!")
 
     # Return the path of the saved audio file
     return save_file_path
