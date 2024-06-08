@@ -42,14 +42,8 @@ def process_input(transcription: str):
     return output
 
 if __name__ == "__main__":
-    with open('functions.json', 'r') as file:
-        functions = file.read()
-
-    model = LLama3("Llama-3-8B-function-calling", functions, "https://drive.google.com/drive/folders/1Q-EV7D7pEeYl1On_d2JzxFEB67-KmEm3?usp=sharing")
     while True:
         user_input = input("User: ")
-        output = model.generate(user_input)
-        if output.startswith("<functioncall> "):
-            output = process_function_call(model, output)
+        output = process_input(user_input)
         print("Assistant: " + output)
         speak(output)
