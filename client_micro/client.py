@@ -59,11 +59,14 @@ def main():
     while True:
         record_audio = input("Would you like to record some audio (y/n)?: ")
         if record_audio.lower() == "y":
-            recorder.start_recording()
+            #recorder.start_recording()
 
             # Send the recorded audio to the server
             print("Recording finished and saved. Sending to server...")
-            response, errno = remote_whisper(recorder.path)
+            #response, errno = remote_whisper(recorder.path)
+            response, errno = remote_whisper("test.wav")
+
+            #INSERT TEXT TO AUDIO CODE HERE
             
             # Handle the server response
             if errno == 0:
