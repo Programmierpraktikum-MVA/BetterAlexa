@@ -1,7 +1,7 @@
 import json
 import os
 
-# get the functions/classes from group a,b,c
+# get the functions/classes from group b,c
 from llama3 import LLama3
 from gtts import gTTS
 from wolfram import ask_wolfram_question
@@ -27,23 +27,17 @@ def process_function_call(model : LLama3, fc: str) -> str:
         print(result)
     return model.generate(result)
 
-def speak(text: str):
-    text_to_speech_file(text, "english", "female")
-    #playsound("output.mp3")
-    #os.remove("output.mp3")  # Delete after playing
-
-def process_input(transcription: str):
-    with open('functions.json', 'r') as file:
-        functions = file.read()
-    model = LLama3("Llama-3-8B-function-calling", functions, "https://drive.google.com/drive/folders/1Q-EV7D7pEeYl1On_d2JzxFEB67-KmEm3?usp=sharing")
+def process_input(model: LLama3, transcription: str):
     output = model.generate(transcription)
     if output.startswith("<functioncall> "):
         output = process_function_call(model, output)
     return output
 
 if __name__ == "__main__":
+    with open('functions.json', 'r') as file:
+        functions = file.read()
+    llamaModel = LLama3("Llama-3-8B-function-calling", functions, "https://drive.google.com/drive/folders/1Q-EV7D7pEeYl1On_d2JzxFEB67-KmEm3?usp=sharing")
     while True:
         user_input = input("User: ")
-        output = process_input(user_input)
+        output = process_input(llamaModel, user_input)
         print("Assistant: " + output)
-        speak(output)
