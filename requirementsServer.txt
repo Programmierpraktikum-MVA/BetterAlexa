@@ -12,3 +12,5 @@ wikipedia-api
 elevenlabs
 flask
 beautifulsoup4
+python-multipart
+pvrecorder
