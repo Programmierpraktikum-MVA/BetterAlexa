@@ -5,8 +5,6 @@ from transformers import pipeline
 from download_drive import download_google_drive_folder
 from trl import setup_chat_format
 
-os.environ["HF_TOKEN"] = "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"
-
 class LLama3:
     path_to_model: str
     model: AutoModelForCausalLM
