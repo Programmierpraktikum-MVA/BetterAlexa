@@ -5,24 +5,31 @@ from transformers import pipeline
 from download_drive import download_google_drive_folder
 from trl import setup_chat_format
 
-os.environ["HF_TOKEN"] = "hf_AdBdWrcrVkKcYwzTCzUkEycfsjQZamuDg"
+os.environ["HF_TOKEN"] = "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"
 
 class LLama3:
     path_to_model: str
     model: AutoModelForCausalLM
     tokenizer: AutoTokenizer
     pipeline: Pipeline
-    chat: list[dict[str, str]]
+    chat: list[dict[str, str]] = []
+    chat_length: int = 0
 
     def __init__(self, destination_path: str, functions: str, drive_link: str | None = None) -> None:
         self.path_to_model = destination_path
-        system = {"role": "system", "content": "You are a helpful assistant with access to the following functions. Use them if required -\n{\n" + functions + "\n}"}
-        self.chat = []
-        self.chat.append(system)
         if drive_link is not None and not (os.path.exists(destination_path) and os.path.isdir(destination_path)):
-            download_google_drive_folder(drive_link, self.path_to_model)
+            download_google_drive_folder(drive_link, destination_path)
+        system_msg = {"role": "system", "content": "You are a helpful assistant with access to the following functions. Use them if required -\n{\n" + functions + "\n}"}
+        self.append_to_chat("system", system_msg)
         self.prepare()
     
+    def append_to_chat(self, role: str, content: str):
+        msg = {"role": role, "content": content}
+        self.chat.append(msg)
+        self.chat_length += len(msg["content"].split())
+        if self.chat_length > 2048:
+            msg = self.chat.pop(1)
+            self.chat_length -= len(msg["content"].split())
 
     def prepare(self):
         if os.getenv("HF_TOKEN") is None:
@@ -46,7 +53,7 @@ class LLama3:
         self.pipeline = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer)
     
     def generate(self, input: str) -> str:
-        self.chat.append({"role": "user", "content": input})
+        self.append_to_chat("user", input)
         prompt = self.pipeline.tokenizer.apply_chat_template(self.chat, tokenize=False, add_generation_prompt=True)
 
         eos_token_id = self.pipeline.tokenizer.eos_token_id
@@ -54,7 +61,7 @@ class LLama3:
 
         outputs = self.pipeline(prompt, max_new_tokens=256, temperature=0.1, top_k=50, top_p=0.1, eos_token_id=eos_token_id, pad_token_id=pad_token_id)
         response = outputs[0]['generated_text'][len(prompt):].strip()
-        self.chat.append({"role": "assistant", "content": response})
+        self.append_to_chat("assistant", response)
         return response
 
 
