@@ -1,4 +1,7 @@
+import os
 import logging
+import pygame
+from gtts import gTTS
 from requests import post
 from os import path
 from audio_recorder import AudioRecorder
@@ -40,6 +43,25 @@ def remote_whisper(input_file_path):
             return response.status_code, -1
     except Exception as e:
         return e, -2
+    
+def play_sound(text: str):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    filename = os.path.join(script_dir, "response.mp3")
+    # text2speech from google
+    tts = gTTS(text=text, lang='en')
+    tts.save(filename)
+    # play sound using pygame
+    pygame.mixer.init()
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play()
+    try:
+        while pygame.mixer.music.get_busy():
+            pygame.time.Clock().tick(10)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        pygame.mixer.music.stop()
+        pygame.mixer.quit()
 
 def main():
     """
@@ -64,12 +86,11 @@ def main():
             # Send the recorded audio to the server
             print("Recording finished and saved. Sending to server...")
             response, errno = remote_whisper(recorder.path)
-
-            #INSERT TEXT TO AUDIO CODE HERE
             
             # Handle the server response
             if errno == 0:
                 print(f"Response: {response}\n")
+                play_sound(response)
             elif errno == -1:
                 logging.error(f"Server responded with status code: {response}")
             elif errno == -2:

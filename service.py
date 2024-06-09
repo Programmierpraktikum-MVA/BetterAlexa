@@ -1,4 +1,5 @@
 import logging
+import torch
 from os import path, remove
 from time import time
 from warnings import filterwarnings
@@ -8,6 +9,7 @@ from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse, FileResponse
 from main import process_input
+from llama3 import LLama3
 
 # define model size (tiny, base, medium, large)
 WHISPER_MODEL = "base"
@@ -26,9 +28,16 @@ app = FastAPI(
 )
 origins = ["*"]
 
-logging.info(f"Loading the {WHISPER_MODEL} model")
-model = load_model(WHISPER_MODEL)
-logging.info("Model loaded")
+logging.info(f"Loading the {WHISPER_MODEL} Whisper model and LLama model!")
+# whisper model on cpu because of gpu memory issues
+model = load_model(WHISPER_MODEL, device=torch.device("cpu"))
+
+# also load the llama model
+with open('functions.json', 'r') as file:
+        functions = file.read()
+llamaModel = LLama3("Llama-3-8B-function-calling", functions, "https://drive.google.com/drive/folders/1Q-EV7D7pEeYl1On_d2JzxFEB67-KmEm3?usp=sharing")
+
+logging.info("Whisper and LLama model loaded!")
 
 app.add_middleware(
     CORSMiddleware,
@@ -65,7 +74,7 @@ async def whisper(file: UploadFile):
     remove(temp_filename)
     print(f"Transcription result: {transcription_result['text']}")
 
-    answer = process_input(transcription_result['text'])
+    answer = process_input(llamaModel, transcription_result['text'])
     
     file_path = path.join(path.dirname(path.abspath(__file__)), "transcription.txt")
     with open(file_path, "w", encoding="utf-8") as txt:

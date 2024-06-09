@@ -17,7 +17,7 @@ class LLama3:
         self.path_to_model = destination_path
         if drive_link is not None and not (os.path.exists(destination_path) and os.path.isdir(destination_path)):
             download_google_drive_folder(drive_link, destination_path)
-        system_msg = {"role": "system", "content": "You are a helpful assistant with access to the following functions. Use them if required -\n{\n" + functions + "\n}"}
+        system_msg = "You are a helpful assistant with access to the following functions. Use them if required -\n{\n" + functions + "\n}"
         self.append_to_chat("system", system_msg)
         self.prepare()
     
@@ -39,11 +39,12 @@ class LLama3:
             load_in_4bit=True,
             bnb_4bit_use_double_quant=True,
             bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.bfloat16
+            bnb_4bit_compute_dtype=torch.bfloat16,
         )
         model = AutoModelForCausalLM.from_pretrained(
             self.path_to_model,
             device_map='auto',
+            attn_implementation="flash_attention_2",
             torch_dtype=torch.bfloat16,
             quantization_config=bnb_config
         )      

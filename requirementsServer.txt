@@ -6,11 +6,10 @@ trl
 uvicorn
 openai-whisper
 fastapi
-gtts
-playsound
 wikipedia-api
 elevenlabs
 flask
 beautifulsoup4
 python-multipart
 pvrecorder
+flash-attn
