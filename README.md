@@ -1,95 +1,49 @@
-# BetterAlexa Monorepo
+# server.py
 
-## About
+This script is used for the server side of the application. It uses a whisper and llama3 model to transcribe incoming audio from the client and generates an answer using predefined functions in `functions.json`, which will be sent back to the client in text form.
 
-Welcome to BetterAlexa monorepo, we use create t3 turbo to create this monorepo.
-Implementation only supports chromium-browsers.
+## Setup
 
-## Architecture
+1. **Python Version**: We tested it with 3.10 but similar versions will probably work as well. You can check your Python version by running `python --version` in your terminal.
 
-![Architecture](docs/static/BetterAlexa-architecture-drawio.png)
+2. **Virtual Environment**: It is recommended to create a virtual environment for running this script. You can do this by running the following commands in your terminal:
 
-## Folder structure
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate
+    ```
 
-```txt
-.github
-  └─ workflows
-        └─ CI with pnpm cache setup
-.vscode
-  └─ Recommended extensions and settings for VSCode users
-apps
-  ├─ command-to-action
-  |   ├─ Flask
-  |   ├─ OpenAI GPT
-  |   └─ Langchain / OpenAI Functioncalling
-  ├─ expo
-  |   ├─ Expo SDK 48
-  |   ├─ React Native using React 18
-  |   ├─ Navigation using Expo Router
-  |   ├─ Tailwind using Nativewind
-  |   └─ Typesafe API calls using tRPC
-  ├─ next.js
-  |   ├─ Next.js 13
-  |   ├─ React 18
-  |   ├─ Tailwind CSS
-  |   └─ E2E Typesafe API Server & Client
-  └─ sample
-      ├─ Flask
-      ├─ Google Text2Speech
-      └─ OpenAI Whisper
-packages
- ├─ api
- |   └─ tRPC v10 router definition
- ├─ auth
- |   └─ Authentication using Firebase Auth
- └─ db
-     └─ Redis
-```
+    This creates a new virtual environment in a directory named `.venv` and activates it. Preferably do this in the client directory.
 
-## Quick Start
+3. **Install Requirements**: Install the required Python packages. You can do this by running `pip install -r requirementsServer.txt` in the client directory.
 
-To get it running, follow the steps below:
+4. **Run the Script**: Just run `python server.py` in the terminal.
 
-### Setup dependencies
+## Usage
 
-```sh
-# Install dependencies
-pnpm i
+Now you can use the client to use the service provided by the server. Sometimes you will see some activity like the search for wikipedia pages. 
 
-# Configure environment variables.
-# There is an `.env.example` in the root directory you can use for reference
-cp .env.example .env
-```
+# client/client.py
 
-## Deployment
+This script is used for the client side of the application. It's recording audio and sending it to the server which responds with a text. We then use google text2speech to translate it back to sound.
 
-### Next.js
+## Setup
 
-#### Prerequisites
+1. **Python Version**: We tested it with 3.10 but similar versions will probably work as well. You can check your Python version by running `python --version` in your terminal.
 
-We are using Redis as our database, and Firebase for our authentication. We're running everything on a VPS.
+2. **Virtual Environment**: It is recommended to create a virtual environment for running this script. You can do this by running the following commands in your terminal:
 
-- Create a [Redis DB](https://redis.io/docs/getting-started/installation/install-redis-on-linux/) on your VPS.
-- Go to [Firebase Console](https://console.firebase.google.com/) and create a new Firebase project.
-  - Create 3 apps for your Firebase project, a Web app, an Android app, and an iOS app. For the Android and iOS app, you can just use the package name from the Expo app (com.mva.betteralexa), you also need to generate a SHA1 for the Android app later.
-  - Enable Firebase authentication with Google as a sign-in method. You can follow [this guide](https://firebase.google.com/docs/auth/web/google-signin) for this. We can add more sign-in method later.
-  - Create a Service Account for your Firebase project. You can follow [this guide](https://firebase.google.com/docs/admin/setup#initialize-sdk) for this. Download the credentials file and paste the config to the `.env` file in the root directory, match it with our `.env.example`.
-  - Get your Firebase config. You can follow [this guide](https://firebase.google.com/docs/web/setup#config-object) for this. Paste the config to the `.env` file in the root directory, match it with our `.env.example`.
-- To generate SHA1 for Expo Google sign in, you need to have an expo account. Link the project to your account, and generate a credentials with `expo credentials`
-- (OPTIONAL) if you want to use the current sample API, you need to have an OpenAI api key, paste it to the `.env` file in the root directory, match it with our `.env.example`.
-- (OPTIONAL) if you want to use the spotify:
-  - Go to [Spotify Dashboard](https://developer.spotify.com/dashboard) and create an app
-  - put `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` in your `.env`
-  - If you dont want to use it, remove the tool from [cta](./apps/command-to-action/api/)
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate
+    ```
 
-## Development
+    This creates a new virtual environment in a directory named `.venv` and activates it. Preferably do this in the client directory.
 
-Use `pnpm dev`
+3. **Install Requirements**: Install the required Python packages. You can do this by running `pip install -r requirementsClient.txt` in the client directory.
 
-## Production
+4. **Run the Script**: Ensure that the server is already running with `python server.py`. Then you should be able to run `python client.py` in the terminal in the client directory.
 
-Use `docker compose up`
+## Usage
 
-## References
-
-The stack originates from [create-t3-app](https://github.com/t3-oss/create-t3-app).
+First select your desired audio device. After that type 'y' if you are ready to record some audio. Press str + C if you are done with recording.

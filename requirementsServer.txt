@@ -12,4 +12,3 @@ flask
 beautifulsoup4
 python-multipart
 pvrecorder
-flash-attn
