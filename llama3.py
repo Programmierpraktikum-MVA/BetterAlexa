@@ -44,7 +44,6 @@ class LLama3:
         model = AutoModelForCausalLM.from_pretrained(
             self.path_to_model,
             device_map='auto',
-            attn_implementation="flash_attention_2",
             torch_dtype=torch.bfloat16,
             quantization_config=bnb_config
         )      

@@ -12,7 +12,7 @@ from main import process_input
 from llama3 import LLama3
 
 # define model size (tiny, base, medium, large)
-WHISPER_MODEL = "base"
+WHISPER_MODEL = "medium"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

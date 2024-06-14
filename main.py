@@ -10,7 +10,7 @@ from spotify import play,set_volume_to,pause,next,prev,turn_on_shuffle,turn_off_
 from playsound import playsound
 from textToSpeechToFile import text_to_speech_file
 
-DEBUG_MODE = 0
+DEBUG_MODE = 1
 
 def process_function_call(model : LLama3, fc: str) -> str:
     if DEBUG_MODE:
