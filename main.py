@@ -7,7 +7,6 @@ from gtts import gTTS
 from wolfram import ask_wolfram_question
 from wikipedia import getWikiPageInfo
 from spotify import play,set_volume_to,pause,next,prev,turn_on_shuffle,turn_off_shuffle,decrease_volume,increase_volume,play_song,play_album,play_artist,add_to_queue
-from playsound import playsound
 from textToSpeechToFile import text_to_speech_file
 
 DEBUG_MODE = 1

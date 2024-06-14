@@ -32,7 +32,7 @@ class LLama3:
     def prepare(self):
         if os.getenv("HF_TOKEN") is None:
             print("You need to set the HF_TOKEN environment variable!")
-            return
+            quit()
         tokenizer = AutoTokenizer.from_pretrained('meta-llama/Meta-Llama-3-8B', token=os.getenv("HF_TOKEN"))
         tokenizer.padding_side = "right"
         bnb_config = BitsAndBytesConfig(
