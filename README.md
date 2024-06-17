@@ -15,7 +15,7 @@ This script is used for the server side of the application. It uses a whisper an
 
     This creates a new virtual environment in a directory named `.venv` and activates it. Preferably do this in the main directory.
 
-3. **Install Requirements**: Install the required Python packages. You can do this by running `pip install -r requirementsServer.txt` in the client directory.
+3. **Install Requirements**: Install the required Python packages. You can do this by running `pip install -r requirementsServer.txt` in the main directory.
 
 4. **Run the Script**: Just run `python server.py` in the terminal.
 
