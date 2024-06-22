@@ -1,9 +1,7 @@
 import json
-import os
 
 # get the functions/classes from group b,c
 from llama3 import LLama3
-from gtts import gTTS
 from wolfram import ask_wolfram_question
 from wikipedia import getWikiPageInfo
 from spotify import play,set_volume_to,pause,next,prev,turn_on_shuffle,turn_off_shuffle,decrease_volume,increase_volume,play_song,play_album,play_artist,add_to_queue
@@ -16,7 +14,13 @@ def process_function_call(model : LLama3, fc: str) -> str:
         print(fc)
     fc = fc[len("<functioncall> "):]
     fc = fc.replace("'", "")
-    data = json.loads(fc)
+    try: 
+        data = json.loads(fc)
+    except:
+        result = 'FUNCTION RESPONSE: Invalid input format, try again' 
+        if DEBUG_MODE:
+            print(result)
+        return model.generate(result)
     name = data["name"]
     arguments = data["arguments"]
     result = globals()[name](**arguments)
@@ -35,7 +39,7 @@ def process_input(model: LLama3, transcription: str):
 if __name__ == "__main__":
     with open('functions.json', 'r') as file:
         functions = file.read()
-    llamaModel = LLama3("Llama-3-8B-function-calling", functions, "https://drive.google.com/drive/folders/1Q-EV7D7pEeYl1On_d2JzxFEB67-KmEm3?usp=sharing")
+    llamaModel = LLama3("Llama-3-8B-function-calling", functions, "https://drive.google.com/drive/folders/1CJtn-3nCfQT3FU3pOgA3zTIdPLQ9n3x6?usp=sharing", "https://drive.google.com/drive/folders/1RmhIu2FXqwu4TxIQ9GpDtYb_IXWoVd7z?usp=sharing")
     while True:
         user_input = input("User: ")
         output = process_input(llamaModel, user_input)
