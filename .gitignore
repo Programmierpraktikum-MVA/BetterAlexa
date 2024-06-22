@@ -5,7 +5,8 @@
 
 transcription.txt
 
-/Llama-3-8B-function-calling
+/Llama-3-8B-function-calling-model
+/Llama-3-8B-function-calling-tokenizer
 
 /__pycache__
 /.vscode
