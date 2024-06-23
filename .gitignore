@@ -14,3 +14,17 @@ transcription.txt
 /audio_files/*
 /myenv/
 .DS_Store
+
+/tutor_ai/llama3/llama3testing
+/tutor_ai/llama3/config.json
+/tutor_ai/SeleniumCrawler/config.json
+/tutor_ai/SeleniumCrawler/misc/__pycache__
+/tutor_ai/SeleniumCrawler/CourseInfos
+/tutor_ai/SeleniumCrawler/IsisModules/__pycache__
+/tutor_ai/SeleniumCrawler/downloaded_videos
+/tutor_ai/SeleniumCrawler/download_log.json
+/tutor_ai/transcribe/transEnv
+/tutor_ai/transcribe/transcribed
+/tutor_ai/transcribe/audio_files
+/tutor_ai/transcribe/__pycache__
+/tutor_ai/transcribe/transformation_log.json
