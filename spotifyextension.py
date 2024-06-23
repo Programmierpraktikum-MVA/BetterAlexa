@@ -196,6 +196,11 @@ def play_artist(access_token, artist):
     response = requests.put(API_BASE_URL + 'me/player/play', headers=headers, json=req_body)
     return response
 
+def user_play_artist(user, artist):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return play_song(token_inf['access_token'], artist)
 
 def search_for_album(token, album_name):
     url = "https://api.spotify.com/v1/search"
@@ -223,6 +228,11 @@ def play_album(access_token, album):
     response = requests.put(API_BASE_URL + 'me/player/play', headers=headers, json=req_body)
     return response
 
+def user_play_album(user, album):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return play_song(token_inf['access_token'], album)
 
 """
 def get_similar_artist(token, artist_name):
@@ -440,7 +450,7 @@ def is_token_expired(token_inf):
     return 'error' in get_available_devices(token_inf['access_token'])
 
 
-def standard_refresh(token_inf):
+def standard_refresh(user, token_inf):
     req_body = {
         'grant_type': 'refresh_token',
         'refresh_token': token_inf['refresh_token'],
@@ -448,6 +458,7 @@ def standard_refresh(token_inf):
         'client_secret': client_secret
     }
     response = requests.post(TOKEN_URL, data=req_body)
+    write_to_store(user, response.json)
     return response.json
 
 def get_token_inf(user):
