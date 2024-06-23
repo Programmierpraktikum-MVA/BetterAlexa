@@ -168,6 +168,22 @@
         }
     },
     {
+        "name": "ask_TutorAI_question",
+        "description": "Asks a question to TutorAI and gets the answer, returning specific Information regarding the computer science course at the Technical University of Berlin",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "question": {
+                    "type": "string",
+                    "description": "The question to be asked to TutorAI"
+                }
+            },
+            "required": [
+                "question"
+            ]
+        }
+    },
+    {
         "name": "getWikiPageInfo",
         "description": "Retrieves a specified number of sentences from the summary of a Wikipedia page in a given language",
         "parameters": {
