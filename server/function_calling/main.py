@@ -1,5 +1,5 @@
 import json
-
+import os
 # get the functions/classes from group b,c
 from llama3 import LLama3
 from actions.wolfram import ask_wolfram_question
@@ -37,9 +37,7 @@ def process_input(model: LLama3, transcription: str):
     return output
 
 if __name__ == "__main__":
-    with open('functions.json', 'r') as file:
-        functions = file.read()
-    llamaModel = LLama3("Llama-3-8B-function-calling", functions, "https://drive.google.com/drive/folders/1CJtn-3nCfQT3FU3pOgA3zTIdPLQ9n3x6?usp=sharing", "https://drive.google.com/drive/folders/1RmhIu2FXqwu4TxIQ9GpDtYb_IXWoVd7z?usp=sharing")
+    llamaModel = LLama3("Llama-3-8B-function-calling", "https://drive.google.com/drive/folders/1CJtn-3nCfQT3FU3pOgA3zTIdPLQ9n3x6?usp=sharing", "https://drive.google.com/drive/folders/1RmhIu2FXqwu4TxIQ9GpDtYb_IXWoVd7z?usp=sharing")
     while True:
         user_input = input("User: ")
         output = process_input(llamaModel, user_input)

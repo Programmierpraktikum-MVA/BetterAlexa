@@ -9,6 +9,7 @@ from llama_index.core import (
 )
 from llama_index.core.memory import ChatMemoryBuffer
 import requests  
+import os
 
 model = None
 
@@ -20,7 +21,9 @@ class TutorAI:
         Settings.embed_model = embedding_llm
         Settings.chunk_size = 512
 
-        storage_context = StorageContext.from_defaults(persist_dir="./storage")
+        path_to_dir = os.path.dirname(__file__)
+        persist_dir = os.path.join(path_to_dir, "storage")
+        storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
         index = load_index_from_storage(storage_context=storage_context)
 
         memory = ChatMemoryBuffer.from_defaults(token_limit=3900)
@@ -44,14 +47,14 @@ class TutorAI:
         return response.json()['results']
     
     def generate(self, input: str) -> str:
-        return self.chat_engine.chat(input)
+        return self.chat_engine.chat(input).response
 
 # API for function calling
-def ask_TutorAI_question(input: str) -> str:
+def ask_TutorAI_question(question: str) -> str:
     global model
     if model is None:
         model = TutorAI()
-    return model.generate(input)
+    return model.generate(question)
 
 if __name__ == "__main__":
     print("Type 'quit' to exit the program")

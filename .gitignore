@@ -7,13 +7,14 @@ transcription.txt
 
 Llama-3-8B-function-calling*
 
-/__pycache__
+*__pycache__
 /.vscode
 /venv
 /audio_files/*
 /myenv/
 .DS_Store
 
+*storage
 /tutor_ai/llama3/llama3testing
 /tutor_ai/llama3/config.json
 /tutor_ai/SeleniumCrawler/config.json
