@@ -8,8 +8,8 @@ from fastapi import FastAPI, UploadFile
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse, FileResponse
-from main import process_input
-from llama3 import LLama3
+from function_calling.main import process_input
+from function_calling.llama3 import LLama3
 
 # define model size (tiny, base, medium, large)
 WHISPER_MODEL = "medium"
@@ -33,9 +33,7 @@ logging.info(f"Loading the {WHISPER_MODEL} Whisper model and LLama model!")
 model = load_model(WHISPER_MODEL, device=torch.device("cpu"))
 
 # also load the llama model
-with open('functions.json', 'r') as file:
-        functions = file.read()
-llamaModel = LLama3("Llama-3-8B-function-calling", functions, "https://drive.google.com/drive/folders/1Q-EV7D7pEeYl1On_d2JzxFEB67-KmEm3?usp=sharing")
+llamaModel = LLama3("Llama-3-8B-function-calling", "https://drive.google.com/drive/folders/1Q-EV7D7pEeYl1On_d2JzxFEB67-KmEm3?usp=sharing", "https://drive.google.com/drive/folders/1RmhIu2FXqwu4TxIQ9GpDtYb_IXWoVd7z?usp=sharing")
 
 logging.info("Whisper and LLama model loaded!")
 

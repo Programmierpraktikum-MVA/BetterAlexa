@@ -8,20 +8,27 @@ from trl import setup_chat_format
 class LLama3:
     path_to_model: str
     path_to_tokenizer: str
+    path_to_dir: str
+    functions: str
     model: AutoModelForCausalLM
     tokenizer: AutoTokenizer
     pipeline: Pipeline
     chat: list[dict[str, str]] = []
     chat_length: int = 0
 
-    def __init__(self, destination_path: str, functions: str, model_link: str | None = None, tokenizer_link: str | None = None) -> None:
-        self.path_to_model = destination_path + "-model"
-        self.path_to_tokenizer = destination_path + "-tokenizer"
+    def __init__(self, destination_path: str, model_link: str | None = None, tokenizer_link: str | None = None) -> None:
+        self.path_to_dir = os.path.dirname(__file__)
+        self.path_to_model = os.path.join(self.path_to_dir, destination_path + "-model")
+        self.path_to_tokenizer = os.path.join(self.path_to_dir, destination_path + "-tokenizer")
+
         if model_link is not None and not (os.path.exists(self.path_to_model) and os.path.isdir(self.path_to_model)):
             download_google_drive_folder(model_link, self.path_to_model)
+
         if tokenizer_link is not None and not (os.path.exists(self.path_to_tokenizer) and os.path.isdir(self.path_to_tokenizer)):
             download_google_drive_folder(tokenizer_link, self.path_to_tokenizer)
-        system_msg = "You are a helpful assistant with access to the following functions. Use them if required -\n{\n" + functions + "\n}"
+        
+        self.search_functions()
+        system_msg = "You are a helpful assistant with access to the following functions. Use them if required -\n{\n" + self.functions + "\n}"
         self.append_to_chat("system", system_msg)
         self.prepare()
     
@@ -32,6 +39,11 @@ class LLama3:
         while self.chat_length > 1024:
             msg = self.chat.pop(1)
             self.chat_length -= len(msg["content"].split())
+
+    def search_functions(self):
+        func_path = os.path.join(self.path_to_dir, "functions.json")
+        with open(func_path, 'r') as file:
+            self.functions = file.read()
 
     def prepare(self):
         tokenizer = AutoTokenizer.from_pretrained(self.path_to_tokenizer)
