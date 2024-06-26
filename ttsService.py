@@ -24,7 +24,7 @@ if __name__ == "__main__":
     # 1:  command to run : uvicorn ttsService:app --reload
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
-    #2: head to the 127.0.... as shown
+    #2: paste http://127.0.0.1:8000/docs into browser
     #3: enter text
     #4: execute
     #5: download output file with the read out text using gTTS
