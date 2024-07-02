@@ -1,9 +1,17 @@
 import torch
 import os
+import json
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Pipeline
 from transformers import pipeline
 from download_drive import download_google_drive_folder
 from trl import setup_chat_format
+
+from actions.wolfram import ask_wolfram_question
+from actions.wikipedia import getWikiPageInfo
+from actions.spotify import play,set_volume_to,pause,next,prev,turn_on_shuffle,turn_off_shuffle,decrease_volume,increase_volume,play_song,play_album,play_artist,add_to_queue
+from tutor_ai.backend.ChatEngine import ask_TutorAI_question
+
+DEBUG_MODE = 1
 
 class LLama3:
     path_to_model: str
@@ -74,6 +82,34 @@ class LLama3:
         response = outputs[0]['generated_text'][len(prompt):].strip()
         self.append_to_chat("assistant", response)
         return response
+    
+    def process_function_call(self, fc: str) -> str:
+        if DEBUG_MODE:
+            print(fc)
+        fc = fc[len("<functioncall> "):]
+        fc = fc.replace("'", "")
+        try: 
+            data = json.loads(fc)
+        except:
+            result = 'FUNCTION RESPONSE: Invalid input format, try again' 
+            if DEBUG_MODE:
+                print(result)
+            return self.generate(result)
+        name = data["name"]
+        arguments = data["arguments"]
+        result = globals()[name](**arguments)
+        result = {"result": result}
+        result = 'FUNCTION RESPONSE: ' + str(result)
+        if DEBUG_MODE:
+            print(result)
+        return self.generate(result)
+
+    def process_input(self, transcription: str):
+        output = self.generate(transcription)
+        if output.startswith("<functioncall> "):
+            output = self.process_function_call(output)
+        return output
+    
 
 
 
