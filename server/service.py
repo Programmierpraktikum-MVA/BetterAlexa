@@ -8,7 +8,6 @@ from fastapi import FastAPI, UploadFile
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse, FileResponse
-from function_calling.main import process_input
 from function_calling.llama3 import LLama3
 
 # define model size (tiny, base, medium, large)
@@ -72,7 +71,7 @@ async def whisper(file: UploadFile):
     remove(temp_filename)
     print(f"Transcription result: {transcription_result['text']}")
 
-    answer = process_input(llamaModel, transcription_result['text'])
+    answer = llamaModel.process_input(transcription_result['text'])
     
     file_path = path.join(path.dirname(path.abspath(__file__)), "transcription.txt")
     with open(file_path, "w", encoding="utf-8") as txt:

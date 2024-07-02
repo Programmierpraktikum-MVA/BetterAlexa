@@ -14,6 +14,7 @@ Llama-3-8B-function-calling*
 /myenv/
 .DS_Store
 
+*.db
 *storage
 /tutor_ai/llama3/llama3testing
 /tutor_ai/llama3/config.json

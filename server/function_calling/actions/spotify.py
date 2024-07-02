@@ -1,5 +1,6 @@
 import datetime
 import urllib
+import sqlite3
 from urllib import parse
 import base64
 import json
@@ -7,8 +8,8 @@ import requests
 from requests import post, get
 from flask import Flask, redirect, request, session, jsonify
 import webbrowser
-from threading import Timer
-
+from threading import Timer, Event
+from actions.database_handling import write_to_store, read_from_store, delete_from_store
 
 client_id = "0fa32183ad404b22bf2587006b50421f"
 client_secret = "53520c39acb44b16962a58df6bd94e8e"
@@ -21,11 +22,22 @@ current_session = {
     'expires_at': ''
 }
 
-acc = "BQDFW5fU82lXPAON7yzRjo0bHnIka3d2WYPKI9uxdyOEkQjPUrLU9vYKykfw2UMEJrwuBznkGBH4yiHSshQp5y8u09f8FO3399Gsbd4LxjjMRGpzOj4rMDddAiVu9oOhyudB6IpFk9BUM9QLXpF24Qf_BLgEyYiySaeoC5JJRKVXrzecYqTUwtg3D7Xv52rgEsOqJ9xJWGEWmICAKfnp5ccokWSjKmEqyKIKnQalW9WOVZn4hh0dK2nkhr1cPaEztXMHpeCy4QGq4zFDlJ34uDP3CRf9aAXh08LlokZKWg8y"
+acc = "BQADF-7Khe4mdlCjBh5CVd0CY46S-iCzcHya7jA9LZVJyQRCrAfxTAwDE9MBiphh1rRcOc7AvvUDIKqGxG4ABppJZIjKtP52p6VP_PIaBb-74emdB8kJcbH7Qu8NnDsP3h5o1d-zHIPqxgpSovyRaRDLvw56fSxT3JGnOAdGsN16ZWB8ybdym5geb2dgEbpxQ7jghOVsbarT6UIwjT2KmH5spKnnBdyvQgiaty-HYC-3t_Rg9PpzuFlhZOL3yqlcIEhgHhVIkdTSpo8FbxhXwtGBNKYoLRYQ58yCBFsKbcuG"
 app = Flask(__name__)
 app.secret_key = 'asljfghsaldaslkas'
 app.config['SESSION_COOKIE_NAME'] = 'Spotify Cookie'
-TOKEN_INFO = 'token_info'
+
+conn = sqlite3.connect('key_value_store.db')
+c = conn.cursor()
+
+# Create table
+c.execute('''CREATE TABLE IF NOT EXISTS store
+             (key TEXT PRIMARY KEY, value TEXT)''')
+
+# Global variable to store token information
+token_info = None
+token_received_event = Event()
+
 
 
 def get_token():
@@ -48,11 +60,21 @@ def open_browser():
     webbrowser.open_new("http://127.0.0.1:5000")
 
 
-
 def open_login_flask_app():
     Timer(1, open_browser).start()
-    app.run() #REMOVE DEBUG MODE WHEN DONE
 
+    # Run Flask app in a separate thread
+    import threading
+    flask_thread = threading.Thread(target=app.run, kwargs={'debug': True, 'use_reloader': False})
+    flask_thread.start()
+
+    # Wait until the token is received
+    token_received_event.wait()
+
+    # Stop the Flask server (optional, if needed)
+    # request.environ.get('werkzeug.server.shutdown')()
+
+    return token_info
 
 
 @app.route('/')
@@ -75,7 +97,7 @@ def auth_user():
                  'playlist-modify-private '
                  'user-read-playback-state ',
         'redirect_uri': redirect_uri,
-        'show_dialog': True # SET TO FALSE WHEN DONE
+        'show_dialog': True  # SET TO FALSE WHEN DONE
     }
     query_string = urllib.parse.urlencode(query_params)
     auth_url = f'https://accounts.spotify.com/authorize?{query_string}'
@@ -84,6 +106,7 @@ def auth_user():
 
 @app.route('/callback')
 def callback():
+    global token_info
     if 'error' in request.args:
         return jsonify({"error": request.args['error']})
     if 'code' in request.args:
@@ -107,9 +130,8 @@ def callback():
         session['refresh_token'] = token_info['refresh_token']
         session['expires_at'] = datetime.datetime.now().timestamp() + token_info['expires_in']
 
-        current_session['access_token'] = token_info['access_token']
-        current_session['refresh_token'] = token_info['refresh_token']
-        current_session['expires_at'] = datetime.datetime.now().timestamp() + token_info['expires_in']
+        # Signal that the token has been received
+        token_received_event.set()
 
         return redirect('/finalwindow')
     return 'No code provided', 400
@@ -142,11 +164,7 @@ def refresh_token():
 def final_window():
     if 'access_token' not in session:
         return redirect('/login')
-
-    if datetime.datetime.now().timestamp() > session['expires_at']:
-        return redirect('/refresh-token')
-
-    return "Thank you for logging in, you may close this window now!\n DEBUG ACCESS_TOKEN: " + session['access_token']
+    return "Thank you for logging in, you may close this window now!"
 
 
 # END OF FLASK APP, FUNCS START HERE
@@ -156,7 +174,7 @@ def search_for_artist(token, artist_name):
     url = "https://api.spotify.com/v1/search"
     headers = {"Authorization": "Bearer " + token}
     query = f"?q={artist_name}&type=artist&limit=1"
-    query_url = url+query
+    query_url = url + query
     result = requests.get(query_url, headers=headers)
     json_result = result.json()
     ide = json_result['artists']['items'][0]['id']
@@ -178,11 +196,17 @@ def play_artist(access_token, artist):
     response = requests.put(API_BASE_URL + 'me/player/play', headers=headers, json=req_body)
     return response
 
+def user_play_artist(user, artist):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return play_song(token_inf['access_token'], artist)
+
 def search_for_album(token, album_name):
     url = "https://api.spotify.com/v1/search"
     headers = {"Authorization": "Bearer " + token}
     query = f"?q={album_name}&type=album&limit=1"
-    query_url = url+query
+    query_url = url + query
     result = requests.get(query_url, headers=headers)
     json_result = result.json()
     ide = json_result['albums']['items'][0]['id']
@@ -203,6 +227,13 @@ def play_album(access_token, album):
     }
     response = requests.put(API_BASE_URL + 'me/player/play', headers=headers, json=req_body)
     return response
+
+def user_play_album(user, album):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(user, token_inf)
+    return play_album(token_inf['access_token'], album)
+
 """
 def get_similar_artist(token, artist_name):
     json_result = search_for_artist(token, artist_name)
@@ -216,8 +247,8 @@ def get_similar_artist(token, artist_name):
 
 def get_playback_state(access_token):
     headers = {
-            'Authorization': f"Bearer {access_token}"
-        }
+        'Authorization': f"Bearer {access_token}"
+    }
     response = requests.get(API_BASE_URL + 'me/player', headers=headers)
     return response.json()
 
@@ -247,6 +278,11 @@ def next(access_token):
     response = requests.post(API_BASE_URL + 'me/player/next', headers=headers)
     return response
 
+def user_next(user):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return next(token_inf['access_token'])
 
 def prev(access_token):
     headers = {
@@ -255,6 +291,11 @@ def prev(access_token):
     response = requests.post(API_BASE_URL + 'me/player/previous', headers=headers)
     return response
 
+def user_prev(user):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return prev(token_inf['access_token'])
 
 def pause(access_token):
     headers = {
@@ -263,6 +304,11 @@ def pause(access_token):
     response = requests.put(API_BASE_URL + 'me/player/pause', headers=headers)
     return response
 
+def user_pause(user):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return pause(token_inf['access_token'])
 
 def play(access_token):
     headers = {
@@ -271,12 +317,17 @@ def play(access_token):
     response = requests.put(API_BASE_URL + 'me/player/play', headers=headers)
     return response
 
+def user_play(user):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return play(token_inf['access_token'])
 
 def search_for_song(token, song_name):
     url = "https://api.spotify.com/v1/search"
     headers = {"Authorization": "Bearer " + token}
     query = f"?q={song_name}&type=track&limit=1"
-    query_url = url+query
+    query_url = url + query
     result = requests.get(query_url, headers=headers)
     json_result = result.json()
     ide = json_result['tracks']['items'][0]['id']
@@ -299,12 +350,17 @@ def play_song(access_token, song):
     response = requests.put(API_BASE_URL + 'me/player/play', headers=headers, json=req_body)
     return response
 
+def user_play_song(user, song):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+      token_inf = standard_refresh(user, token_inf)
+    return play_song(token_inf['access_token'], song)
 
 def increase_volume(access_token):
     currentstate = get_playback_state(access_token)
     vol = currentstate['device']['volume_percent']
     print(vol)
-    vol = vol+15
+    vol = vol + 15
     if vol > 100:
         vol = 100
     headers = {'Authorization': f"Bearer {access_token}"}
@@ -312,25 +368,42 @@ def increase_volume(access_token):
     response = requests.put(url, headers=headers)
     return response
 
+def user_increase_volume(user):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return increase_volume(token_inf['access_token'])
 
 def decrease_volume(access_token):
     currentstate = get_playback_state(access_token)
     vol = currentstate['device']['volume_percent']
     if vol > 20:
-        vol = vol-15
+        vol = vol - 15
     else:
-        vol = vol/2
+        vol = vol / 2
     headers = {'Authorization': f"Bearer {access_token}"}
     url = API_BASE_URL + f"me/player/volume?volume_percent={vol}"
     response = requests.put(url, headers=headers)
     return response
 
+def user_decrease_volume(user):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return decrease_volume(token_inf['access_token'])
 
-def set_volume_to(access_token, vol):   # Takes user access token and desired volume in percent (0-100 including)
+
+def set_volume_to(access_token, vol):  # Takes user access token and desired volume in percent (0-100 including)
     headers = {'Authorization': f"Bearer {access_token}"}
     url = API_BASE_URL + f"me/player/volume?volume_percent={vol}"
     response = requests.put(url, headers=headers)
     return response
+
+def user_set_volume_to(user, vol):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return set_volume_to(token_inf['access_token'], vol)
 
 
 def add_to_queue(access_token, song):
@@ -345,24 +418,74 @@ def add_to_queue(access_token, song):
     response = requests.post(url, headers=headers)
     return response
 
+def user_add_to_queue(user, song):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return add_to_queue(token_inf['access_token'], song)
 
 def turn_on_shuffle(access_token):
     headers = {'Authorization': f"Bearer {access_token}"}
-    response = requests.put(API_BASE_URL+'me/player/shuffle?state=true', headers=headers)
+    response = requests.put(API_BASE_URL + 'me/player/shuffle?state=true', headers=headers)
     return response
 
+def user_turn_on_shuffle(user):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return turn_on_shuffle(token_inf['access_token'])
 
 def turn_off_shuffle(access_token):
     headers = {'Authorization': f"Bearer {access_token}"}
-    response = requests.put(API_BASE_URL+'me/player/shuffle?state=false', headers=headers)
+    response = requests.put(API_BASE_URL + 'me/player/shuffle?state=false', headers=headers)
     return response
 
+def user_turn_off_shuffle(user):
+    token_inf = get_token_inf(user)
+    if is_token_expired(token_inf):
+        token_inf = standard_refresh(token_inf)
+    return turn_off_shuffle(token_inf['access_token'])
 
-#print(search_for_artist(get_token(), "joy division"))
-#print(play_artist(acc, "joy divison").content)
-#print(play_album(acc, "").content)
-#print(play_song(acc, "disorder").content)
-#set_volume_to(acc, 100)
-#print(turn_off_shuffle(acc).content)
-#open_login_flask_app()
-#print(get_playlists(acc))
+def is_token_expired(token_inf):
+    return 'error' in get_available_devices(token_inf['access_token'])
+
+
+def standard_refresh(user, token_inf):
+    req_body = {
+        'grant_type': 'refresh_token',
+        'refresh_token': token_inf['refresh_token'],
+        'client_id': client_id,
+        'client_secret': client_secret
+    }
+    response = requests.post(TOKEN_URL, data=req_body)
+    write_to_store(user, json.dumps(response.json()), conn, c)
+    return response.json()
+
+def get_token_inf(user):
+    if read_from_store(user,c) is not None:
+        toke_dump = read_from_store(user, c)
+        return json.loads(toke_dump)
+    else:
+        toke_inf = open_login_flask_app()
+        write_to_store(user, json.dumps(toke_inf), conn, c)
+        return toke_inf
+
+
+
+user_play_album("Emil", "selected ambient works 85-92")
+# open_login_flask_app()
+# print(play_song(acc, "under pressure").content)
+# print(play_artist(acc, "michael jackson").content)
+# print(play_album(acc, "selected ambient works 85-92").content)
+# print(increase_volume(acc).content)
+# print(decrease_volume(acc).content)
+# print(set_volume_to(acc, 70).content)
+# print(turn_off_shuffle(acc).content)
+# print(turn_on_shuffle(acc).content)
+# print(next(acc).content)
+# print(prev(acc).content)
+# print(pause(acc).content)
+# print(play(acc).content)
+# print(add_to_queue(acc, "under pressure"))
+# print(open_login_flask_app())
+#print(open_login_flask_app())
