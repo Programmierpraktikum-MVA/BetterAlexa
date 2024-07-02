@@ -472,7 +472,7 @@ def get_token_inf(user):
 
 
 
-user_play_album("Emil", "selected ambient works 85-92")
+#user_play_album("Emil", "selected ambient works 85-92")
 # open_login_flask_app()
 # print(play_song(acc, "under pressure").content)
 # print(play_artist(acc, "michael jackson").content)
