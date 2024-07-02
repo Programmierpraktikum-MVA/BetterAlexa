@@ -5,6 +5,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from transformers import pipeline
 from download_drive import download_google_drive_folder
 from trl import setup_chat_format
+from deep_translator import GoogleTranslator
+from lingua import Language, LanguageDetectorBuilder
 
 from actions.wolfram import ask_wolfram_question
 from actions.wikipedia import getWikiPageInfo
@@ -23,11 +25,13 @@ class LLama3:
     pipeline: Pipeline
     chat: list[dict[str, str]] = []
     chat_length: int = 0
+    lang_detector: LanguageDetectorBuilder
 
     def __init__(self, destination_path: str, model_link: str | None = None, tokenizer_link: str | None = None) -> None:
         self.path_to_dir = os.path.dirname(__file__)
         self.path_to_model = os.path.join(self.path_to_dir, destination_path + "-model")
         self.path_to_tokenizer = os.path.join(self.path_to_dir, destination_path + "-tokenizer")
+        self.lang_detector = LanguageDetectorBuilder.from_languages(Language.GERMAN, Language.ENGLISH).build()
 
         if model_link is not None and not (os.path.exists(self.path_to_model) and os.path.isdir(self.path_to_model)):
             download_google_drive_folder(model_link, self.path_to_model)
@@ -70,7 +74,7 @@ class LLama3:
         )      
         self.model, self.tokenizer = setup_chat_format(model, tokenizer)
         self.pipeline = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer)
-    
+
     def generate(self, input: str) -> str:
         self.append_to_chat("user", input)
         prompt = self.pipeline.tokenizer.apply_chat_template(self.chat, tokenize=False, add_generation_prompt=True)
@@ -105,9 +109,15 @@ class LLama3:
         return self.generate(result)
 
     def process_input(self, transcription: str):
+        lang = self.lang_detector.detect_language_of(transcription).iso_code_639_1.name
+        lang = lang.lower()
+        if lang != 'en':
+            transcription = GoogleTranslator("auto", "en").translate(transcription)
         output = self.generate(transcription)
         if output.startswith("<functioncall> "):
             output = self.process_function_call(output)
+        if lang != 'en':
+            output = GoogleTranslator("en", lang).translate(output)
         return output
     
 
