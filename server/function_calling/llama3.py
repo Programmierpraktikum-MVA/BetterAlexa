@@ -10,7 +10,7 @@ from lingua import Language, LanguageDetectorBuilder
 
 from actions.wolfram import ask_wolfram_question
 from actions.wikipedia import getWikiPageInfo
-from actions.spotify import play,set_volume_to,pause,next,prev,turn_on_shuffle,turn_off_shuffle,decrease_volume,increase_volume,play_song,play_album,play_artist,add_to_queue
+from actions.spotify_utils import play,set_volume_to,pause,next,prev,turn_on_shuffle,turn_off_shuffle,decrease_volume,increase_volume,play_song,play_album,play_artist,add_to_queue
 from tutor_ai.backend.ChatEngine import ask_TutorAI_question
 
 DEBUG_MODE = 1
