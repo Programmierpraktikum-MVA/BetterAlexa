@@ -19,13 +19,13 @@ filterwarnings("ignore", category=UserWarning, message="FP16 is not supported on
 
 logging.info("Loading finished - starting server")
 app = FastAPI(
-    title="Whisper API",
+    title="S2T & T2S API",
     description="""Whisper API""",
     version="0.1"
 )
 origins = ["*"]
 
-logging.info(f"Loading the {WHISPER_MODEL} Whisper model and LLama model!")
+logging.info(f"Loading the {WHISPER_MODEL} Whisper model")
 # whisper model on cpu because of gpu memory issues
 model = load_model(WHISPER_MODEL)
 

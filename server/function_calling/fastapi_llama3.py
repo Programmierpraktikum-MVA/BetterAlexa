@@ -3,6 +3,7 @@ import os
 # get the functions/classes from group b,c
 from llama3 import LLama3
 from fastapi import FastAPI
+from starlette.responses import RedirectResponse
 
 app = FastAPI()
 
@@ -12,9 +13,13 @@ print("llama model loaded")
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return RedirectResponse(url="/docs")
 
 @app.post("/t2c/{user_input}")
 async def t2c(user_input: str):
     output = llamaModel.process_input(user_input)
     return {"message": output}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, hostname="0.0.0.0", port=8007)
