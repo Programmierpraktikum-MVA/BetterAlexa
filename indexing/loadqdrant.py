@@ -4,6 +4,7 @@ import json
 import os
 import time
 from deep_translator import GoogleTranslator
+import langdetect
 
 
 
@@ -94,7 +95,29 @@ def createcollection(name, dimensions, courses, folder):
         print(f"Uploading points took: {time.time()-start}")
     print(f"Total time taken: {time.time()-initialstart}")
 
-def queryCollection(query,lang,collection):
+def queryCollection(query,collection):
+    coursenames = {
+        '23037': 'System Programmierung SoSe21',
+        '25797': 'Wissenschaftliches Rechnen WiSe21/22',
+        '28622': 'Diskrete Strukturen SoSe22',
+        '30325': 'Wissenschaftliches Rechnen WiSe22/23',
+        '30385':'Berechenbarkeit und Komplexität WiSe22/23',
+        '30849': 'Softwaretechnik und Programmierparadigmen WiSe22/23',
+        '31070': 'Analysis 1 und Lineares Algebra WiSe22/23',
+        '31624': 'Algorithmen und Datenstrukturen SoSe23',
+        '33475': 'Diskrete Strukturen SoSe23',
+        '33845': 'Algorithmentheorie SoSe23',
+        '34637': 'Robotics WiSe23/24',
+        '35440': 'Logik Wise23/24',
+        '35532': 'IntroProg Wise23/24',
+        '35958': 'Softwaretechnik und Programmierparadigmen WiSe23/24',
+        '36347': 'Betriebsysteme Praktikum WiSe23/24',
+        '37656': 'Verteilte Systeme SoSe24',
+        '37800': 'Algorithmentheorie SoSe24',
+        '38479': 'Algorithmen und Datenstrukturen SoSe24'
+    } 
+    lang = langdetect.detect(query)
+    print(f"Detected language: {lang}")
     if lang != 'en':
         query = GoogleTranslator(source=lang, target='en').translate(query)
     start = time.time()
@@ -102,14 +125,34 @@ def queryCollection(query,lang,collection):
     search_results = client.search(
         collection_name=collection,
         query_vector=query_vector,
-        limit=3,
+        limit=5,
     )
     print(f"Querying took: {time.time()-start}")
     results = []
+    visited = []
+    outstring = ""
+    first = True
     for res in search_results:
-        if res.score>0.95:
+        if res.score>0.65 and res.payload['course'] not in visited:
             results.append(res)
-    return results
+            visited.append(res.payload['course'])
+            website = res.payload['lecture_link'] + '#@' + str(int(res.payload['start']))
+            if first:
+                if lang != 'en':
+                    outstring += f"Folgende relevante Videos wurden gefunden: \n"
+                else:
+                    outstring += f"Following relevant videoes were found: \n"
+                first = False
+            if lang != 'en':
+                outstring += f"Vom Kurs {coursenames[res.payload['course']]}: {website}\n"
+            else:
+                outstring += f"From course {coursenames[res.payload['course']]}: {website}\n"
+    if not results:
+        if lang != 'en':
+            outstring += "Keine relevanten Videos gefunden"
+        else:
+            outstring += "No relevant videos found"
+    return outstring
 
 # Code below vectorizes the transcriptions and saves them as JSONs
 #To reuse, change the folder path and course variable
@@ -134,10 +177,10 @@ def queryCollection(query,lang,collection):
 
 
 # Code below creates a collection in Qdrant and uploads a list of jsons
-createcollection('MVA', encoder.get_sentence_embedding_dimension(), ['23037','25797','28622','30325', '30385','30849','31070','31624','33475','33845','34637','35440','35532','35958','36347','37656','37800','38479'], '/Vectorized')
+# createcollection('MVA', encoder.get_sentence_embedding_dimension(), ['23037','25797','28622','30325', '30385','30849','31070','31624','33475','33845','34637','35440','35532','35958','36347','37656','37800','38479'], '/Vectorized')
 
 
 
 
-# print(queryCollection('Wie funktuniert Matrizen multiplikation? ich habe es nicht wirklich in der Vorlesung verstanden','de','MVA'))
+# print(queryCollection('Wie funktuniert Matrizen multiplikation? ich habe es nicht wirklich in der Vorlesung verstanden','MVA'))
 
