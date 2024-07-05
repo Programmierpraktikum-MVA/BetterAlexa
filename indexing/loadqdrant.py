@@ -133,7 +133,7 @@ def queryCollection(query,collection):
     outstring = ""
     first = True
     for res in search_results:
-        if res.score>0.65 and res.payload['course'] not in visited:
+        if res.score>0.60 and res.payload['course'] not in visited:
             results.append(res)
             visited.append(res.payload['course'])
             website = res.payload['lecture_link'] + '#@' + str(int(res.payload['start']))
