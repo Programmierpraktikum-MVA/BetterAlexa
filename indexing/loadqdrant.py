@@ -177,7 +177,7 @@ def queryCollection(query,collection):
 
 
 # Code below creates a collection in Qdrant and uploads a list of jsons
-createcollection('MVA', encoder.get_sentence_embedding_dimension(), ['23037','25797','28622','30325', '30385','30849','31070','31624','33475','33845','34637','35440','35532','35958','36347','37656','37800','38479'], 'Vectorized/')
+# createcollection('MVA', encoder.get_sentence_embedding_dimension(), ['23037','25797','28622','30325', '30385','30849','31070','31624','33475','33845','34637','35440','35532','35958','36347','37656','37800','38479'], 'Vectorized/')
 
 
 
