@@ -15,4 +15,4 @@ async def vidindex(user_input: str):
     return {'message': response}
 
 if __name__ == "__main__":
-    uvicorn.run(app, hostname="0.0.0.0", port=8047)
+    uvicorn.run(app, port=8047)
