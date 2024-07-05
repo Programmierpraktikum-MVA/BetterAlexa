@@ -144,9 +144,9 @@ def queryCollection(query,collection):
                     outstring += f"Following relevant videoes were found: \n"
                 first = False
             if lang != 'en':
-                outstring += f"Vom Kurs {coursenames[res.payload['course']]}: {website}\n"
+                outstring += f"Vom Kurs {coursenames[res.payload['course']]}: {website} \n"
             else:
-                outstring += f"From course {coursenames[res.payload['course']]}: {website}\n"
+                outstring += f"From course {coursenames[res.payload['course']]}: {website} \n"
     if not results:
         if lang != 'en':
             outstring += "Keine relevanten Videos gefunden"
