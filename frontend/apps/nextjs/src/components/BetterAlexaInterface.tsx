@@ -130,7 +130,7 @@ const ChatHistory = ({
         } chathistory-scrollbar dark:chathistory-scrollbarDark overflow-y-scroll pr-4 transition-[height] duration-500`}
       >
         {chatHistory.messages.map((message, index) => (
-          <>
+           <React.Fragment key={message.id || index}>
             <div className="my-4" key={index}>
               {!message.fromSelf && (
                 <div className="flex">
@@ -171,6 +171,7 @@ const ChatHistory = ({
                     </span>
                   </div>
                 </div>
+                </React.Fragment>
               )}
             </div>
           </>
