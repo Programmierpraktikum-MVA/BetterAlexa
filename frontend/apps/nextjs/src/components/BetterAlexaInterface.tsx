@@ -100,25 +100,6 @@ const ChatHistory = ({
     }
   }, [scrollRef, chatHistory]);
 
-  const playTextToSpeech = async (text: string) => {
-    const data = await textToSpeech(text);
-    const audioBlob = Buffer.from(data.result.base64, "base64");
-    const audioUrl = URL.createObjectURL(
-      new Blob([audioBlob], { type: "audio/webm" }),
-    );
-    const audio = new Audio(audioUrl);
-    void audio.play();
-  };
-
-  const onPlayAudioClicked = () => {
-    const lastMessage =
-      chatHistory.messages[chatHistory.messages.length - 1]?.text;
-
-    if (!lastMessage || lastMessage == "") return;
-
-    void playTextToSpeech(lastMessage);
-  };
-
   return (
     <>
       <div
@@ -130,7 +111,7 @@ const ChatHistory = ({
         } chathistory-scrollbar dark:chathistory-scrollbarDark overflow-y-scroll pr-4 transition-[height] duration-500`}
       >
         {chatHistory.messages.map((message, index) => (
-          <React.Fragment key={message.id || index}> {/* Corrected React.Fragment placement */}
+          <React.Fragment key={message.id || index}>
             <div className="my-4">
               {!message.fromSelf && (
                 <div className="flex">
@@ -143,19 +124,18 @@ const ChatHistory = ({
                       </ReactMarkdown>
                     </span>
                   </div>
-                  {chatHistory.messages.indexOf(message) ===
-                    chatHistory.messages.length - 1 && (
+                  {index === chatHistory.messages.length - 1 && (
                     <>
                       <AudioIcon
                         className="ms-4 w-8 hover:text-blue-800 dark:hover:text-gray-400"
                         onClick={onPlayAudioClicked}
                       />
-                      {processingTextToSpeech && <LoadingSpinner className="" />}
+                      {processingTextToSpeech && <LoadingSpinner />}
                     </>
                   )}
                 </div>
               )}
-  
+
               {message.fromSelf && (
                 <div className="flex flex-col items-end">
                   <div className="inline-block max-w-[70%] rounded-xl border border-slate-700 bg-slate-600 p-2">
@@ -182,7 +162,8 @@ const ChatHistory = ({
       </div>
     </>
   );
-  
+};
+
 
 const BetterAlexaInterface = () => {
   const [isRecording, setRecording] = useState(false);
