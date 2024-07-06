@@ -24,8 +24,11 @@ async def root():
 async def t2c(user_data: UserInput):
     text = user_data.user_input
     output = "Did you just ask " + text + "? You dumbass!" # llamaModel.process_input(user_input)
-    qdrant = post("http://108.181.203.191:8047/vidindex/", json={"user_input": text})
-    return {"message": output, "qdrant": qdrant.json()["message"]}
+    try:
+        qdrant = post("http://108.181.203.191:8047/vidindex", json={"user_input": text})
+        return {"message": output, "qdrant": qdrant.json()["message"]}
+    except Exception as e:
+        return {"message": output, "qdrant": "{}".format(e)}
 
 if __name__ == "__main__":
     import uvicorn
