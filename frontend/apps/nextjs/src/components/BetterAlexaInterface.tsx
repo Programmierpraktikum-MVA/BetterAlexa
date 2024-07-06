@@ -130,11 +130,11 @@ const ChatHistory = ({
         } chathistory-scrollbar dark:chathistory-scrollbarDark overflow-y-scroll pr-4 transition-[height] duration-500`}
       >
         {chatHistory.messages.map((message, index) => (
-           <React.Fragment key={message.id || index}>
-            <div className="my-4" key={index}>
+          <React.Fragment key={message.id || index}> {/* Corrected React.Fragment placement */}
+            <div className="my-4">
               {!message.fromSelf && (
                 <div className="flex">
-                  <div className="inline-block  max-w-[70%] rounded-xl border border-slate-800 bg-slate-700 p-2">
+                  <div className="inline-block max-w-[70%] rounded-xl border border-slate-800 bg-slate-700 p-2">
                     <span className="break-words text-white">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm, remarkMath, rehypeKatex]}
@@ -150,15 +150,12 @@ const ChatHistory = ({
                         className="ms-4 w-8 hover:text-blue-800 dark:hover:text-gray-400"
                         onClick={onPlayAudioClicked}
                       />
-
-                      {processingTextToSpeech && (
-                        <LoadingSpinner className="" />
-                      )}
+                      {processingTextToSpeech && <LoadingSpinner className="" />}
                     </>
                   )}
                 </div>
               )}
-
+  
               {message.fromSelf && (
                 <div className="flex flex-col items-end">
                   <div className="inline-block max-w-[70%] rounded-xl border border-slate-700 bg-slate-600 p-2">
@@ -171,10 +168,9 @@ const ChatHistory = ({
                     </span>
                   </div>
                 </div>
-                </React.Fragment>
               )}
             </div>
-          </>
+          </React.Fragment>
         ))}
         {processingAction && (
           <div className="my-1">
@@ -186,7 +182,7 @@ const ChatHistory = ({
       </div>
     </>
   );
-};
+  
 
 const BetterAlexaInterface = () => {
   const [isRecording, setRecording] = useState(false);
