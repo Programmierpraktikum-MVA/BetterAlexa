@@ -3,6 +3,8 @@ import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import React, { useEffect, useRef } from 'react';
+
 
 import { api } from "~/utils/api";
 import { blobToBase64 } from "~/utils/blobToBase64";
