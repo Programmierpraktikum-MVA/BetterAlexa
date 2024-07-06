@@ -115,9 +115,12 @@ def queryCollection(query,collection):
         '37656': 'Verteilte Systeme SoSe24',
         '37800': 'Algorithmentheorie SoSe24',
         '38479': 'Algorithmen und Datenstrukturen SoSe24'
-    } 
-    lang = langdetect.detect(query)
-    print(f"Detected language: {lang}")
+    }
+    try:
+        lang = langdetect.detect(query)
+        print(f"Detected language: {lang}")
+    except Exception as e:
+        lang = 'en'
     if lang != 'en':
         query = GoogleTranslator(source=lang, target='en').translate(query)
     start = time.time()

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "globalDependencies": ["**/.env"],
+  "pipeline": {
+    "db:generate": {
+      "inputs": ["prisma/schema.prisma"],
+      "cache": false
+    },
+    "db:push": {
+      "inputs": ["prisma/schema.prisma"],
+      "cache": false
+    },
+    "start": {
+      "persistent": true,
+      "cache": false
+    },
+    "dev": {
+      "persistent": true,
+      "cache": false
+    },
+    "build": {
+      "dependsOn": ["^build", "^db:generate"],
+      "outputs": [".next/**", ".expo/**"]
+    },
+    "lint": {},
+    "lint:fix": {},
+    "clean": {
+      "cache": false
+    },
+    "//#clean": {
+      "cache": false
+    },
+    "type-check": {
+      "dependsOn": ["^db:generate"],
+      "cache": false
+    }
+  },
+  "globalEnv": [
+    "CI",
+    "DATABASE_URL",
+    "NODE_ENV",
+    "NEXT_PUBLIC_IS_EXTENSION",
+    "FIREBASE_PROJECT_ID",
+    "FIREBASE_CLIENT_EMAIL",
+    "FIREBASE_PRIVATE_KEY",
+    "SPEECH_TO_TEXT_URL",
+    "COMMAND_TO_ACTION_URL",
+    "TEXT_TO_SPEECH_URL",
+    "NEXT_PUBLIC_API_KEY",
+    "NEXT_PUBLIC_AUTH_DOMAIN",
+    "NEXT_PUBLIC_PROJECT_ID",
+    "NEXT_PUBLIC_STORAGE_BUCKET",
+    "NEXT_PUBLIC_MESSAGING_SENDER_ID",
+    "NEXT_PUBLIC_APP_ID",
+    "NEXT_PUBLIC_BASE_URL",
+    "EXPO_ROUTER_APP_ROOT",
+    "ANDROID_GOOGLE_CLIENT_ID",
+    "IOS_GOOGLE_CLIENT_ID",
+    "EXPO_GOOGLE_CLIENT_ID",
+    "OPENAI_API_KEY",
+    "SKIP_ENV_VALIDATION",
+    "VERCEL",
+    "VERCEL_URL",
+    "SPOTIFY_CLIENT_ID",
+    "SPOTIFY_CLIENT_SECRET"
+  ]
+}

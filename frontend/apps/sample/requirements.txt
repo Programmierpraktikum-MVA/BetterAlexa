@@ -1,0 +1,5 @@
+Flask
+openai
+gTTS
+waitress
+openai-whisper
