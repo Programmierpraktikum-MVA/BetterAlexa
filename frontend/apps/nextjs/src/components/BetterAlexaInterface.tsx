@@ -182,24 +182,29 @@ const BetterAlexaInterface = () => {
     }));
   };
 
-  const sendCommand = () => {
+  const sendCommand = async () => {
     if (text === "" || processingAction) return;
     pushMessage({
       text: text,
       fromSelf: true,
     });
     setText("");
-    void commandToAction(text).then((data) => {
-      // if (data.result.qdrant === "") return;
-      pushMessage({
-        text: data.result.qdrant,
-        fromSelf: false,
-      });
+    try {
+      const data = await commandToAction(text);
+      if (data.result.qdrant !== "") {
+        pushMessage({
+          text: data.result.qdrant,
+          fromSelf: false,
+        });
+      }
       pushMessage({
         text: data.result.text,
         fromSelf: false,
       });
-    });
+    } catch (error) {
+      console.error("Failed to send command:", error);
+      // Handle the error, e.g., show a user-friendly message
+    }
   };
   const handleKeyPress = (event: KeyboardEvent) => {
     if (event.key === "Enter" && text !== "" && event.shiftKey === false) {
