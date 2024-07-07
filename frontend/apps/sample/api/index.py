@@ -1,6 +1,7 @@
 from flask import Flask, request
 from gtts import gTTS
 from waitress import serve
+from langdetect import detect
 
 import os
 # import openai
@@ -68,11 +69,12 @@ def generate_cta():
 
         # Parse incoming data as binary
         data = request.get_data()
+        spotify_token = request.headers.get("x-spotify-access-token", "undefined")
         text = data.decode("utf-8")
 
         # response = post("http://108.181.203.191:8047/t2c/{}".format(urllib.parse.quote(text, safe="/")))
         # response = post("http://108.181.203.191:8047/t2c/", json={"user_input": text})
-        response = post("http://108.181.203.191:8007/t2c/", json={"user_input": text})
+        response = post("http://108.181.203.191:8007/t2c", json={"user_input": text}, headers={"x-spotify-access-token": spotify_token})
 
         json = response.json()
 
@@ -107,7 +109,7 @@ def process_text():
         # Parse incoming data as binary
         data = request.get_data()
         text = data.decode("utf-8")
-        tts = gTTS(text=text, lang="en")
+        tts = gTTS(text=text, lang=detect(text))
 
         # return tts audio stream
         return tts.stream()

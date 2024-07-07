@@ -139,7 +139,10 @@ def queryCollection(query,collection):
         if res.score>0.60 and res.payload['course'] not in visited:
             results.append(res)
             visited.append(res.payload['course'])
-            website = res.payload['lecture_link'] + '#@' + str(int(res.payload['start']))
+            start = res.payload['start']
+            if not start:
+                start = '0'
+            website = res.payload['lecture_link'] + '#@' + str(int(start))
             if first:
                 if lang != 'en':
                     outstring += f"Folgende relevante Videos wurden gefunden: \n"
