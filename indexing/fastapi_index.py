@@ -16,6 +16,7 @@ async def root():
 @app.post("/vidindex")
 async def vidindex(input_data: UserInput):
     output = loadqdrant.queryCollection(input_data.user_input, 'MVA')
+    print(f"Output of Qdrant: {output}")
     return {"message": output}
 
 if __name__ == "__main__":

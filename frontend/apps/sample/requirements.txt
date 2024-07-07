@@ -3,3 +3,4 @@ openai
 gTTS
 waitress
 openai-whisper
+langdetect

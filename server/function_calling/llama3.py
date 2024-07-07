@@ -109,7 +109,11 @@ class LLama3:
         return self.generate(result)
 
     def process_input(self, transcription: str):
-        lang = self.lang_detector.detect_language_of(transcription).iso_code_639_1.name
+        try:
+            lang = self.lang_detector.detect_language_of(transcription).iso_code_639_1.name
+        except Exception as e:
+            lang = "en"
+
         lang = lang.lower()
         if lang != 'en':
             transcription = GoogleTranslator("auto", "en").translate(transcription)
