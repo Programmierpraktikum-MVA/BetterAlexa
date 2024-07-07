@@ -34,7 +34,7 @@ async def t2c(request: Request, user_data: UserInput):
     print(token)
     conn = sqlite3.connect('key_value_store.db')
     c = conn.cursor()
-    actions.database_handling.write_to_store("AlexaUser", token, conn, c)
+    actions.database_handling.write_to_store("AlexaUser", json.dumps(token), conn, c)
     conn.close()
     output = llamaModel.process_input(text)
     conn = sqlite3.connect('key_value_store.db')
