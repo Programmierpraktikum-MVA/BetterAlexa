@@ -28,7 +28,9 @@ async def root():
 async def t2c(request: Request, user_data: UserInput):
     text = user_data.user_input
     start_time = time()
-    token =request.headers.get("x-spotify-access-token", "header not found")
+    token ={
+        "access_token":request.headers.get("x-spotify-access-token", "header not found")
+    }
     print(token)
     conn = sqlite3.connect('key_value_store.db')
     c = conn.cursor()
