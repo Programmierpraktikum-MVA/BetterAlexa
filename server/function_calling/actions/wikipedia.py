@@ -2,7 +2,7 @@
 import wikipediaapi 
 import re
 
-def getWikiPageInfo(title: str, language: str, number_of_sentences: int) -> str:
+def get_wiki_pageInfo(title: str, language: str, number_of_sentences: int) -> str:
     wiki_wiki = wikipediaapi.Wikipedia('MyProjectName (merlin@example.com)', 'en')
     if (language == "german"):
         wiki_wiki = wikipediaapi.Wikipedia('MyProjectName (merlin@example.com)', 'de')
