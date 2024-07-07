@@ -29,6 +29,7 @@ async def t2c(request: Request, user_data: UserInput):
     text = user_data.user_input
     start_time = time()
     token =request.headers.get("x-spotify-access-token", "header not found")
+    print(token)
     conn = sqlite3.connect('key_value_store.db')
     c = conn.cursor()
     actions.database_handling.write_to_store("AlexaUser", token, conn, c)
@@ -40,7 +41,7 @@ async def t2c(request: Request, user_data: UserInput):
     conn.close()
     
     print("llama time taken: {}".format(time() - start_time))
-    #print("x-spotify-token: {}".format(request.headers.get("x-spotify-access-token", "header not found")))
+    print("x-spotify-token: {}".format(request.headers.get("x-spotify-access-token", "header not found")))
     try:
         qdrant = post("http://108.181.203.191:8047/vidindex", json={"user_input": text})
         return {"message": output, "qdrant": qdrant.json()["message"]}
