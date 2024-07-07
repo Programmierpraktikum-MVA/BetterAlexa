@@ -27,7 +27,7 @@ async def t2c(request: Request, user_data: UserInput):
     start_time = time()
     output = llamaModel.process_input(text)
     print("llama time taken: {}".format(time() - start_time))
-    print("x-spotify-token: {}".format(request.headers.get("x-spotify-access-token", "header not found")))
+    #print("x-spotify-token: {}".format(request.headers.get("x-spotify-access-token", "header not found")))
     try:
         qdrant = post("http://108.181.203.191:8047/vidindex", json={"user_input": text})
         return {"message": output, "qdrant": qdrant.json()["message"]}
