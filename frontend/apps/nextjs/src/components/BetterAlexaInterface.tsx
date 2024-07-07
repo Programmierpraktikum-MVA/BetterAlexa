@@ -86,15 +86,28 @@ const Recorder = ({
 const ChatHistory = ({
   chatHistory,
   processingAction,
-  onPlayAudioClicked,  // Add this prop
 }: {
   chatHistory: ChatHistoryModel;
   processingAction: boolean;
-  onPlayAudioClicked: () => void;  // Define the type for the prop
 }) => {
   const { mutateAsync: textToSpeech, isLoading: processingTextToSpeech } =
     api.microservice.textToSpeech.useMutation();
-
+  const onPlayAudioClicked = (index: number) => {
+      const playedMessage = chatHistory.messages[index]?.text;
+  
+      if (!playedMessage || playedMessage == "") return;
+  
+      void playTextToSpeech(playedMessage);
+    };
+  const playTextToSpeech = async (text: string) => {
+      const data = await textToSpeech(text);
+      const audioBlob = Buffer.from(data.result.base64, "base64");
+      const audioUrl = URL.createObjectURL(
+        new Blob([audioBlob], { type: "audio/webm" }),
+      );
+      const audio = new Audio(audioUrl);
+      void audio.play();
+    };
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (scrollRef.current) {
@@ -126,15 +139,17 @@ const ChatHistory = ({
                       </ReactMarkdown>
                     </span>
                   </div>
-                  {index === chatHistory.messages.length - 1 && (
                     <>
                       <AudioIcon
                         className="ms-4 w-8 hover:text-blue-800 dark:hover:text-gray-400"
-                        onClick={onPlayAudioClicked}
+                        onClick={() =>
+                          onPlayAudioClicked(
+                            chatHistory.messages.indexOf(message),
+                          )
+                        }
                       />
                       {processingTextToSpeech && <LoadingSpinner />}
                     </>
-                  )}
                 </div>
               )}
 
@@ -218,23 +233,6 @@ const BetterAlexaInterface = () => {
     }
   };
 
-  const onPlayAudioClicked = () => {
-    const lastMessage = chatHistory.messages[chatHistory.messages.length - 1]?.text;
-
-    if (!lastMessage || lastMessage === "") return;
-
-    void playTextToSpeech(lastMessage);
-  };
-
-  const playTextToSpeech = async (text: string) => {
-    const data = await textToSpeech(text);
-    const audioBlob = Buffer.from(data.result.base64, "base64");
-    const audioUrl = URL.createObjectURL(
-      new Blob([audioBlob], { type: "audio/webm" }),
-    );
-    const audio = new Audio(audioUrl);
-    void audio.play();
-  };
 
   return (
     <div className="flex flex-col px-4 pt-8 max-md:w-full md:w-3/4 lg:max-w-3xl">
@@ -242,7 +240,6 @@ const BetterAlexaInterface = () => {
         <ChatHistory
           chatHistory={chatHistory}
           processingAction={processingAction}
-          onPlayAudioClicked={onPlayAudioClicked} // Pass the function as a prop
         />
 
         <div className="mt-8 flex w-full items-center justify-center gap-1">
