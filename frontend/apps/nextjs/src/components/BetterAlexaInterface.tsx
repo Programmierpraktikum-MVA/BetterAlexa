@@ -225,6 +225,8 @@ const BetterAlexaInterface = () => {
   };
 
   const playTextToSpeech = async (text: string) => {
+    const { mutateAsync: textToSpeech, isLoading: processingTextToSpeech } =
+    api.microservice.textToSpeech.useMutation();
     const data = await textToSpeech(text);
     const audioBlob = Buffer.from(data.result.base64, "base64");
     const audioUrl = URL.createObjectURL(
