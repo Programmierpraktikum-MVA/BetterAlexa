@@ -25,6 +25,9 @@ current_session = {
 # hardcode username to simplify things
 user = "AlexaUser"
 
+conn = sqlite3.connect('key_value_store.db')
+c = conn.cursor()
+
 def get_token():
     auth_string = client_id + ":" + client_secret
     auth_bytes = auth_string.encode("utf-8")
