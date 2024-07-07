@@ -11,8 +11,10 @@ import webbrowser
 from threading import Timer, Event
 from actions.database_handling import write_to_store, read_from_store, delete_from_store
 
-client_id = "0fa32183ad404b22bf2587006b50421f"
-client_secret = "53520c39acb44b16962a58df6bd94e8e"
+#client_id = "0fa32183ad404b22bf2587006b50421f"
+client_id = "642551fcd12a4d17898ce7f8310fcaa2"
+#client_secret = "53520c39acb44b16962a58df6bd94e8e"
+client_secret = "d93f08d1b5f944deacac371acff85ee0"
 redirect_uri = "http://127.0.0.1:5000/callback"
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 API_BASE_URL = 'https://api.spotify.com/v1/'
