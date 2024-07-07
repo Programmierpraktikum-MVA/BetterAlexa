@@ -86,9 +86,11 @@ const Recorder = ({
 const ChatHistory = ({
   chatHistory,
   processingAction,
+  onPlayAudioClicked,  // Add this prop
 }: {
   chatHistory: ChatHistoryModel;
   processingAction: boolean;
+  onPlayAudioClicked: () => void;  // Define the type for the prop
 }) => {
   const { mutateAsync: textToSpeech, isLoading: processingTextToSpeech } =
     api.microservice.textToSpeech.useMutation();
@@ -182,35 +184,44 @@ const BetterAlexaInterface = () => {
     }));
   };
 
-  const sendCommand = async () => {
+  const sendCommand = () => {
     if (text === "" || processingAction) return;
     pushMessage({
       text: text,
       fromSelf: true,
     });
     setText("");
-    try {
-      const data = await commandToAction(text);
-      if (data.result.qdrant !== "") {
-        pushMessage({
-          text: data.result.qdrant,
-          fromSelf: false,
-        });
-      }
+    void commandToAction(text).then((data) => {
       pushMessage({
         text: data.result.text,
         fromSelf: false,
       });
-    } catch (error) {
-      console.error("Failed to send command:", error);
-      // Handle the error, e.g., show a user-friendly message
-    }
+    });
   };
+
   const handleKeyPress = (event: KeyboardEvent) => {
     if (event.key === "Enter" && text !== "" && event.shiftKey === false) {
       event.preventDefault();
       sendCommand();
     }
+  };
+
+  const onPlayAudioClicked = () => {
+    const lastMessage = chatHistory.messages[chatHistory.messages.length - 1]?.text;
+
+    if (!lastMessage || lastMessage === "") return;
+
+    void playTextToSpeech(lastMessage);
+  };
+
+  const playTextToSpeech = async (text: string) => {
+    const data = await textToSpeech(text);
+    const audioBlob = Buffer.from(data.result.base64, "base64");
+    const audioUrl = URL.createObjectURL(
+      new Blob([audioBlob], { type: "audio/webm" }),
+    );
+    const audio = new Audio(audioUrl);
+    void audio.play();
   };
 
   return (
@@ -219,6 +230,7 @@ const BetterAlexaInterface = () => {
         <ChatHistory
           chatHistory={chatHistory}
           processingAction={processingAction}
+          onPlayAudioClicked={onPlayAudioClicked} // Pass the function as a prop
         />
 
         <div className="mt-8 flex w-full items-center justify-center gap-1">
