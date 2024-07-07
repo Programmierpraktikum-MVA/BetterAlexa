@@ -7,11 +7,14 @@ from starlette.responses import RedirectResponse
 from pydantic import BaseModel
 from requests import post
 from time import time
+import actions.database_handling
+import sqlite3
 
 class UserInput(BaseModel):
     user_input: str
 
 app = FastAPI()
+
 
 llamaModel = LLama3("Llama-3-8B-function-calling", "https://drive.google.com/drive/folders/1CJtn-3nCfQT3FU3pOgA3zTIdPLQ9n3x6?usp=sharing", "https://drive.google.com/drive/folders/1RmhIu2FXqwu4TxIQ9GpDtYb_IXWoVd7z?usp=sharing")
 
@@ -25,7 +28,17 @@ async def root():
 async def t2c(request: Request, user_data: UserInput):
     text = user_data.user_input
     start_time = time()
+    token =request.headers.get("x-spotify-access-token", "header not found")
+    conn = sqlite3.connect('key_value_store.db')
+    c = conn.cursor()
+    actions.database_handling.write_to_store("AlexaUser", token, conn, c)
+    conn.close()
     output = llamaModel.process_input(text)
+    conn = sqlite3.connect('key_value_store.db')
+    c = conn.cursor()
+    actions.database_handling.delete_from_store("AlexaUser", conn, c)
+    conn.close()
+    
     print("llama time taken: {}".format(time() - start_time))
     print("x-spotify-token: {}".format(request.headers.get("x-spotify-access-token", "header not found")))
     try:
