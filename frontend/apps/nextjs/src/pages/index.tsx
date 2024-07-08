@@ -7,7 +7,7 @@ import BetterAlexaInterface from "~/components/BetterAlexaInterface";
 import RouteGuard from "~/components/RouteGuard";
 import BetterAlexaBackground from "~/components/ui/BetterAlexaBackground";
 import BetterAlexaLogo from "~/components/ui/BetterAlexaLogo";
-
+import SpotifyConnect from "./spotify";
 
 const Home: NextPage = () => {
   const session = useSession();
@@ -21,9 +21,8 @@ const Home: NextPage = () => {
       <BetterAlexaHead />
 
       <RouteGuard />
-      
+
       <BetterAlexaBackground>
-        
         <BetterAlexaLogo />
 
         {session.loading && <div>Loading...</div>}
@@ -34,11 +33,12 @@ const Home: NextPage = () => {
                 {session.user && <span>{session.user.email}</span>}
 
                 <button
-                  className="mx-5 rounded-3xl bg-black/30 dark:bg-white/20  hover:bg-black/40 dark:hover:bg-white/40 px-4 py-2 backdrop-blur-xl"
+                  className="mx-5 rounded-3xl bg-black/30 px-4  py-2 backdrop-blur-xl hover:bg-black/40 dark:bg-white/20 dark:hover:bg-white/40"
                   onClick={logOut}
                 >
                   <p>Sign out</p>
                 </button>
+                <SpotifyConnect />
               </div>
             </div>
             {session.user && <BetterAlexaInterface />}
