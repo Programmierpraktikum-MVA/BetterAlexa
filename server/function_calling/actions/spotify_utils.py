@@ -87,7 +87,10 @@ def play_artist(artist: str):
         'context_uri': context_uri
     }
     response = requests.put(API_BASE_URL + 'me/player/play', headers=headers, json=req_body)
-    return response.text
+    if response.status_code == 204:
+        return "the artist is successfully being played"
+    else:
+        return "the artist was not played successfully"
 
 def play_album(album: str):
     token_inf = get_token_inf(user)
@@ -107,7 +110,10 @@ def play_album(album: str):
         'context_uri': context_uri
     }
     response = requests.put(API_BASE_URL + 'me/player/play', headers=headers, json=req_body)
-    return response.text
+    if response.status_code == 204:
+        return "the album was played successfully"
+    else:
+        return "the album was not played successfully"
 
 def play_song(song: str):
     token_inf = get_token_inf(user)
@@ -128,7 +134,10 @@ def play_song(song: str):
         'uris': [context_uri]
     }
     response = requests.put(API_BASE_URL + 'me/player/play', headers=headers, json=req_body)
-    return response.text
+    if response.status_code == 204:
+        return "song was played successfully"
+    else:
+        return "song was not played successfully"
 
 def next():
     token_inf = get_token_inf(user)
@@ -140,7 +149,10 @@ def next():
         'Authorization': f"Bearer {access_token}"
     }
     response = requests.post(API_BASE_URL + 'me/player/next', headers=headers)
-    return response.text
+    if response.status_code == 204:
+        return "the next song was played successfully"
+    else:
+        return "the next song was not played successfully"
 
 def prev():
     token_inf = get_token_inf(user)
@@ -152,7 +164,10 @@ def prev():
         'Authorization': f"Bearer {access_token}"
     }
     response = requests.post(API_BASE_URL + 'me/player/previous', headers=headers)
-    return response.text
+    if response.status_code == 204:
+        return "the previous song was played successfully"
+    else:
+        return "the previous song was played successfully"
 
 def play():
     token_inf = get_token_inf(user)
@@ -164,8 +179,11 @@ def play():
         'Authorization': f"Bearer {access_token}"
     }
     response = requests.put(API_BASE_URL + 'me/player/play', headers=headers)
-    return response.text
-
+    if response.status_code == 204:
+        return "it was played successfully"
+    else:
+        return "it was not played successfully"
+    
 def pause():
     token_inf = get_token_inf(user)
     if is_token_expired(token_inf):
@@ -176,7 +194,10 @@ def pause():
         'Authorization': f"Bearer {access_token}"
     }
     response = requests.put(API_BASE_URL + 'me/player/pause', headers=headers)
-    return response.text
+    if response.status_code == 204:
+        return "it was paused successfully"
+    else:
+        return "it was not paused successfully"
 
 def increase_volume(amount: int):
     token_inf = get_token_inf(user)
@@ -190,7 +211,10 @@ def increase_volume(amount: int):
     headers = {'Authorization': f"Bearer {access_token}"}
     url = API_BASE_URL + f"me/player/volume?volume_percent={vol}"
     response = requests.put(url, headers=headers)
-    return response.text
+    if response.status_code == 204:
+        return "the volume was increased successfully"
+    else:
+        return "the volume was not increased successfully"
 
 def decrease_volume(amount: int):
     token_inf = get_token_inf(user)
@@ -204,7 +228,10 @@ def decrease_volume(amount: int):
     headers = {'Authorization': f"Bearer {access_token}"}
     url = API_BASE_URL + f"me/player/volume?volume_percent={vol}"
     response = requests.put(url, headers=headers)
-    return response.text
+    if response.status_code == 204:
+        return "the volume was decreased successfully"
+    else:
+        return "the volume was not decreased successfully"
 
 def add_to_queue(song: str):
     token_inf = get_token_inf(user)
@@ -221,7 +248,10 @@ def add_to_queue(song: str):
     }
     url = API_BASE_URL + f'me/player/queue?uri={context_uri}'
     response = requests.post(url, headers=headers)
-    return response.text
+    if response.status_code == 204:
+        return "the song was successfully added to the queue"
+    else:
+        return "the song was not added to the queue successfully"
 
 ### HELPER FUNCTIONS
 

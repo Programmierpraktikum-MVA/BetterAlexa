@@ -120,7 +120,7 @@ def process_text():
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "dev":
-        app.run(host="::", port=3001, debug=True)
+        app.run(host="::", port=3047, debug=True)
     else:
-        app.logger.info(" * Running production server on port 3001")
-        serve(app, host="0.0.0.0", port=3001)
+        app.logger.info(" * Running production server on port 3047")
+        serve(app, host="0.0.0.0", port=3047)

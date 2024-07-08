@@ -55,3 +55,7 @@ service_account.json
 
 # python
 __pycache__
+
+#venv and dump
+venv/
+dump.rdb
