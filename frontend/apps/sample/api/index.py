@@ -70,11 +70,12 @@ def generate_cta():
         # Parse incoming data as binary
         data = request.get_data()
         spotify_token = request.headers.get("x-spotify-access-token", "undefined")
+        spotify_refresh_token = request.headers.get("x-spotify-refresh-token", "undefined")
         text = data.decode("utf-8")
 
         # response = post("http://108.181.203.191:8047/t2c/{}".format(urllib.parse.quote(text, safe="/")))
         # response = post("http://108.181.203.191:8047/t2c/", json={"user_input": text})
-        response = post("http://108.181.203.191:8007/t2c", json={"user_input": text}, headers={"x-spotify-access-token": spotify_token})
+        response = post("http://108.181.203.191:8007/t2c", json={"user_input": text}, headers={"x-spotify-access-token": spotify_token, "x-spotify-refresh-token": spotify_refresh_token})
 
         json = response.json()
 

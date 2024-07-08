@@ -15,7 +15,7 @@ from actions.database_handling import write_to_store, read_from_store, delete_fr
 client_id = "642551fcd12a4d17898ce7f8310fcaa2"
 #client_secret = "53520c39acb44b16962a58df6bd94e8e"
 client_secret = "d93f08d1b5f944deacac371acff85ee0"
-redirect_uri = "http://127.0.0.1:5000/callback"
+redirect_uri = "http://108.181.203.191:3001/callback"
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 API_BASE_URL = 'https://api.spotify.com/v1/'
 current_session = {
@@ -298,7 +298,10 @@ def get_available_devices(access_token):
         'Authorization': f"Bearer {access_token}"
     }
     response = requests.get(API_BASE_URL + 'me/player/devices', headers=headers)
-    return response.json()
+    try:
+        return response.json()
+    except Exception as e:
+        return {}
 
 def search_for_song(token, song_name):
     url = "https://api.spotify.com/v1/search"

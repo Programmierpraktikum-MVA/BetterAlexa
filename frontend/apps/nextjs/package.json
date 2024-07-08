@@ -6,7 +6,7 @@
     "build": "pnpm with-env next build",
     "build:ext": "pnpm with-env bash build-ext.sh",
     "clean": "git clean -xdf .next .turbo node_modules",
-    "dev": "pnpm with-env next dev",
+    "dev": "PORT=3001 pnpm with-env next dev",
     "lint": "dotenv -v SKIP_ENV_VALIDATION=1 next lint",
     "lint:fix": "pnpm lint --fix",
     "start": "pnpm with-env next start",
