@@ -29,21 +29,28 @@ async def t2c(request: Request, user_data: UserInput):
     text = user_data.user_input
     start_time = time()
     token ={
-        "access_token":request.headers.get("x-spotify-access-token", "header not found")
+        "access_token":request.headers.get("x-spotify-access-token", "header not found"),
+        "refresh_token": request.headers.get("x-spotify-refresh-token", "header not found")
     }
-    print(token)
+    # print(token)
+
     conn = sqlite3.connect('key_value_store.db')
     c = conn.cursor()
+
     actions.database_handling.write_to_store("AlexaUser", json.dumps(token), conn, c)
+
     conn.close()
+
     output = llamaModel.process_input(text)
+
     conn = sqlite3.connect('key_value_store.db')
     c = conn.cursor()
     actions.database_handling.delete_from_store("AlexaUser", conn, c)
     conn.close()
     
-    print("llama time taken: {}".format(time() - start_time))
-    print("x-spotify-token: {}".format(request.headers.get("x-spotify-access-token", "header not found")))
+    # print("llama time taken: {}".format(time() - start_time))
+    # print("x-spotify-access-token: {}".format(request.headers.get("x-spotify-access-token", "header not found")))
+    print("x-spotify-refresh-token: {}".format(request.headers.get("x-spotify-refresh-token", "header not found")))
     try:
         qdrant = post("http://108.181.203.191:8047/vidindex", json={"user_input": text})
         return {"message": output, "qdrant": qdrant.json()["message"]}
