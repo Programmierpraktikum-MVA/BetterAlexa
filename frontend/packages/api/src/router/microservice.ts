@@ -28,11 +28,19 @@ export const microserviceRouter = createTRPCRouter({
       const spotifyAccessToken = await redis.get(
         `${session.email}:spotify:access_token`,
       );
+      const spotifyRefreshToken = await redis.get(
+        `${session.email}:spotify:refresh_token`,
+      );
+      /* const spotifyExpires = await redis.get(
+        `${session.email}:spotify:expires_in`,
+      ); */
       const result = await fetch(process.env.COMMAND_TO_ACTION_URL as string, {
         method: "POST",
         headers: {
           "x-spotify-access-token":
             spotifyAccessToken ?? (cookies?.["spotify-access-token"] as string),
+          "x-spotify-refresh-token":
+            spotifyRefreshToken ?? (cookies?.["spotify-refresh-token"] as string),
         },
         body: input,
       });
