@@ -34,6 +34,8 @@ export default async function handler(
   };
 
   await redis.set(`${state}:spotify:access_token`, response.access_token);
+  await redis.set(`${state}:spotify:refresh_token`, response.refresh_token);
+  await redis.set(`${state}:spotify:expires_in`, response.expires_in);
 
   res.setHeader("Set-Cookie", [
     `spotify-access-token=${response.access_token}; Path=/; HttpOnly`,
