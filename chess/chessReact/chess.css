@@ -1,0 +1,27 @@
+.chessBoard{
+    display:flex;
+    flex-wrap: wrap;
+    background-color: rgb(7, 7, 228);
+    width: 512px;
+    height: 512px;
+    margin:0%;
+
+}
+.white-block {
+    display:grid;
+    place-content: center;
+    width: 64px;
+    height: 64px;
+    background-color: rgb(58, 43, 43);
+}
+.black-block {
+    display:grid;
+    place-content: center;
+    width: 64px;
+    height: 64px;
+    background-color: rgb(141, 0, 0);
+}
+.piece{
+    width: 50px;
+    height: 50px;
+}
