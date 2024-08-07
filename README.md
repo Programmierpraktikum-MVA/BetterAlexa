@@ -1,49 +1,81 @@
-# server.py
+# Better Alexa Project
 
-This script is used for the server side of the application. It uses a whisper and llama3 model to transcribe incoming audio from the client and generates an answer using predefined functions in `functions.json`, which will be sent back to the client in text form.
+Welcome to the Better Alexa Project! This repository contains various components and microservices designed to work together to create an enhanced voice assistant experience. This document will guide you through setting up and understanding the different parts of this project.
 
-## Setup
+## Table of Contents
+1. Project Structure
+2. Getting Started
+3. Directory Overview
+4. Contributing
+5. License
 
-1. **Python Version**: We tested it with 3.10 but similar versions will probably work as well. You can check your Python version by running `python --version` in your terminal.
+## Project Structure
 
-2. **Virtual Environment**: It is recommended to create a virtual environment for running this script. You can do this by running the following commands in your terminal:
+```sh
+.
+├── backend
+│   ├── audio_stream_client
+│   ├── client
+│   ├── indexing
+│   └── server
+├── chess
+├── frontend
+└── file_structure.txt
+```
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    ```
+## Getting Started
 
-    This creates a new virtual environment in a directory named `.venv` and activates it. Preferably do this in the main directory.
+### Prerequisites
 
-3. **Install Requirements**: Install the required Python packages. You can do this by running `pip install -r requirementsServer.txt` in the main directory.
+- Python 3.8+
+- Node.js 14+
+- Docker
 
-4. **Run the Script**: Just run `python server.py` in the terminal.
+## Directory Overview
 
-## Usage
+### backend
+Contains the main implementation for the project from 2024.
 
-Now you can use the client to use the service provided by the server. Sometimes you will see some activity like the search for wikipedia pages. 
+#### audio_stream_client
+Contains the client-side code for streaming audio to the server.
 
-# client/client.py
+- `main.py`, `vad.py`, `remote_whisper.py`: Main scripts for audio processing.
+- `requirements.txt`, `setup.md`: Dependencies and setup instructions.
 
-This script is used for the client side of the application. It's recording audio and sending it to the server which responds with a text. We then use google text2speech to translate it back to sound.
+#### client
+Client-side scripts for testing the backend, allowing access to the application through other means than a website.
 
-## Setup
+- `audio_recorder.py`, `client.py`, `textToSpeechToFile.py`: Main client scripts.
+- `requirementsClient.txt`, `docu.md`: Dependencies and documentation.
 
-1. **Python Version**: We tested it with 3.10 but similar versions will probably work as well. You can check your Python version by running `python --version` in your terminal.
+#### server
+Backend server code and microservices.
 
-2. **Virtual Environment**: It is recommended to create a virtual environment for running this script. You can do this by running the following commands in your terminal:
+- **function_calling**: Includes the LLM (Llama) and the actions it can perform.
+- **tutor_ai**: Tools related to Tutor AI / BetterAlexa interface.
+- `microservices.py`, `server.py`, `service.py`: Main server scripts.
+- `requirementsServer.txt`: Server dependencies.
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    ```
+### chess
+Chess game implementation with a backend (Flask) and frontend (React).
 
-    This creates a new virtual environment in a directory named `.venv` and activates it. Preferably do this in the client directory.
+- **chessFlask**: Backend logic for the chess game.
+- **chessReact**: Frontend components for the chess game.
 
-3. **Install Requirements**: Install the required Python packages. You can do this by running `pip install -r requirementsClient.txt` in the client directory.
+### frontend
+Contains the implementation from 2023, including the entire frontend of the application as well as parts of the backend that have been adjusted.
 
-4. **Run the Script**: Ensure that the server is already running with `python server.py`. Then you should be able to run `python client.py` in the terminal in the client directory.
+- **apps**: Contains multiple frontend applications `exp0` and `nextjs`. Also contains backend-related applications `sample` and `command-to-action`.
+- `docker-compose.yml`, `docs`: Docker configuration and documentation.
 
-## Usage
+### indexing
+Scripts and tools for indexing data, primarily focused on video indexing.
 
-First select your desired audio device. After that type 'y' if you are ready to record some audio. Press str + C if you are done with recording.
+- **DataSetup**: Scripts for setting up data.
+- `fastapi_index.py`, `loadqdrant.py`: Indexing scripts.
+- `VideoIndexing.md`: Documentation for video indexing.
+
+### notebooks
+Jupyter notebooks for model fine-tuning.
+
+- `llama3-fine-tuning-fc.ipynb`: Notebook for fine-tuning Llama 3 model.
