@@ -1,0 +1,192 @@
+[
+    {
+        "name": "ask_wolfram_question",
+        "description": "Asks a question to Wolfram Alpha and gets the answer, returning the result",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "question": {
+                    "type": "string",
+                    "description": "The question to be asked to Wolfram Alpha"
+                }
+            },
+            "required": [
+                "question"
+            ]
+        }
+    },
+    {
+        "name": "ask_TutorAI_question",
+        "description": "Asks a question to TutorAI and gets the answer, returning specific Information regarding the computer science course at the Technical University of Berlin",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "question": {
+                    "type": "string",
+                    "description": "The question to be asked to TutorAI"
+                }
+            },
+            "required": [
+                "question"
+            ]
+        }
+    },
+    {
+        "name": "get_wiki_pageInfo",
+        "description": "Retrieves a specified number of sentences from the summary of a Wikipedia page in a given language",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "description": "The title of the Wikipedia page to retrieve"
+                },
+                "language": {
+                    "type": "string",
+                    "description": "The language version of Wikipedia to use ('english' or 'german')"
+                },
+                "number_of_sentences": {
+                    "type": "integer",
+                    "description": "The number of sentences to retrieve from the page summary"
+                }
+            },
+            "required": [
+                "title",
+                "language",
+                "number_of_sentences"
+            ]
+        }
+    },
+    {
+        "name": "play_artist",
+        "description": "Play an artist profile on Spotify.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "artist": {
+                    "type": "string",
+                    "description": "Name of the artist to be played"
+                }
+            },
+            "required": [
+                "artist"
+            ]
+        }
+    },
+    {
+        "name": "play_album",
+        "description": "Play an album on Spotify.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "album": {
+                    "type": "string",
+                    "description": "Name of the album to be played"
+                }
+            },
+            "required": [
+                "album"
+            ]
+        }
+    },
+    {
+        "name": "play_song",
+        "description": "Play a song on Spotify.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "song": {
+                    "type": "string",
+                    "description": "Name of the song to be played"
+                }
+            },
+            "required": [
+                "song"
+            ]
+        }
+    },
+    {
+        "name": "next",
+        "description": "Skip to the next Spotify song.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    },
+    {
+        "name": "prev",
+        "description": "Skip to the previous Spotify song.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    },
+    {
+        "name": "play",
+        "description": "Start or resume playback of a Spotify song.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    },
+    {
+        "name": "pause",
+        "description": "Pause playback of a Spotify song.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    },
+    {
+        "name": "increase_volume",
+        "description": "Increase the playback volume by a given amount",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "int",
+                    "description": "the amount of which the volume is increased"
+                }
+            },
+            "required": [
+                "amount"
+            ]
+        }
+    },
+    {
+        "name": "decrease_volume",
+        "description": "Decrease the playback volume by a given amount",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "int",
+                    "description": "the amount of which the volume is decreased"
+                }
+            },
+            "required": [
+                "amount"
+            ]
+        }
+    },
+    {
+        "name": "add_to_queue",
+        "description": "Add a song to the playback queue on Spotify.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "song": {
+                    "type": "string",
+                    "description": "Name of the song to be added to the queue"
+                }
+            },
+            "required": [
+                "song"
+            ]
+        }
+    }
+]
