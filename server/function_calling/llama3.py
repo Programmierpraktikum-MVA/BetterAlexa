@@ -71,9 +71,13 @@ class LLama3:
         )
         model = AutoModelForCausalLM.from_pretrained(
             self.path_to_model,
-            device_map='auto',
-            torch_dtype=torch.bfloat16,
-            quantization_config=bnb_config
+
+            # switched to cpu-friendly precision for now -- to be edited when deploying @Backend
+            # device_map='auto',          
+            # torch_dtype=torch.bfloat16,
+            device_map={"":'cpu'},
+            torch_dtype=torch.float32,
+            # quantization_config=bnb_config
         )      
         self.model, self.tokenizer = setup_chat_format(model, tokenizer)
         self.pipeline = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer)
