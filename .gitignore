@@ -29,5 +29,5 @@ Llama-3-8B-function-calling*
 /tutor_ai/transcribe/audio_files
 /tutor_ai/transcribe/__pycache__
 /tutor_ai/transcribe/transformation_log.json
-
+*/.venv/*
 #/frontend/

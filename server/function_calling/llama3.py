@@ -76,7 +76,7 @@ class LLama3:
             # device_map='auto',          
             # torch_dtype=torch.bfloat16,
             device_map={"":'cpu'},
-            torch_dtype=torch.float32,
+            torch_dtype=torch.float16,
             # quantization_config=bnb_config
         )      
         self.model, self.tokenizer = setup_chat_format(model, tokenizer)
