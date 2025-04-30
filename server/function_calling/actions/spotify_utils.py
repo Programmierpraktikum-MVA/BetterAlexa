@@ -9,7 +9,7 @@ from requests import post, get
 # from flask import Flask, redirect, request, session, jsonify
 import webbrowser
 from threading import Timer, Event
-from actions.database_handling import write_to_store, read_from_store, delete_from_store
+from .actions.database_handling import write_to_store, read_from_store, delete_from_store
 
 #client_id = "0fa32183ad404b22bf2587006b50421f"
 client_id = "642551fcd12a4d17898ce7f8310fcaa2"
