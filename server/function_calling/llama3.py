@@ -3,15 +3,18 @@ import os
 import json
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Pipeline
 from transformers import pipeline
-from download_drive import download_google_drive_folder
+from .download_drive import download_google_drive_folder
 from trl import setup_chat_format
 from deep_translator import GoogleTranslator
 from lingua import Language, LanguageDetectorBuilder
 
-from actions.wolfram import ask_wolfram_question
-from actions.wikipedia import get_wiki_pageInfo
-from actions.spotify_utils import play_artist, play_album, play_song, next, prev, pause, play, increase_volume, decrease_volume, add_to_queue
-from tutor_ai.backend.ChatEngine import ask_TutorAI_question
+from .actions.wolfram import ask_wolfram_question
+from .actions.wikipedia import get_wiki_pageInfo
+
+# That should be looked at by @Integrations
+
+# from .actions.spotify_utils import play_artist, play_album, play_song, next, prev, pause, play, increase_volume, decrease_volume, add_to_queue
+from .tutor_ai.backend.ChatEngine import ask_TutorAI_question
 
 DEBUG_MODE = 1
 
