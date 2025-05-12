@@ -79,14 +79,19 @@ class LLama3:
         tokenizer = AutoTokenizer.from_pretrained(self.path_to_tokenizer)
         tokenizer.padding_side = "right"
 
-        # Checks if there is still enough VRAM; if not, falls back on CPU 
-        enough_vram_bnb = gpu_utils.gpu_free_gb() >gpu_utils.LLAMA3_8B_4BIT_GB + gpu_utils.SAFETY_MARGIN_GB
-        enough_vram_no_bnb = gpu_utils.gpu_free_gb() > gpu_utils.LLAMA3_8B_16FP_GB + gpu_utils.SAFETY_MARGIN_GB
-        use_bnb = self._gpu_supports_bnb() # this checks for compatibility of GPU with bnb
-        if use_bnb and enough_vram_bnb:
-            try:
+        free_gb          = gpu_utils.gpu_free_gb()
+        need_4bit_gb     = gpu_utils.LLAMA3_8B_4BIT_GB  + gpu_utils.SAFETY_MARGIN_GB
+        need_fp16_gb     = gpu_utils.LLAMA3_8B_16FP_GB + gpu_utils.SAFETY_MARGIN_GB
+
+        can_bnb          = self._gpu_supports_bnb()          # sm ≥ 7.0
+        enough_for_4bit  = free_gb >= need_4bit_gb
+        enough_for_fp16  = free_gb >= need_fp16_gb
+
+        try:
+        # BNB and enough VRAM for 4bit
+            if can_bnb and enough_for_4bit:
                 from transformers import BitsAndBytesConfig
-                bnb_config = BitsAndBytesConfig(
+                bnb_cfg = BitsAndBytesConfig(
                     load_in_4bit=True,
                     bnb_4bit_use_double_quant=True,
                     bnb_4bit_quant_type="nf4",
@@ -95,24 +100,37 @@ class LLama3:
                 model = AutoModelForCausalLM.from_pretrained(
                     self.path_to_model,
                     device_map="auto",
-                    quantization_config=bnb_config,
+                    quantization_config=bnb_cfg,
                     torch_dtype=torch.bfloat16,
                 )
-            except (ImportError, OSError, ValueError, RuntimeError) as e:
-                logging.warning(f"Falling back from bitsandbytes: {e}")
-                torch.cuda.empty_cache()
-                use_bnb = False  # will reload below
-        if not use_bnb and enough_vram_no_bnb:
-            model = AutoModelForCausalLM.from_pretrained(
-                self.path_to_model,
-                device_map="auto" if torch.cuda.is_available() else {"": "cpu"},
-                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-            )
-        if not use_bnb and not enough_vram_no_bnb:
+
+            # No BNB but enough VRAM for FP16
+            elif torch.cuda.is_available() and enough_for_fp16:
+                model = AutoModelForCausalLM.from_pretrained(
+                    self.path_to_model,
+                    device_map="auto",
+                    torch_dtype=torch.float16,
+                )
+
+            # CPU
+            else:
+                logging.warning(
+                    "Loading Llama on CPU (%.1f GB free VRAM; need ≥ %.1f GB for GPU)",
+                    free_gb, need_4bit_gb if can_bnb else need_fp16_gb,
+                )
+                model = AutoModelForCausalLM.from_pretrained(
+                    self.path_to_model,
+                    device_map={"": "cpu"},
+                    torch_dtype=torch.float32,
+                )
+        except (ImportError, OSError, ValueError, RuntimeError) as e:
+            # Any unexpected CUDA/bits‑and‑bytes issue → retry on CPU
+            logging.warning("GPU load failed (%s) – retrying on CPU", e)
+            torch.cuda.empty_cache()
             model = AutoModelForCausalLM.from_pretrained(
                 self.path_to_model,
                 device_map={"": "cpu"},
-                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                torch_dtype=torch.float32,
             )
 
         self.model, self.tokenizer = setup_chat_format(model, tokenizer)
