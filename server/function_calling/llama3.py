@@ -7,6 +7,7 @@ from .download_drive import download_google_drive_folder
 from trl import setup_chat_format
 from deep_translator import GoogleTranslator
 from lingua import Language, LanguageDetectorBuilder
+import logging
 
 from .actions.wolfram import ask_wolfram_question
 from .actions.wikipedia import get_wiki_pageInfo
@@ -29,6 +30,19 @@ class LLama3:
     chat: list[dict[str, str]] = []
     chat_length: int = 0
     lang_detector: LanguageDetectorBuilder
+
+    def _gpu_supports_bnb(self) -> bool:
+        """
+        True  → we have a CUDA-capable GPU whose compute capability ≥ 7.0  
+        (Turing / RTX‑20‑series or newer – the minimum BNB officially
+        documents for LLM quantisation)  
+        False → no GPU or an older CC (e.g. GTX‑10/50‑series).
+        """
+        if not torch.cuda.is_available():
+            return False
+        major, minor = torch.cuda.get_device_capability(0)
+        return (major * 10 + minor) >= 70      # 7.0, covers RTX‑20 onwards
+
 
     def __init__(self, destination_path: str, model_link: str | None = None, tokenizer_link: str | None = None) -> None:
         self.path_to_dir = os.path.dirname(__file__)
@@ -63,24 +77,37 @@ class LLama3:
     def prepare(self):
         tokenizer = AutoTokenizer.from_pretrained(self.path_to_tokenizer)
         tokenizer.padding_side = "right"
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_use_double_quant=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.bfloat16,
-        )
-        model = AutoModelForCausalLM.from_pretrained(
-            self.path_to_model,
 
-            # switched to cpu-friendly precision for now -- to be edited when deploying @Backend
-            # device_map='auto',          
-            # torch_dtype=torch.bfloat16,
-            device_map={"":'cpu'},
-            torch_dtype=torch.float16,
-            # quantization_config=bnb_config
-        )      
+        use_bnb = self._gpu_supports_bnb() # this checks for compatibility of GPU with bnb
+        if use_bnb:
+            try:
+                from transformers import BitsAndBytesConfig
+                bnb_config = BitsAndBytesConfig(
+                    load_in_4bit=True,
+                    bnb_4bit_use_double_quant=True,
+                    bnb_4bit_quant_type="nf4",
+                    bnb_4bit_compute_dtype=torch.bfloat16,
+                )
+                model = AutoModelForCausalLM.from_pretrained(
+                    self.path_to_model,
+                    device_map="auto",
+                    quantization_config=bnb_config,
+                    torch_dtype=torch.bfloat16,
+                )
+            except (ImportError, OSError, ValueError, RuntimeError) as e:
+                logging.warning(f"Falling back from bitsandbytes: {e}")
+                torch.cuda.empty_cache()
+                use_bnb = False  # will reload below
+        if not use_bnb:
+            model = AutoModelForCausalLM.from_pretrained(
+                self.path_to_model,
+                device_map="auto" if torch.cuda.is_available() else {"": "cpu"},
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+            )
+
         self.model, self.tokenizer = setup_chat_format(model, tokenizer)
         self.pipeline = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer)
+
 
     def generate(self, input: str) -> str:
         self.append_to_chat("user", input)
