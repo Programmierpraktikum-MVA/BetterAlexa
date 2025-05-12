@@ -35,7 +35,7 @@ app = FastAPI(
 origins = ["*"]
 
 logging.info(f"Loading the {WHISPER_MODEL} Whisper model and LLama model!")
-# whisper model on cpu because of gpu memory issues
+# whisper model on GPU, with fallback to CPU if needed
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model  = load_model(WHISPER_MODEL, device=device)
 
