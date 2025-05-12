@@ -78,12 +78,12 @@ class LLama3:
     def prepare(self):
         tokenizer = AutoTokenizer.from_pretrained(self.path_to_tokenizer)
         tokenizer.padding_side = "right"
-        use_bnb = False
 
         # Checks if there is still enough VRAM; if not, falls back on CPU 
-        if gpu_utils.gpu_free_gb() >gpu_utils.LLAMA3_8B_4BIT_GB + gpu_utils.SAFETY_MARGIN_GB:
-            use_bnb = self._gpu_supports_bnb() # this checks for compatibility of GPU with bnb
-        if use_bnb:
+        enough_vram_bnb = gpu_utils.gpu_free_gb() >gpu_utils.LLAMA3_8B_4BIT_GB + gpu_utils.SAFETY_MARGIN_GB
+        enough_vram_no_bnb = gpu_utils.gpu_free_gb() > gpu_utils.LLAMA3_8B_16FP_GB + gpu_utils.SAFETY_MARGIN_GB
+        use_bnb = self._gpu_supports_bnb() # this checks for compatibility of GPU with bnb
+        if use_bnb and enough_vram_bnb:
             try:
                 from transformers import BitsAndBytesConfig
                 bnb_config = BitsAndBytesConfig(
@@ -102,10 +102,16 @@ class LLama3:
                 logging.warning(f"Falling back from bitsandbytes: {e}")
                 torch.cuda.empty_cache()
                 use_bnb = False  # will reload below
-        if not use_bnb:
+        if not use_bnb and enough_vram_no_bnb:
             model = AutoModelForCausalLM.from_pretrained(
                 self.path_to_model,
                 device_map="auto" if torch.cuda.is_available() else {"": "cpu"},
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+            )
+        if not use_bnb and not enough_vram_no_bnb:
+            model = AutoModelForCausalLM.from_pretrained(
+                self.path_to_model,
+                device_map={"": "cpu"},
                 torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
             )
 
