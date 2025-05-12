@@ -37,7 +37,7 @@ origins = ["*"]
 logging.info(f"Loading the {WHISPER_MODEL} Whisper model and LLama model!")
 # whisper model on cpu because of gpu memory issues
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model  = load_model(WHISPER_MODEL, device="cpu")
+model  = load_model(WHISPER_MODEL, device=device)
 
 # also load the llama model
 llamaModel = LLama3("Llama-3-8B-function-calling", "https://drive.google.com/drive/folders/1Q-EV7D7pEeYl1On_d2JzxFEB67-KmEm3?usp=sharing", "https://drive.google.com/drive/folders/1RmhIu2FXqwu4TxIQ9GpDtYb_IXWoVd7z?usp=sharing")
