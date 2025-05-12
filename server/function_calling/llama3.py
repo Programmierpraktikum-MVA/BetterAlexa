@@ -8,6 +8,7 @@ from trl import setup_chat_format
 from deep_translator import GoogleTranslator
 from lingua import Language, LanguageDetectorBuilder
 import logging
+import gpu_utils
 
 from .actions.wolfram import ask_wolfram_question
 from .actions.wikipedia import get_wiki_pageInfo
@@ -77,8 +78,11 @@ class LLama3:
     def prepare(self):
         tokenizer = AutoTokenizer.from_pretrained(self.path_to_tokenizer)
         tokenizer.padding_side = "right"
+        use_bnb = False
 
-        use_bnb = self._gpu_supports_bnb() # this checks for compatibility of GPU with bnb
+        # Checks if there is still enough VRAM; if not, falls back on CPU 
+        if gpu_utils.gpu_free_gb() >gpu_utils.LLAMA3_8B_4BIT_GB + gpu_utils.SAFETY_MARGIN_GB:
+            use_bnb = self._gpu_supports_bnb() # this checks for compatibility of GPU with bnb
         if use_bnb:
             try:
                 from transformers import BitsAndBytesConfig

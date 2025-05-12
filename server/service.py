@@ -9,6 +9,10 @@ from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse, FileResponse
 from function_calling.llama3 import LLama3
+import gpu_utils
+
+
+needed_for_whisper = gpu_utils.WHISPER_MEDIUM_FP16_GB + gpu_utils.SAFETY_MARGIN_GB
 
 # Disabled FlashAttention for now, because of GPU compatibility (should be changed for deployment on server; for @Backend)
 torch.backends.cuda.enable_flash_sdp(False)        # disable FlashAttention
@@ -35,9 +39,17 @@ app = FastAPI(
 origins = ["*"]
 
 logging.info(f"Loading the {WHISPER_MODEL} Whisper model and LLama model!")
-# whisper model on GPU, with fallback to CPU if needed
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model  = load_model(WHISPER_MODEL, device=device)
+
+# This is the check for GPU VRAM for Whisper 
+if gpu_utils.gpu_free_gb() >= needed_for_whisper:
+    whisper_device = torch.device("cuda")
+    logging.info("Enough VRAM – loading Whisper on GPU")
+else:
+    whisper_device = torch.device("cpu")
+    logging.warning("GPU VRAM < %.1f GB → loading Whisper on CPU",
+                    needed_for_whisper)
+
+model  = load_model(WHISPER_MODEL, device=whisper_device)
 
 # also load the llama model
 llamaModel = LLama3("Llama-3-8B-function-calling", "https://drive.google.com/drive/folders/1Q-EV7D7pEeYl1On_d2JzxFEB67-KmEm3?usp=sharing", "https://drive.google.com/drive/folders/1RmhIu2FXqwu4TxIQ9GpDtYb_IXWoVd7z?usp=sharing")
