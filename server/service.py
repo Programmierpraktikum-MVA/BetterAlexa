@@ -10,6 +10,13 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse, FileResponse
 from function_calling.llama3 import LLama3
 
+# Disabled FlashAttention for now, because of GPU compatibility (should be changed for deployment on server; for @Backend)
+torch.backends.cuda.enable_flash_sdp(False)        # disable FlashAttention
+torch.backends.cuda.enable_mem_efficient_sdp(False) # Has to be deactivate for @GymKiler, due to GPU; Will lead to 15-20% Performance loss. 
+torch.backends.cuda.enable_math_sdp(True)          # always allowed
+
+
+
 # define model size (tiny, base, medium, large)
 WHISPER_MODEL = "medium"
 
@@ -29,7 +36,8 @@ origins = ["*"]
 
 logging.info(f"Loading the {WHISPER_MODEL} Whisper model and LLama model!")
 # whisper model on cpu because of gpu memory issues
-model = load_model(WHISPER_MODEL, device=torch.device("cpu"))
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model  = load_model(WHISPER_MODEL, device="cpu")
 
 # also load the llama model
 llamaModel = LLama3("Llama-3-8B-function-calling", "https://drive.google.com/drive/folders/1Q-EV7D7pEeYl1On_d2JzxFEB67-KmEm3?usp=sharing", "https://drive.google.com/drive/folders/1RmhIu2FXqwu4TxIQ9GpDtYb_IXWoVd7z?usp=sharing")
