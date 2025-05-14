@@ -11,6 +11,8 @@ from starlette.responses import RedirectResponse, FileResponse
 from function_calling.llama3 import LLama3
 import gpu_utils
 
+# Workaround for not using client with audio input, but just typing
+no_audio = False
 
 needed_for_whisper = gpu_utils.WHISPER_MEDIUM_FP16_GB + gpu_utils.SAFETY_MARGIN_GB
 
@@ -79,34 +81,53 @@ def swagger_documentation():
 
 @app.post("/whisper")
 async def whisper(file: UploadFile):
-    # save incoming audio file
-    temp_filename = f"TempFile_{time()}.wav"
-    with open(temp_filename, 'wb') as temp_file:
-        temp_file.write(await file.read())
+    if(no_audio == True):
+        while True:
+            checkQuestion = input("Do you want to ask a question (y/n)?:")
+            if checkQuestion.lower() == "y":
+                # get question and process it
+                question = input("Give me your question: ")
+                # check if input is viable
+                if question.strip() == "":
+                    print("Input cannot be empty. Try again.")
+                else:
+                    answer = llamaModel.process_input(question)
 
-    # transcribe audio file
-    current_time = time()
-    transcription_result = model.transcribe(temp_filename)
-    whisper_time = time() - current_time
-    remove(temp_filename)
-    print(f"Transcription result: {transcription_result['text']}")
+                    # directly print answer
+                    print(answer)
+            elif checkQuestion.lower() == "n":
+                break
+            else:
+                print(f"Invalid input '{checkQuestion}'. Use 'y' for yes and 'n' for no. Try again.")
+    else:
+        # save incoming audio file
+        temp_filename = f"TempFile_{time()}.wav"
+        with open(temp_filename, 'wb') as temp_file:
+            temp_file.write(await file.read())
 
-    answer = llamaModel.process_input(transcription_result['text'])
+        # transcribe audio file
+        current_time = time()
+        transcription_result = model.transcribe(temp_filename)
+        whisper_time = time() - current_time
+        remove(temp_filename)
+        print(f"Transcription result: {transcription_result['text']}")
+        answer = llamaModel.process_input(transcription_result['text'])
+
     
-    file_path = path.join(path.dirname(path.abspath(__file__)), "transcription.txt")
-    with open(file_path, "w", encoding="utf-8") as txt:
-        txt.write(answer)
+        file_path = path.join(path.dirname(path.abspath(__file__)), "transcription.txt")
+        with open(file_path, "w", encoding="utf-8") as txt:
+            txt.write(answer)
 
-    current_time = time()
-    tts_time = time() - current_time
+        current_time = time()
+        tts_time = time() - current_time
 
-    # send response with meta-data in headers
-    return FileResponse(
-        path=file_path,
-        media_type="text/plain",
-        headers={
-            "X-Language": transcription_result["language"],
-            "Time-Whisper": str(whisper_time),
-            "Time-TTS": str(tts_time)
-        }
-    )
+        # send response with meta-data in headers
+        return FileResponse(
+            path=file_path,
+            media_type="text/plain",
+            headers={
+                "X-Language": transcription_result["language"],
+                "Time-Whisper": str(whisper_time),
+                "Time-TTS": str(tts_time)
+            }
+        )
