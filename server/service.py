@@ -73,6 +73,25 @@ class Query(BaseModel):
 
 logging.info("All complete - ready for traffic")
 
+if(no_audio == True):
+    while True:
+        checkQuestion = input("Do you want to ask a question (y/n)?:")
+        if checkQuestion.lower() == "y":
+                # get question and process it
+            question = input("Give me your question: ")
+                # check if input is viable
+            if question.strip() == "":
+                print("Input cannot be empty. Try again.")
+            else:
+                answer = llamaModel.process_input(question)
+
+                # directly print answer
+                print(answer)
+        elif checkQuestion.lower() == "n":
+            break
+        else:
+            print(f"Invalid input '{checkQuestion}'. Use 'y' for yes and 'n' for no. Try again.")
+
 
 @app.get("/")
 def swagger_documentation():
@@ -81,25 +100,6 @@ def swagger_documentation():
 
 @app.post("/whisper")
 async def whisper(file: UploadFile):
-    if(no_audio == True):
-        while True:
-            checkQuestion = input("Do you want to ask a question (y/n)?:")
-            if checkQuestion.lower() == "y":
-                # get question and process it
-                question = input("Give me your question: ")
-                # check if input is viable
-                if question.strip() == "":
-                    print("Input cannot be empty. Try again.")
-                else:
-                    answer = llamaModel.process_input(question)
-
-                    # directly print answer
-                    print(answer)
-            elif checkQuestion.lower() == "n":
-                break
-            else:
-                print(f"Invalid input '{checkQuestion}'. Use 'y' for yes and 'n' for no. Try again.")
-    else:
         # save incoming audio file
         temp_filename = f"TempFile_{time()}.wav"
         with open(temp_filename, 'wb') as temp_file:
