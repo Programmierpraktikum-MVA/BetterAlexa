@@ -1,4 +1,4 @@
 TTS
 numpy
 webrtcvad==2.0.10
-sounddevice==0.5.1
+
