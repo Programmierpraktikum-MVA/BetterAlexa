@@ -17,7 +17,9 @@ This script is used for the server side of the application. It uses a whisper an
 
 3. **Install Requirements**: Install the required Python packages. You can do this by running `pip install -r requirementsServer.txt` in the main directory.
 
-4. **Run the Script**: Just run `python server.py` in the terminal.
+4. **Integrations**: If you want to use the API based Integrations, like Discord, you have to setup an .env file for your authentication tokens. This .env file should never be in the open repository and should be updated by hand.
+
+5. **Run the Script**: Just run `python server.py` in the terminal.
 
 ## Usage
 
