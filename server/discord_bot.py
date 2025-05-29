@@ -1,13 +1,18 @@
 import discord
 from discord.ext import commands
 
+import os
+from dotenv import load_dotenv
+
 intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix="?", intents=intents)
 
-# Dein Bot-Token hier einfügen:
-TOKEN = "MTM3NzM1NzgwMjQyMjQwMzE3Mg.GVSRjt.RXxG3eCW1-Ri7DXmjm3ROyH_yHwTj5-vRb0c9w"
+
+# Dein Bot-Token aus den .env variablen auslesen
+load_dotenv()
+TOKEN = os.getenv("DISCORD_TOKEN")
 
 # Variable, in der der Link gespeichert wird
 zoom_link = None
