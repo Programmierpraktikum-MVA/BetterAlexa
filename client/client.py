@@ -9,7 +9,8 @@ from audio_recorder import AudioRecorder
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-SERVER_URL = "http://127.0.0.1:8006/whisper"
+SERVER_URL = "http://108.181.203.191:8006/whisper"
+
 
 def get_path(file_name):
     """
