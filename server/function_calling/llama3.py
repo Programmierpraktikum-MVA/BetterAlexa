@@ -3,13 +3,13 @@
 Pass `delegate_names=["tutorai", "anthropic", ...]` to register pseudo tools.
 """
 from __future__ import annotations
-
+from pathlib import Path
 import json, re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, TextGenerationPipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 _TOOL_REGEX = re.compile(r"<functioncall>(.*?)</functioncall>", re.DOTALL)
 
@@ -32,6 +32,14 @@ class LLama3:
             local_files_only=True,
         )
         self.delegate_names = delegate_names or []
+        self.pipe = pipeline(
+            "text-generation",
+            model=self.model,
+            tokenizer=self.tokenizer,
+            device_map="auto",
+            torch_dtype=torch.float16,
+        )
+
     # ────────────────── public ──────────────────
     def process_input(self, user_text: str) -> LlamaOutput:
         chat = self._build_prompt(user_text)
