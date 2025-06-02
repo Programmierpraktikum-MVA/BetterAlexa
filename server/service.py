@@ -18,7 +18,7 @@ import httpx, numpy as np, soundfile as sf
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-
+from pathlib import Path
 from whisper import load_model  # type: ignore
 from function_calling.llama3 import LLama3, LlamaOutput  # updated API
 from TTS.api import TTS  # type: ignore
