@@ -43,3 +43,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+"""
+Alle Commits mit 'Bot joint automatisch einem Zoom-Meeting' als Commit Messge dürfen auskommentiert werden, diese sind noch nicht funktional
+"""
