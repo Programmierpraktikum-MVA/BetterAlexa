@@ -44,7 +44,7 @@ async def main(args):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--server", default="http://108.181.203.191:8000",
+    ap.add_argument("--server", default="http://108.181.203.191:8006",
                     help="Base URL of BetterAlexa FastAPI core")
     ap.add_argument("--meeting", default="pv_local",
                     help="Session ID used by server-side FSM")
