@@ -31,6 +31,7 @@ class LLama3:
             device_map="auto",
             local_files_only=True,
         )
+        self.delegate_names = delegate_names or []
     # ────────────────── public ──────────────────
     def process_input(self, user_text: str) -> LlamaOutput:
         chat = self._build_prompt(user_text)
