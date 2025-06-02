@@ -26,6 +26,9 @@ from TTS.api import TTS  # type: ignore
 # ────────────────────────── config ──────────────────────────
 WHISPER_MODEL_NAME = os.getenv("WHISPER_MODEL", "medium")
 LLAMA_MODEL_NAME   = os.getenv("LLAMA_MODEL", "Llama-3-8B-function-calling")
+LLAMA_MODEL_DIR = Path(__file__).parent / "function_calling" / "Llama-3-8B-function-calling-model"
+LLAMA_TOKENIZER_DIR = Path(__file__).parent / "function_calling" / "Llama-3-8B-function-calling-tokenizer"
+
 
 # TutorAI creds (first delegate target)
 TUTORAI_URL   = os.getenv("TUTORAI_URL", "https://tutor.ai/api/v1/chat")
@@ -50,7 +53,11 @@ async def _startup() -> None:
     import torch
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     app.state.whisper = load_model(WHISPER_MODEL_NAME, device=device)
-    app.state.llama   = LLama3(LLAMA_MODEL_NAME, delegate_names=["tutorai"])  # pass known delegates
+    app.state.llama = LLama3(
+        model_dir=LLAMA_MODEL_DIR,
+        tokenizer_dir=LLAMA_TOKENIZER_DIR,
+        delegate_names=["tutorai"],
+    )
     app.state.tts     = TTS(model_name="tts_models/en/vctk/vits", progress_bar=False)
     app.state.httpx   = httpx.AsyncClient(http2=True, timeout=10)
 
