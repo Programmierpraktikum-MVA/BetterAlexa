@@ -1,21 +1,19 @@
-# ───────── web / API layer ─────────
+
 fastapi==0.111.0
-uvicorn[standard]==0.29.0         # “standard” pulls in httptools, websockets…
-httpx==0.27.0                     # UDS + HTTP/2 support
+uvicorn[standard]==0.29.0
+httpx==0.27.0
 
-# ───────── data + audio ───────────
 numpy>=1.26.4
-soundfile>=0.12.1                 # wrapper around libsndfile
+soundfile>=0.13.1
 
-# ───────── ML / inference ─────────
-# torch==2.2.2+cu118                # pick the CUDA build that matches your driver
-torch==2.2.1
-transformers==4.40.1
-sentencepiece==0.2.0              # tokenizer for many HF models
-accelerate==0.28.0                # HF runtime helper
-openai-whisper==20231117
-coqui-tts==0.26.2                       # Coqui-TTS (vits model)
+# ML stack – rely on Torch’s own triton pin (2.3.1)
+torch==2.3.1                       # bundles triton 2.3.1
+transformers==4.51.0               # satisfies coqui-tts (<4.52)
+accelerate==0.28.0
+sentencepiece==0.2.0
 
-# ───────── typing / validation ────
-pydantic==2.7.1                   # FastAPI ≥0.111 targets Pydantic v2
+openai-whisper==20231117           # needs triton <3   → 2.3.1 is OK
+coqui-tts==0.26.2                  # needs torch ≥2.3  → 2.3.1 is OK
+
+pydantic==2.7.1
 typing-extensions>=4.11
