@@ -1,21 +1,21 @@
-torch
-transformers
-bitsandbytes
-accelerate 
-trl
-uvicorn
-openai-whisper
-fastapi
-wikipedia-api
-flask
-beautifulsoup4
-python-multipart
-pvrecorder
-deep_translator
-lingua-language-detector
+# ───────── web / API layer ─────────
+fastapi==0.111.0
+uvicorn[standard]==0.29.0         # “standard” pulls in httptools, websockets…
+httpx==0.27.0                     # UDS + HTTP/2 support
 
-llama-index-llms-ollama
-llama-index-embeddings-ollama
-llama-index-readers-file
+# ───────── data + audio ───────────
+numpy>=1.26.4
+soundfile>=0.12.1                 # wrapper around libsndfile
 
-sounddevice
+# ───────── ML / inference ─────────
+# torch==2.2.2+cu118                # pick the CUDA build that matches your driver
+torch==2.2.1
+transformers==4.40.1
+sentencepiece==0.2.0              # tokenizer for many HF models
+accelerate==0.28.0                # HF runtime helper
+openai-whisper==20231117
+coqui-tts==0.26.2                       # Coqui-TTS (vits model)
+
+# ───────── typing / validation ────
+pydantic==2.7.1                   # FastAPI ≥0.111 targets Pydantic v2
+typing-extensions>=4.11
