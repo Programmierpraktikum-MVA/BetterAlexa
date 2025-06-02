@@ -1,6 +1,6 @@
 from uvicorn import run as _run
 import argparse, os, platform
-from server.zoom_joiner import join_zoom_meeting
+from zoom_joiner import join_zoom_meeting
 import threading
 
 # Verwende service.py als Uvicorn-App
