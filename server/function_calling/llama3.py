@@ -21,16 +21,16 @@ class LlamaOutput:
     function_called: bool = False
 
 class LLama3:
-        def __init__(self, model_dir: Path, tokenizer_dir: Path, delegate_names=None):
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                tokenizer_dir, local_files_only=True
-            )
-            self.model = AutoModelForCausalLM.from_pretrained(
-                model_dir,
-                torch_dtype=torch.float16,
-                device_map="auto",
-                local_files_only=True,
-            )
+    def __init__(self, model_dir: Path, tokenizer_dir: Path, delegate_names=None):
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            tokenizer_dir, local_files_only=True
+        )
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_dir,
+            torch_dtype=torch.float16,
+            device_map="auto",
+            local_files_only=True,
+        )
     # ────────────────── public ──────────────────
     def process_input(self, user_text: str) -> LlamaOutput:
         chat = self._build_prompt(user_text)
