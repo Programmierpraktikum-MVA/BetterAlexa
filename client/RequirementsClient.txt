@@ -5,3 +5,4 @@ sounddevice>=0.4.6
 soundfile>=0.12.1
 webrtcvad>=2.0.10
 pvrecorder>=1.1.7
+setuptools
