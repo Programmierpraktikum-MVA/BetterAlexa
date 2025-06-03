@@ -54,10 +54,9 @@ class LLama3:
         logging.debug(f"Built prompt: {chat}")
 
         raw_output = self.pipe(chat, 
-                               do_sample=False, 
+                               do_sample=True, 
                                temperature=0.2,
                                max_new_tokens=128,
-                               stop=["\nUser:", "<functioncall>"],
                                return_full_text=False
                                )
         raw = raw_output[0]["generated_text"][len(chat):]
