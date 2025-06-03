@@ -53,7 +53,13 @@ class LLama3:
         chat = self._build_prompt(user_text)
         logging.debug(f"Built prompt: {chat}")
 
-        raw_output = self.pipe(chat, do_sample=True, temperature=0.7)
+        raw_output = self.pipe(chat, 
+                               do_sample=False, 
+                               temperature=0.2,
+                               max_new_tokens=128,
+                               stop=["\nUser:", "<functioncall>"],
+                               return_full_text=False
+                               )
         raw = raw_output[0]["generated_text"][len(chat):]
 
         logging.debug(f"Raw model output: {raw}")
