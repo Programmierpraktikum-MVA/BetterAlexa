@@ -23,8 +23,6 @@ from whisper import load_model  # type: ignore
 from function_calling.llama3 import LLama3, LlamaOutput  # updated API
 from TTS.api import TTS  # type: ignore
 
-logging.basicConfig(level=logging.DEBUG)
-
 # ────────────────────────── config ──────────────────────────
 WHISPER_MODEL_NAME = os.getenv("WHISPER_MODEL", "medium")
 LLAMA_MODEL_NAME   = os.getenv("LLAMA_MODEL", "Llama-3-8B-function-calling")
