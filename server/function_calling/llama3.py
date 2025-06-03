@@ -7,7 +7,7 @@ from pathlib import Path
 import json, re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
-
+from transformers import BitsAndBytesConfig
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
@@ -22,12 +22,18 @@ class LlamaOutput:
 
 class LLama3:
     def __init__(self, model_dir: Path, tokenizer_dir: Path, delegate_names=None):
+        quantization_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type='nf4',
+            bnb_4bit_compute_dtype=torch.float16,
+        )
         self.tokenizer = AutoTokenizer.from_pretrained(
             tokenizer_dir, local_files_only=True
         )
         self.model = AutoModelForCausalLM.from_pretrained(
             model_dir,
-            torch_dtype=torch.float16,
+            quantization_config=quantization_config,
             device_map="auto",
             local_files_only=True,
         )
@@ -37,7 +43,6 @@ class LLama3:
             model=self.model,
             tokenizer=self.tokenizer,
             device_map="auto",
-            torch_dtype=torch.float16,
         )
 
     # ────────────────── public ──────────────────
