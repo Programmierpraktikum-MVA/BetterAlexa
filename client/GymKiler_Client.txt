@@ -1,6 +1,0 @@
-# requirements_client.txt  ── for thin_client.py
-numpy>=1.26.4           # chunking + VAD
-sounddevice==0.4.6      # microphone capture (PortAudio wrapper)
-simpleaudio==1.0.4      # cross-platform WAV playback
-httpx==0.27.0           # async HTTP POST to /api/v1/stream
-pygame
