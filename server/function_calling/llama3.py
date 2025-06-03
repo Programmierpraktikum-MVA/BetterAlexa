@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 from transformers import BitsAndBytesConfig
 import torch
+import logging
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
 _TOOL_REGEX = re.compile(r"<functioncall>(.*?)</functioncall>", re.DOTALL)
@@ -47,26 +48,43 @@ class LLama3:
 
     # ────────────────── public ──────────────────
     def process_input(self, user_text: str) -> LlamaOutput:
+        logging.debug(f"Processing input: {user_text}")
+
         chat = self._build_prompt(user_text)
-        raw = self.pipe(chat, do_sample=True, temperature=0.7)[0]["generated_text"][len(chat):]
+        logging.debug(f"Built prompt: {chat}")
+
+        raw_output = self.pipe(chat, do_sample=True, temperature=0.7)
+        raw = raw_output[0]["generated_text"][len(chat):]
+
+        logging.debug(f"Raw model output: {raw}")
 
         m = _TOOL_REGEX.search(raw)
         if m:
             payload = json.loads(m.group(1).strip())
+            logging.debug(f"Detected function call payload: {payload}")
             name, args = payload.get("name"), payload.get("arguments", {})
+
             if name and name.startswith("delegate_to_"):
                 target = name.split("delegate_to_")[-1]
+                logging.debug(f"Delegation identified to target: {target}")
                 return LlamaOutput(text="", delegate=True, delegate_target=target)
+
             if name in self.tools:
                 try:
                     result = self.tools[name](**args)
+                    logging.debug(f"Tool '{name}' returned: {result}")
                 except Exception as e:
                     result = f"<error>{e}</error>"
+                    logging.exception(f"Tool '{name}' invocation error")
                 chat += raw + f"\nFunction `{name}` returned: {result}"
-                final = self.pipe(chat, do_sample=False, temperature=0.2)[0]["generated_text"][len(chat):]
+                final_output = self.pipe(chat, do_sample=False, temperature=0.2)
+                final = final_output[0]["generated_text"][len(chat):]
+                logging.debug(f"Final response after function call: {final}")
                 return LlamaOutput(text=final.strip(), function_called=True)
 
+        logging.debug(f"Final plain output: {raw.strip()}")
         return LlamaOutput(text=raw.strip())
+
 
     # ────────────────── internals ───────────────
     def _build_prompt(self, user_text: str) -> str:
