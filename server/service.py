@@ -156,7 +156,7 @@ class StreamPayload(BaseModel):
 
 @app.post("/api/v1/stream", response_class=StreamingResponse)
 async def stream(payload: StreamPayload):
-    logging.debug(f"Received request: {payload}")
+    logging.debug(f"Received request")
     try:
         wav = await pipeline(payload.meeting_id, np.array(payload.pcm, dtype=np.float32))
         logging.debug(f"Generated audio size: {len(wav)} bytes")
