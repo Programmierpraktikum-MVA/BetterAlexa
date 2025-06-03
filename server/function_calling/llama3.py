@@ -22,7 +22,7 @@ from transformers import (
 _TOOL_REGEX = re.compile(r"<functioncall>(.*?)</functioncall>", re.DOTALL)
 
 
-a@dataclass
+@dataclass
 class LlamaOutput:
     text: str
     delegate: bool = False
@@ -31,6 +31,15 @@ class LlamaOutput:
 
 
 class LLama3:
+    """Thin convenience wrapper around a local Llama‑3 model.
+
+    * Ensures we **only return the newly‑generated answer tokens** back to
+      the caller (FastAPI service) – never the full prompt.
+    * Adds a hard *max_new_tokens* cap so the model can’t run away.
+    * Provides a simple *function‑calling* mechanism and a lightweight
+      **delegation** hook (e.g. forward the query to a cloud LLM).
+    """
+
     def __init__(
         self,
         model_dir: Path,
