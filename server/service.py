@@ -9,7 +9,7 @@
 That's it – no more enum edits.
 """
 from __future__ import annotations
-
+import logging 
 import asyncio, io, os
 from enum import Enum, auto
 from typing import Dict, List, Optional, Callable, Awaitable
@@ -22,6 +22,8 @@ from pathlib import Path
 from whisper import load_model  # type: ignore
 from function_calling.llama3 import LLama3, LlamaOutput  # updated API
 from TTS.api import TTS  # type: ignore
+
+logging.basicConfig(level=logging.DEBUG)
 
 # ────────────────────────── config ──────────────────────────
 WHISPER_MODEL_NAME = os.getenv("WHISPER_MODEL", "medium")
@@ -88,20 +90,23 @@ DELEGATE_HANDLERS: Dict[str, DelegateHandler] = {
 
 # ────────────────────── main pipeline ───────────────────────
 async def pipeline(meeting: str, pcm: np.ndarray) -> bytes:
+    logging.debug(f"Transcribing PCM audio for meeting {meeting}")
     whisper = app.state.whisper
     transcript = whisper.transcribe(pcm, fp16=False)["text"]
-
+    logging.debug(f"Transcription result: {transcript}")
     state = SESSION_STATE.get(meeting, RouteState.BETTERALEXA)
     llama: LLama3 = app.state.llama
-
+    logging.debug(f"RouteState for meeting {meeting}: {state}")
     # 1) Local handling
     if state is RouteState.BETTERALEXA:
         out: LlamaOutput = llama.process_input(transcript)
+        logging.debug(f"Llama output: {out}")
         answer = out.text
         if out.delegate:
             target = out.delegate_target or "tutorai"
             SESSION_STATE[meeting] = RouteState.DELEGATE
             SESSION_DELEGATE[meeting] = target
+            logging.debug(f"Delegating to {target}")
             result = await _delegate_call(target, transcript, meeting)
             answer = result.answer
             if result.done:
@@ -111,6 +116,7 @@ async def pipeline(meeting: str, pcm: np.ndarray) -> bytes:
     # 2) Ongoing delegation
     elif state is RouteState.DELEGATE:
         target = SESSION_DELEGATE.get(meeting)
+        logging.debug(f"Ongoing delegation to {target}")
         result = await _delegate_call(target, transcript, meeting)
         answer = result.answer
         if result.done:
@@ -121,11 +127,20 @@ async def pipeline(meeting: str, pcm: np.ndarray) -> bytes:
     else:
         answer = "[testing mode placeholder]"
 
+    answer = answer.strip()
+    if not answer:
+        logging.warning("Empty TTS input detected. Using placeholder response.")
+        answer = "Sorry, I didn't catch that. Can you repeat?"
+    elif len(answer) > 500:  # arbitrary length check
+        logging.warning(f"Excessively long TTS input detected ({len(answer)} chars). Truncating.")
+        answer = answer[:500]
+    logging.debug(f"TTS inut: {answer}")
     # TTS
     wav_np = app.state.tts.tts(text=answer, speaker="p335")
     buf = io.BytesIO()
     sf.write(buf, wav_np, samplerate=app.state.tts.synthesizer.output_sample_rate, format="WAV")
     buf.seek(0)
+    logging.debug(f"Returning WAV bytes of length: {buf.getbuffer().nbytes}")
     return buf.read()
 
 async def _delegate_call(target: Optional[str], query: str, meeting: str) -> DelegateResult:
@@ -138,11 +153,18 @@ class StreamPayload(BaseModel):
     meeting_id: str
     pcm: List[float]
 
-@app.post("/api/v1/stream", response_class=StreamingResponse)
 async def stream(payload: StreamPayload):
-    wav = await pipeline(payload.meeting_id, np.array(payload.pcm, dtype=np.float32))
-    async def it(d: bytes, n=4096):
-        for i in range(0, len(d), n):
-            yield d[i:i+n]
-    return StreamingResponse(it(wav), media_type="audio/wav")
+    logging.debug(f"Received request: {payload}")
+    try:
+        wav = await pipeline(payload.meeting_id, np.array(payload.pcm, dtype=np.float32))
+        logging.debug(f"Generated audio size: {len(wav)} bytes")
+    except Exception as e:
+        logging.exception(f"Error in pipeline processing: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+    async def audio_streamer(data: bytes, chunk_size=4096):
+        for i in range(0, len(data), chunk_size):
+            yield data[i:i+chunk_size]
+
+    return StreamingResponse(audio_streamer(wav), media_type="audio/wav")
 
