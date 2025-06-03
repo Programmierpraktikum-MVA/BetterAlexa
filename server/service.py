@@ -62,7 +62,6 @@ async def _startup() -> None:
     app.state.llama = LLama3(
         model_dir=LLAMA_MODEL_DIR,
         tokenizer_dir=LLAMA_TOKENIZER_DIR,
-        delegate_names=["tutorai"],
     )
     app.state.tts     = TTS(model_name="tts_models/en/vctk/vits", progress_bar=False)
     app.state.httpx   = httpx.AsyncClient(http2=True, timeout=10)
