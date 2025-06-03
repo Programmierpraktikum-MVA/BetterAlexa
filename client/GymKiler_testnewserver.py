@@ -30,7 +30,7 @@ def play_wav_bytes(wav_bytes: bytes):
     sd.wait()
 
 async def main(args):
-    async with httpx.AsyncClient(timeout=30) as client:
+    async with httpx.AsyncClient(timeout=3000) as client:
         while True:
             pcm = audio_interface.listen_for_voice()      # blocks until VAD silence
             payload = {

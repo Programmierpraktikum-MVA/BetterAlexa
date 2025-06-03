@@ -47,6 +47,9 @@ class RouteState(Enum):
 SESSION_STATE: Dict[str, RouteState]      = {}
 SESSION_DELEGATE: Dict[str, Optional[str]] = {}   # e.g. {"m42": "tutorai"}
 
+for noisy in ["TTS", "transformers", "urllib3", "numba"]:
+    logging.getLogger(noisy).setLevel(logging.WARNING)
+
 # ─────────────────────── FastAPI setup ──────────────────────
 app = FastAPI(title="BetterAlexa Core", version="0.6")
 _tutor_sem = asyncio.Semaphore(int(os.getenv("TUTOR_CONCURRENCY", 5)))
