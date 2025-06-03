@@ -2,12 +2,12 @@
 
 Key features
 ============
-* Reads **`functions.json`** on startup and advertises every tool except those
-  whose name contains *TutorAI* (these get delegated instead).
-* Detects *<functioncall>* blocks even when the model forgets to close the tag
-  or uses single‑quotes inside the JSON.
-* Executes recognised tools inline (via `skills.<tool>.run`) and feeds their
-  result back so the LLM can produce a natural‑language answer.
+* Reads **`functions.json`** on startup and exposes every function except
+  those whose *name* contains the substring *TutorAI* (these are delegated).
+* Detects and executes `<functioncall>{ … }</functioncall>` blocks even when
+  the close‑tag is missing or the JSON uses single quotes.
+* Feeds the function result back to the model so it can phrase a natural
+  language answer – only that answer is returned to the caller.
 """
 from __future__ import annotations
 
@@ -28,9 +28,11 @@ from transformers import (
 )
 
 # ───────────────────────── regex helpers ────────────────────────────
-# 1. captures JSON after <functioncall> even if </functioncall> is missing
-_FUNC_JSON_RE = re.compile(r"<functioncall>\s*({.*?})", re.DOTALL | re.I)
-# 2. generic role‑tag detector (used by _assistant_only)
+# 1️⃣ Capture JSON between explicit open & close tags (preferred case)
+_FUNC_TAG_RE = re.compile(r"<functioncall>(.*?)</functioncall>", re.DOTALL | re.I)
+# 2️⃣ Fallback: opening tag only – grab until next role tag or EoS
+_FUNC_OPEN_RE = re.compile(r"<functioncall>(.*)", re.DOTALL | re.I)
+# Detect the next role tag so we know where the assistant turn ends
 _ROLE_RE = re.compile(r"\n\s*(user|assistant|system)[:\s]", re.I)
 
 
@@ -54,14 +56,14 @@ class LLama3:
         tutor_delegate: str = "TutorAI",
         max_new_tokens: int = 64,
     ) -> None:
-        # ═══════════════ load function specs ════════════════════════
+        # ══════════════════ Load function specs ═════════════════════
         with functions_file.open("r", encoding="utf‑8") as fh:
             spec: List[Dict[str, Any]] = json.load(fh)
         self.local_funcs = [f for f in spec if tutor_delegate.lower() not in f["name"].lower()]
         self.delegate_funcs = [f for f in spec if f not in self.local_funcs]
         self.tutor_delegate_name = tutor_delegate.lower()
 
-        # ═══════════════ HF model + tokenizer ═══════════════════════
+        # ══════════════════ Model + tokenizer ═══════════════════════
         quant_cfg = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_use_double_quant=True,
@@ -77,31 +79,31 @@ class LLama3:
         )
         self.pipe = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer, device_map="auto")
 
-        # ═══════════════ runtime settings ═══════════════════════════
+        # ══════════════════ Runtime settings ════════════════════════
         self.max_new_tokens = max_new_tokens
         self.tools = self._load_tools()
 
-    # ───────────────────────── public api ──────────────────────────
+    # ───────────────────────── Public API ──────────────────────────
     def process_input(self, user_text: str) -> LlamaOutput:
         logging.debug("Processing input: %s", user_text)
         prompt = self._build_prompt(user_text)
         raw_answer = self._generate(prompt)
         logging.debug("Raw model output: %s", raw_answer)
 
-        func_payload = self._extract_func_payload(raw_answer)
-        if func_payload:
-            name = func_payload.get("name")
-            args = func_payload.get("arguments", {})
+        payload = self._extract_func_payload(raw_answer)
+        if payload:
+            name = payload.get("name")
+            args = payload.get("arguments", {})
             logging.debug("Function‑call detected – name=%s args=%s", name, args)
 
-            # ───── delegation for TutorAI ─────
+            # ─── Delegation: TutorAI or future hard‑coded services ───
             if name and name.lower().startswith("ask_tutorai"):
                 return LlamaOutput(text="", delegate=True, delegate_target=self.tutor_delegate_name)
 
-            # ───── local execution ─────
+            # ─── Local execution ───
             if name in self.tools:
                 try:
-                    # if arguments came in as string JSON → parse
+                    # arguments may be a JSON‑encoded string → parse
                     if isinstance(args, str):
                         args = json.loads(args)
                     result = self.tools[name](**args)
@@ -109,28 +111,34 @@ class LLama3:
                     logging.exception("Tool '%s' raised", name)
                     result = f"<error>{exc}</error>"
 
-                follow_up = (
+                follow_up_prompt = (
                     prompt
                     + raw_answer
                     + f"\nFunction `{name}` returned: {result}\nAssistant: "
                 )
-                final_answer = self._generate(follow_up)
+                final_answer = self._generate(follow_up_prompt)
                 return LlamaOutput(text=self._assistant_only(final_answer), function_called=True)
 
-        # No recognised function‑call – return as is
+        # No recognised function‑call – return trimmed assistant text
         return LlamaOutput(text=self._assistant_only(raw_answer))
 
-    # ────────────────────── internal helpers ───────────────────────
+    # ─────────────────────── Internal helpers ──────────────────────
     def _extract_func_payload(self, text: str) -> Optional[Dict[str, Any]]:
-        """Return JSON payload inside <functioncall> … or None."""
-        m = _FUNC_JSON_RE.search(text)
+        """Grab and parse the JSON inside a <functioncall> block."""
+        m = _FUNC_TAG_RE.search(text) or _FUNC_OPEN_RE.search(text)
         if not m:
             return None
         json_str = m.group(1)
+
+        # If we matched _FUNC_OPEN_RE, chop off at next role tag
+        role_match = _ROLE_RE.search(json_str)
+        if role_match:
+            json_str = json_str[: role_match.start()]
+
+        json_str = json_str.strip()
         try:
             return json.loads(json_str)
         except json.JSONDecodeError:
-            # Try to coerce single‑quotes to double‑quotes (LLM error)
             try:
                 fixed = json_str.replace("'", '"')
                 return json.loads(fixed)
@@ -162,7 +170,7 @@ class LLama3:
             f"User: {user_text}\nAssistant: "
         )
 
-    # ═══════════════ tool registry ═════════════════════════════════
+    # ═══════════════ Tool registry ════════════════════════════════
     def _load_tools(self) -> Dict[str, Any]:
         registry: Dict[str, Any] = {}
         for spec in self.local_funcs:
