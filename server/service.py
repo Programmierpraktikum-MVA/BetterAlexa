@@ -151,6 +151,7 @@ class StreamPayload(BaseModel):
     meeting_id: str
     pcm: List[float]
 
+@app.post("/api/v1/stream", response_class=StreamingResponse)
 async def stream(payload: StreamPayload):
     logging.debug(f"Received request: {payload}")
     try:
