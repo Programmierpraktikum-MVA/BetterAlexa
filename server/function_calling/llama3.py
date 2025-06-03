@@ -1,4 +1,4 @@
-"""Llama-3 wrapper with structured output and generic delegation.
+"""Llama‑3 wrapper with structured output and generic delegation.
 Pass `delegate_names=[...]` to register pseudo tools.
 """
 from __future__ import annotations
@@ -19,7 +19,7 @@ from transformers import (
 )
 
 # Matches <functioncall>{json…}</functioncall>
-_TOOL_REGEX = re.compile(r"<functioncall>(.*?)</functioncall>", re.DOTALL)
+_TOOL_REGEX = re.compile(r"<functioncall>(.*?)</functioncall>", re.DOTALL | re.IGNORECASE)
 
 
 @dataclass
@@ -33,14 +33,14 @@ class LlamaOutput:
 
 
 class LLama3:
-    """Thin convenience wrapper around a local Llama-3 model.
+    """Thin convenience wrapper around a local Llama‑3 model.
 
     Highlights
     ----------
-    * **Returns only the assistant’s freshly-generated text** (never the full
+    * **Returns only the assistant’s freshly‑generated text** (never the full
       prompt) so the caller can pipe it straight into TTS.
-    * Enforces a hard ``max_new_tokens`` ceiling to avoid run-away answers.
-    * Supports JSON-wrapped `<functioncall>` tool invocations and optional
+    * Enforces a hard ``max_new_tokens`` ceiling to avoid run‑away answers.
+    * Supports JSON‑wrapped `<functioncall>` tool invocations and optional
       *delegation* placeholders (e.g. forward query to a cloud model).
     """
 
@@ -100,9 +100,9 @@ class LLama3:
             payload = json.loads(match.group(1).strip())
             name: str | None = payload.get("name")
             args: Dict[str, Any] = payload.get("arguments", {})
-            logging.debug("Detected function-call payload: %s", payload)
+            logging.debug("Detected function‑call payload: %s", payload)
 
-            # Delegation pseudo-tool — nothing to execute locally.
+            # Delegation pseudo‑tool — nothing to execute locally.
             if name and name.startswith("delegate_to_"):
                 target = name.split("delegate_to_")[-1]
                 return LlamaOutput(text="", delegate=True, delegate_target=target)
@@ -111,7 +111,7 @@ class LLama3:
             if name in self.tools:
                 try:
                     result = self.tools[name](**args)
-                except Exception as exc:  # noqa: BLE001 – best-effort logging
+                except Exception as exc:  # noqa: BLE001 – best‑effort logging
                     logging.exception("Tool '%s' raised", name)
                     result = f"<error>{exc}</error>"
 
@@ -132,10 +132,14 @@ class LLama3:
 
     # ─────────────────────── internal helpers ────────────────────────
     def _assistant_only(self, text: str) -> str:
-        """Cut at the first ``\nUser:`` tag so we never read out hallucinated turns."""
-        cut = text.find("\nUser:")
-        if cut != -1:
-            text = text[:cut]
+        """Return only the assistant’s reply, cutting off at the next role tag.
+
+        We look for a newline followed by *any* role word (user/assistant/system)
+        in *any* capitalisation, optionally followed by a colon or whitespace.
+        """
+        turn_break = re.search(r"\n\s*(user|assistant|system)[:\s]", text, re.IGNORECASE)
+        if turn_break:
+            text = text[: turn_break.start()]
         return text.strip()
 
     def _generate(self, full_prompt: str) -> str:
@@ -161,7 +165,7 @@ class LLama3:
         )
 
     def _load_tools(self) -> Dict[str, Any]:
-        """Register built-in tools and delegation placeholders."""
+        """Register built‑in tools and delegation placeholders."""
         registry: Dict[str, Any] = {
             "math_add": lambda a, b: a + b,
         }
@@ -170,7 +174,7 @@ class LLama3:
         return registry
 
     def _tools_schema(self) -> List[Dict[str, Any]]:
-        """Return OpenAI-style JSON schema describing available tools."""
+        """Return OpenAI‑style JSON schema describing available tools."""
         schema: List[Dict[str, Any]] = [
             {
                 "name": "math_add",
