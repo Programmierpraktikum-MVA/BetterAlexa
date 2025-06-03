@@ -18,16 +18,19 @@ import numpy as np
 import httpx
 import sounddevice as sd
 import soundfile as sf
-
+import pygame
 import audio_interface                 # ← your existing helper
 
 SR = 16_000
 
-def play_wav_bytes(wav_bytes: bytes):
-    """Decode WAV in-memory and play via sounddevice."""
-    audio, sr = sf.read(io.BytesIO(wav_bytes), dtype="float32")
-    sd.play(audio, sr)
-    sd.wait()
+def play_wav_bytes(wav_bytes):
+    buf = io.BytesIO(wav_bytes)
+    pygame.mixer.init(frequency=SR)
+    pygame.mixer.music.load(buf)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        pygame.time.Clock().tick(10)
+    pygame.mixer.quit()
 
 async def main(args):
     async with httpx.AsyncClient(timeout=3000) as client:
@@ -40,7 +43,9 @@ async def main(args):
             r = await client.post(f"{args.server}/api/v1/stream", json=payload)
             r.raise_for_status()
             print(f"← {len(r.content)/1024:.1f} KB audio from server – playing")
-            play_wav_bytes(r.content)
+            wav_bytes = r.content          # r is the Response
+            play_wav_bytes(wav_bytes)
+            
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
