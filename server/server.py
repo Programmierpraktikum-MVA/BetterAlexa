@@ -13,11 +13,11 @@ def join_zoom_meeting_on_start():
     meeting_link = "https://us05web.zoom.us/j/81166204833?pwd=MKJ1nbafwVeEDWbOeGzdiZb3FPbAnv.1"
     print("Trete Zoom-Meeting bei...")
 
-    try:
-        join_zoom_meeting(meeting_link)
-        print("Zoom-Meeting erfolgreich gestartet.")
-    except Exception as e:
-        print(f"Fehler beim Beitreten des Zoom-Meetings: {e}")
+#    try:
+#        join_zoom_meeting(meeting_link)
+#        print("Zoom-Meeting erfolgreich gestartet.")
+#    except Exception as e:
+#        print(f"Fehler beim Beitreten des Zoom-Meetings: {e}")
 
 def main():
     # Argumente parsen
