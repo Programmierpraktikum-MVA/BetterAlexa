@@ -1,19 +1,29 @@
-"""Llama‑3 wrapper with structured output and dynamic function‑calling.
+"""Llama‑3 wrapper for BetterAlexa – updated to use **chat‑template generation**
+exactly like the previous `llama3_old.py` while still exposing the modern
+`LlamaOutput` API expected by `service.py`.
 
-Key features
-============
-* Reads **`functions.json`** on startup and exposes every function except
-  those whose *name* contains the substring *TutorAI* (these are delegated).
-* Detects and executes `<functioncall>{ … }</functioncall>` blocks even when
-  the close‑tag is missing or the JSON uses single quotes.
-* Feeds the function result back to the model so it can phrase a natural
-  language answer – only that answer is returned to the caller.
+Key changes vs the last revision
+================================
+* Keeps a rolling **chat list** and formats prompts through
+  `tokenizer.apply_chat_template`, identical to the old implementation.
+* Loads **functions.json verbatim** and injects it once as a *system* message
+  ("You have access to the following functions …").  No schema processing –
+  we simply pass the raw JSON string to the model, again mirroring
+  `llama3_old.py`.
+* Generation now defaults to `temperature=0.1`, `top_k=50`, `top_p=0.1` and
+  up to `512` new tokens, matching the legacy behaviour.
+* Still returns a structured `LlamaOutput`, delegating `ask_tutorai*` calls
+  and executing local tools via a minimal registry.
+
+This makes the new file a **drop‑in replacement** that behaves just like the
+old one but retains the modern quantised loading logic.
 """
 from __future__ import annotations
 
 import importlib
 import json
 import logging
+import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -28,16 +38,15 @@ from transformers import (
 )
 
 # ───────────────────────── regex helpers ────────────────────────────
-# 1️⃣ Capture JSON between explicit open & close tags (preferred case)
 _FUNC_TAG_RE = re.compile(r"<functioncall>(.*?)</functioncall>", re.DOTALL | re.I)
-# 2️⃣ Fallback: opening tag only – grab until next role tag or EoS
 _FUNC_OPEN_RE = re.compile(r"<functioncall>(.*)", re.DOTALL | re.I)
-# Detect the next role tag so we know where the assistant turn ends
 _ROLE_RE = re.compile(r"\n\s*(user|assistant|system)[:\s]", re.I)
 
-
+# ───────────────────────── public dataclass ─────────────────────────
 @dataclass
 class LlamaOutput:
+    """Result returned by :pymeth:`LLama3.process_input`."""
+
     text: str
     delegate: bool = False
     delegate_target: Optional[str] = None
@@ -45,7 +54,10 @@ class LlamaOutput:
 
 
 class LLama3:
-    """Drop‑in Llama‑3 wrapper for BetterAlexa with smart tool support."""
+    """Chat‑style Llama‑3 wrapper with legacy generation semantics."""
+
+    # chat & memory limits
+    _MAX_CHAT_TOKENS = 1024
 
     def __init__(
         self,
@@ -54,16 +66,25 @@ class LLama3:
         *,
         functions_file: Path = Path(__file__).with_name("functions.json"),
         tutor_delegate: str = "TutorAI",
-        max_new_tokens: int = 64,
+        max_new_tokens: int = 512,
     ) -> None:
-        # ══════════════════ Load function specs ═════════════════════
+        self.logger = logging.getLogger(__name__)
+
+        # ══════════════════ load functions.json (verbatim) ══════════════════
         with functions_file.open("r", encoding="utf‑8") as fh:
-            spec: List[Dict[str, Any]] = json.load(fh)
-        self.local_funcs = [f for f in spec if tutor_delegate.lower() not in f["name"].lower()]
-        self.delegate_funcs = [f for f in spec if f not in self.local_funcs]
+            self.functions_json_str: str = fh.read()
         self.tutor_delegate_name = tutor_delegate.lower()
 
-        # ══════════════════ Model + tokenizer ═══════════════════════
+        # prepare chat memory & prime with system message
+        self.chat: List[Dict[str, str]] = []
+        self.chat_length: int = 0  # word count approximation
+        system_msg = (
+            "You are a helpful assistant with access to the following functions. "
+            "Use them if required -\n{\n" + self.functions_json_str + "\n}"
+        )
+        self._append_to_chat("system", system_msg)
+
+        # ══════════════════ model & tokenizer ═══════════════════════════════
         quant_cfg = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_use_double_quant=True,
@@ -79,77 +100,21 @@ class LLama3:
         )
         self.pipe = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer, device_map="auto")
 
-        # ══════════════════ Runtime settings ════════════════════════
         self.max_new_tokens = max_new_tokens
-        self.tools = self._load_tools()
 
-    # ───────────────────────── Public API ──────────────────────────
-    def process_input(self, user_text: str) -> LlamaOutput:
-        logging.debug("Processing input: %s", user_text)
-        prompt = self._build_prompt(user_text)
-        raw_answer = self._generate(prompt)
-        logging.debug("Raw model output: %s", raw_answer)
+        # ══════════════════ tool registry (minimal) ═════════════════════════
+        self.tools: Dict[str, Any] = self._load_tools()
 
-        payload = self._extract_func_payload(raw_answer)
-        if payload:
-            name = payload.get("name")
-            args = payload.get("arguments", {})
-            logging.debug("Function‑call detected – name=%s args=%s", name, args)
+    # ──────────────────────────── chat helpers ────────────────────────────
+    def _append_to_chat(self, role: str, content: str) -> None:
+        msg = {"role": role, "content": content}
+        self.chat.append(msg)
+        self.chat_length += len(content.split())
+        while self.chat_length > self._MAX_CHAT_TOKENS and len(self.chat) > 2:
+            removed = self.chat.pop(1)  # drop oldest *user/assistant* pair
+            self.chat_length -= len(removed["content"].split())
 
-            # ─── Delegation: TutorAI or future hard‑coded services ───
-            if name and name.lower().startswith("ask_tutorai"):
-                return LlamaOutput(text="", delegate=True, delegate_target=self.tutor_delegate_name)
-
-            # ─── Local execution ───
-            if name in self.tools:
-                try:
-                    # arguments may be a JSON‑encoded string → parse
-                    if isinstance(args, str):
-                        args = json.loads(args)
-                    result = self.tools[name](**args)
-                except Exception as exc:  # noqa: BLE001
-                    logging.exception("Tool '%s' raised", name)
-                    result = f"<error>{exc}</error>"
-
-                follow_up_prompt = (
-                    prompt
-                    + raw_answer
-                    + f"\nFunction `{name}` returned: {result}\nAssistant: "
-                )
-                final_answer = self._generate(follow_up_prompt)
-                return LlamaOutput(text=self._assistant_only(final_answer), function_called=True)
-
-        # No recognised function‑call – return trimmed assistant text
-        return LlamaOutput(text=self._assistant_only(raw_answer))
-
-    # ─────────────────────── Internal helpers ──────────────────────
-    def _extract_func_payload(self, text: str) -> Optional[Dict[str, Any]]:
-        """Grab and parse the JSON inside a <functioncall> block."""
-        m = _FUNC_TAG_RE.search(text) or _FUNC_OPEN_RE.search(text)
-        if not m:
-            return None
-        json_str = m.group(1)
-
-        # If we matched _FUNC_OPEN_RE, chop off at next role tag
-        role_match = _ROLE_RE.search(json_str)
-        if role_match:
-            json_str = json_str[: role_match.start()]
-
-        json_str = json_str.strip()
-        try:
-            return json.loads(json_str)
-        except json.JSONDecodeError:
-            try:
-                fixed = json_str.replace("'", '"')
-                return json.loads(fixed)
-            except Exception:
-                logging.warning("Could not parse function‑call JSON: %s", json_str)
-                return None
-
-    def _assistant_only(self, text: str) -> str:
-        m = _ROLE_RE.search(text)
-        return (text[: m.start()] if m else text).strip()
-
+    # ─────────────────────────── generation ───────────────────────────────
     def _generate(self, prompt: str) -> str:
         out = self.pipe(
             prompt,
@@ -159,29 +124,93 @@ class LLama3:
             pad_token_id=self.tokenizer.eos_token_id,
             eos_token_id=self.tokenizer.eos_token_id,
         )
-        return out[0]["generated_text"]
+        return out[0]["generated_text"].strip()
 
-    def _build_prompt(self, user_text: str) -> str:
-        tools_json = json.dumps(self.local_funcs_schema(), indent=2)
-        return (
-            "You are BetterAlexa. Answer user queries. "
-            "If a function/tool is needed, output <functioncall>{JSON}</functioncall>.\n"
-            f"Available tools: {tools_json}\n\n"
-            f"User: {user_text}\nAssistant: "
-        )
+    def _chat_prompt(self) -> str:
+        return self.tokenizer.apply_chat_template(self.chat, tokenize=False, add_generation_prompt=True)
 
-    # ═══════════════ Tool registry ════════════════════════════════
+    # ───────────────────────── function helpers ───────────────────────────
+    def _extract_func_payload(self, text: str) -> Optional[Dict[str, Any]]:
+        m = _FUNC_TAG_RE.search(text) or _FUNC_OPEN_RE.search(text)
+        if not m:
+            return None
+        json_str = m.group(1)
+        role_match = _ROLE_RE.search(json_str)
+        if role_match:
+            json_str = json_str[: role_match.start()]
+        try:
+            return json.loads(json_str.strip())
+        except json.JSONDecodeError:
+            try:
+                return json.loads(json_str.replace("'", '"'))
+            except Exception:
+                self.logger.warning("Could not parse function JSON: %s", json_str)
+                return None
+
+    def _run_tool(self, name: str, args: Dict[str, Any]) -> Any:
+        func = self.tools.get(name)
+        if not func:
+            return f"<error>Unknown tool: {name}</error>"
+        try:
+            return func(**args)
+        except Exception as exc:  # noqa: BLE001
+            self.logger.exception("Tool '%s' raised", name)
+            return f"<error>{exc}</error>"
+
+    # ───────────────────────── public API ────────────────────────────────
+    def process_input(self, user_text: str) -> LlamaOutput:
+        # 1) generate initial answer
+        self._append_to_chat("user", user_text)
+        prompt = self._chat_prompt()
+        raw_answer = self._generate(prompt)
+        self._append_to_chat("assistant", raw_answer)
+
+        # 2) detect function‑call
+        payload = self._extract_func_payload(raw_answer)
+        if payload:
+            name = payload.get("name", "")
+            args = payload.get("arguments", {})
+
+            # ─── Delegation to TutorAI ───────────────────────────────────
+            if name.lower().startswith("ask_tutorai"):
+                return LlamaOutput(text="", delegate=True, delegate_target=self.tutor_delegate_name)
+
+            # ─── Local execution ────────────────────────────────────────
+            if isinstance(args, str):  # JSON encoded inside string
+                try:
+                    args = json.loads(args)
+                except Exception:
+                    args = {}
+            result = self._run_tool(name, args)
+
+            # Let the model turn the raw result into nice prose
+            follow_up = (
+                prompt
+                + raw_answer
+                + f"\nFunction `{name}` returned: {result}\nAssistant: "
+            )
+            final_answer = self._generate(follow_up)
+            return LlamaOutput(text=final_answer, function_called=True)
+
+        # 3) plain answer
+        return LlamaOutput(text=raw_answer)
+
+    # ───────────────────────── tool registry ─────────────────────────────
     def _load_tools(self) -> Dict[str, Any]:
         registry: Dict[str, Any] = {}
-        for spec in self.local_funcs:
-            fname = spec["name"]
+        try:
+            spec = json.loads(self.functions_json_str)
+        except Exception:
+            self.logger.warning("functions.json is not valid JSON – tools disabled")
+            return registry
+        for entry in spec:
+            fname = entry.get("name")
+            if not fname:
+                continue
             try:
                 mod = importlib.import_module(f"skills.{fname}")
                 registry[fname] = getattr(mod, "run")
             except Exception:
-                logging.warning("No implementation for %s – using stub", fname)
+                self.logger.debug("No implementation for %s – stub registered", fname)
                 registry[fname] = lambda **_: f"[{fname} executed]"
         return registry
-
-    def local_funcs_schema(self) -> List[Dict[str, Any]]:
-        return self.local_funcs
