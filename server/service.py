@@ -1,15 +1,9 @@
-
-"""FastAPI core – now with a **generic delegation framework**.
-
-* `RouteState` has three values: BETTERALEXA, DELEGATE, TESTING
-* For DELEGATE we keep a per‑meeting `delegate_target` (e.g. "tutorai",
-  "anthropic", ...).  Adding a new cloud LLM means:
-    1) register an async handler in `DELEGATE_HANDLERS`
-    2) expose a pseudo‑tool `delegate_to_<name>` in llama3.py
-That's it – no more enum edits.
 """
-from __future__ import annotations
-import logging 
+This is the heart if BetterAlexa. 
+It uses FastAPI Event-handler to route BetterAlexa traffic to the correct destination. 
+"""
+
+import logging
 import asyncio, io, os
 from enum import Enum, auto
 from typing import Dict, List, Optional, Callable, Awaitable
@@ -23,37 +17,45 @@ from whisper import load_model  # type: ignore
 from function_calling.llama3 import LLama3, LlamaOutput  # updated API
 from TTS.api import TTS  # type: ignore
 
-
 logging.basicConfig(level=logging.DEBUG)
 
-# ────────────────────────── config ──────────────────────────
+# parameters for the LLMs
 WHISPER_MODEL_NAME = os.getenv("WHISPER_MODEL", "medium")
 LLAMA_MODEL_NAME   = os.getenv("LLAMA_MODEL", "Llama-3-8B-function-calling")
 LLAMA_MODEL_DIR = Path(__file__).parent / "function_calling" / "Llama-3-8B-function-calling-model"
 LLAMA_TOKENIZER_DIR = Path(__file__).parent / "function_calling" / "Llama-3-8B-function-calling-tokenizer"
 
-
-# TutorAI creds (first delegate target)
+# parameters for the Integrations 
+# TBD @Backend
 TUTORAI_URL   = os.getenv("TUTORAI_URL", "https://tutor.ai/api/v1/chat")
 TUTORAI_TOKEN = os.getenv("TUTORAI_TOKEN", "REPLACE_ME")
 
-# ────────────────────────── FSM ─────────────────────────────
+# The routing states that BetterAlexa uses for traffic.
 class RouteState(Enum):
     BETTERALEXA = auto()
     DELEGATE    = auto()
     TESTING     = auto()
+    TUTORAI     = auto()
 
 # per‑meeting state stores
-SESSION_STATE: Dict[str, RouteState]      = {}
+SESSION_STATE: Dict[str, RouteState]       = {}
 SESSION_DELEGATE: Dict[str, Optional[str]] = {}   # e.g. {"m42": "tutorai"}
 
+# silencing of "loud" libraries for debugging
 for noisy in ["TTS", "transformers", "urllib3", "numba"]:
     logging.getLogger(noisy).setLevel(logging.WARNING)
 
 # ─────────────────────── FastAPI setup ──────────────────────
 app = FastAPI(title="BetterAlexa Core", version="0.6")
+
+# A semaphore for limiting how many parallel TutorAI conversations BetterAlexa can have
 _tutor_sem = asyncio.Semaphore(int(os.getenv("TUTOR_CONCURRENCY", 5)))
 
+"""
+Everything that happens on Server startup 
+Loads needed LLMs (Whisper, Llama, TTS)
+Creates a HTTP Client for communication with Integrations (TutorAI, ...)
+"""
 @app.on_event("startup")
 async def _startup() -> None:
     import torch
@@ -70,28 +72,47 @@ async def _startup() -> None:
 async def _shutdown() -> None:
     await app.state.httpx.aclose()
 
+# TBD
 # ─────────────────── delegate handlers registry ─────────────
-DelegateHandler = Callable[[str, str], Awaitable[str]]  # (query, meeting_id) -> answer text & done bool maybe
+DelegateHandler = Callable[[str, str], Awaitable["DelegateResult"]]  # (query, meeting_id) -> answer text & done bool maybe
 
 class DelegateResult(BaseModel):
     answer: str
     done: bool = False
 
+"""
+Builds the defined JSON formatted Payload
+Sends request to TutorAI and returns answer and "done" field for state within pipeline
+"""
 async def _call_tutorai(query: str, meeting: str) -> DelegateResult:
     payload = {"client_id": meeting, "conversation_id": meeting, "query": query}
     async with _tutor_sem:
-        r = await app.state.httpx.post(TUTORAI_URL, json=payload, headers={"Authorization": f"Bearer {TUTORAI_TOKEN}"})
+        r = await app.state.httpx.post(
+            TUTORAI_URL,
+            json=payload,
+            headers={"Authorization": f"Bearer {TUTORAI_TOKEN}"}
+        )
     if r.status_code != 200:
         raise HTTPException(status_code=502, detail="TutorAI upstream error")
     data = r.json()
     return DelegateResult(answer=data.get("answer", ""), done=data.get("done", False))
 
+
 DELEGATE_HANDLERS: Dict[str, DelegateHandler] = {
     "tutorai": _call_tutorai,
-    # "anthropic": _call_anthropic,  # add later
 }
 
-# ────────────────────── main pipeline ───────────────────────
+STATE_TO_DELEGATE = {
+    RouteState.TUTORAI: "tutorai",
+}
+
+"""
+This is the main pipeline.  
+It receivevs a meeting ID and the corresponding audio stream. It then  
+transforms it into text (Whisper),
+answers (Llama or Integration, depending on state),
+and turns the answer into speech (TTS).
+"""
 async def pipeline(meeting: str, pcm: np.ndarray) -> bytes:
     logging.debug(f"Transcribing PCM audio for meeting {meeting}")
     whisper = app.state.whisper
@@ -100,31 +121,32 @@ async def pipeline(meeting: str, pcm: np.ndarray) -> bytes:
     state = SESSION_STATE.get(meeting, RouteState.BETTERALEXA)
     llama: LLama3 = app.state.llama
     logging.debug(f"RouteState for meeting {meeting}: {state}")
+
     # 1) Local handling
     if state is RouteState.BETTERALEXA:
         out: LlamaOutput = llama.process_input(transcript)
         logging.debug(f"Llama output: {out}")
         answer = out.text
         if out.delegate:
-            target = out.delegate_target or "tutorai"
-            SESSION_STATE[meeting] = RouteState.DELEGATE
-            SESSION_DELEGATE[meeting] = target
+            target = (out.delegate_target or "tutorai").lower()
+            if target == "tutorai":
+                SESSION_STATE[meeting] = RouteState.TUTORAI
+            else:
+                logging.warning(f"Unknown delegate target '{target}', staying in BETTERALEXA")
             logging.debug(f"Delegating to {target}")
             result = await _delegate_call(target, transcript, meeting)
             answer = result.answer
             if result.done:
                 SESSION_STATE[meeting] = RouteState.BETTERALEXA
-                SESSION_DELEGATE.pop(meeting, None)
 
     # 2) Ongoing delegation
-    elif state is RouteState.DELEGATE:
-        target = SESSION_DELEGATE.get(meeting)
+    elif state in STATE_TO_DELEGATE:
+        target = STATE_TO_DELEGATE[state]
         logging.debug(f"Ongoing delegation to {target}")
         result = await _delegate_call(target, transcript, meeting)
         answer = result.answer
         if result.done:
             SESSION_STATE[meeting] = RouteState.BETTERALEXA
-            SESSION_DELEGATE.pop(meeting, None)
 
     # 3) Testing fallback
     else:
@@ -137,7 +159,8 @@ async def pipeline(meeting: str, pcm: np.ndarray) -> bytes:
     elif len(answer) > 500:  # arbitrary length check
         logging.warning(f"Excessively long TTS input detected ({len(answer)} chars). Truncating.")
         answer = answer[:500]
-    logging.debug(f"TTS inut: {answer}")
+    logging.debug(f"TTS input: {answer}")
+
     # TTS
     wav_np = app.state.tts.tts(text=answer, speaker="p335")
     buf = io.BytesIO()
@@ -168,7 +191,6 @@ async def stream(payload: StreamPayload):
 
     async def audio_streamer(data: bytes, chunk_size=4096):
         for i in range(0, len(data), chunk_size):
-            yield data[i:i+chunk_size]
+            yield data[i:i + chunk_size]
 
     return StreamingResponse(audio_streamer(wav), media_type="audio/wav")
-
