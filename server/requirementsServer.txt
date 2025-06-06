@@ -24,3 +24,4 @@ python-dotenv
 selenium
 bitsandbytes
 httpx[http2]
+wikipedia-api
