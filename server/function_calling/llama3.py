@@ -127,7 +127,20 @@ class LLama3:
         return out[0]["generated_text"].strip()
 
     def _chat_prompt(self) -> str:
-        return self.tokenizer.apply_chat_template(self.chat, tokenize=False, add_generation_prompt=True)
+        """Return a prompt for generation, falling back if the tokenizer has no chat template."""
+        try:
+            # Prefer the official chat template if present (HF >= 4.39 models)
+            return self.tokenizer.apply_chat_template(
+                self.chat,
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+        except (ValueError, AttributeError):
+            # Some community models ship without a template; build one manually so
+            # the pipeline never crashes.
+            prompt_lines = [f"{m['role']}: {m['content']}" for m in self.chat]
+            prompt_lines.append("assistant: ")  # generation cue
+            return "\n".join(prompt_lines)
 
     # ───────────────────────── function helpers ───────────────────────────
     def _extract_func_payload(self, text: str) -> Optional[Dict[str, Any]]:
