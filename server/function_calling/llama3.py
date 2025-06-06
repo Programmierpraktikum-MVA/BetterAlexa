@@ -27,6 +27,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+
+from .actions.wolfram import ask_wolfram_question
+from .actions.wikipedia import get_wiki_pageInfo
+
 import torch
 from transformers import (
     AutoModelForCausalLM,
