@@ -16,6 +16,15 @@ Key changes vs the last revision
   role tag ("user", "assistant", "system") – exactly the stop‑criterion the
   old wrapper achieved implicitly via its EOS token.  This prevents the model
   from hallucinating additional turns inside a single response.
+
+2025‑06‑06  ▸  Patch 3
+--------------------
+* **Fallback to globals() for tools** – if a function name isn’t registered in
+  `self.tools`, `_run_tool()` now looks it up in the module’s global symbol
+  table (so `from actions.wolfram import ask_wolfram_question` works exactly
+  like in the old wrapper).  This lets you add tool functions via a simple
+  import without wiring them into `skills.*` shims.
+* No other logic or comments changed.
 """
 from __future__ import annotations
 
@@ -26,10 +35,6 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-
-
-from .actions.wolfram import ask_wolfram_question
-from .actions.wikipedia import get_wiki_pageInfo
 
 import torch
 from transformers import (
@@ -173,11 +178,14 @@ class LLama3:
                 return None
 
     def _run_tool(self, name: str, args: Dict[str, Any]) -> Any:
+        """Execute a registered tool, falling back to globals() like the old wrapper."""
         func = self.tools.get(name)
+        if not func:
+            func = globals().get(name)  # ← legacy fallback
         if not func:
             return f"<error>Unknown tool: {name}</error>"
         try:
-            return func(**args)
+            return func(**args) if args else func()
         except Exception as exc:  # noqa: BLE001
             self.logger.exception("Tool '%s' raised", name)
             return f"<error>{exc}</error>"
