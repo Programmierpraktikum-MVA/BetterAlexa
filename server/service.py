@@ -160,7 +160,7 @@ async def pipeline(meeting: str, pcm: np.ndarray) -> bytes:
         logging.warning(f"Excessively long TTS input detected ({len(answer)} chars). Truncating.")
         answer = answer[:500]
     logging.debug(f"TTS input: {answer}")
-
+    # @DB The "speaker" is where you might use the database. Talk to @Winter for other things that might be costumized for the TTS. 
     # TTS
     wav_np = app.state.tts.tts(text=answer, speaker="p335")
     buf = io.BytesIO()
@@ -174,11 +174,16 @@ async def _delegate_call(target: Optional[str], query: str, meeting: str) -> Del
         return DelegateResult(answer="[delegate target not available]", done=True)
     return await DELEGATE_HANDLERS[target](query, meeting)
 
-# ─────────────────────── HTTP endpoint ──────────────────────
+
+
 class StreamPayload(BaseModel):
     meeting_id: str
     pcm: List[float]
 
+"""
+This is the Endpoint for Traffic. 
+It takes an audio-stream and meeting-id as input and outputs the answer-audio stream.
+"""
 @app.post("/api/v1/stream", response_class=StreamingResponse)
 async def stream(payload: StreamPayload):
     logging.debug(f"Received request")
