@@ -10,20 +10,18 @@ Key changes vs the last revision
   ("You have access to the following functions …").  No schema processing –
   we simply pass the raw JSON string to the model, again mirroring
   `llama3_old.py`.
-* Generation now defaults to `temperature=0.1`, `top_k=50`, `top_p=0.1` and
-  up to `512` new tokens, matching the legacy behaviour.
-* Still returns a structured `LlamaOutput`, delegating `ask_tutorai*` calls
-  and executing local tools via a minimal registry.
-
-This makes the new file a **drop‑in replacement** that behaves just like the
-old one but retains the modern quantised loading logic.
+* Generation defaults to `temperature=0.1`, `top_k=50`, `top_p=0.1` and up
+  to `512` new tokens, matching the legacy behaviour.
+* A new **_assistant_only() stop helper** trims everything after the first
+  role tag ("user", "assistant", "system") – exactly the stop‑criterion the
+  old wrapper achieved implicitly via its EOS token.  This prevents the model
+  from hallucinating additional turns inside a single response.
 """
 from __future__ import annotations
 
 import importlib
 import json
 import logging
-import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -41,6 +39,7 @@ from transformers import (
 _FUNC_TAG_RE = re.compile(r"<functioncall>(.*?)</functioncall>", re.DOTALL | re.I)
 _FUNC_OPEN_RE = re.compile(r"<functioncall>(.*)", re.DOTALL | re.I)
 _ROLE_RE = re.compile(r"\n\s*(user|assistant|system)[:\s]", re.I)
+
 
 # ───────────────────────── public dataclass ─────────────────────────
 @dataclass
@@ -98,7 +97,12 @@ class LLama3:
             device_map="auto",
             local_files_only=True,
         )
-        self.pipe = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer, device_map="auto")
+        self.pipe = pipeline(
+            "text-generation",
+            model=self.model,
+            tokenizer=self.tokenizer,
+            device_map="auto",
+        )
 
         self.max_new_tokens = max_new_tokens
 
@@ -110,15 +114,22 @@ class LLama3:
         msg = {"role": role, "content": content}
         self.chat.append(msg)
         self.chat_length += len(content.split())
+        # maintain rolling window
         while self.chat_length > self._MAX_CHAT_TOKENS and len(self.chat) > 2:
-            removed = self.chat.pop(1)  # drop oldest *user/assistant* pair
+            removed = self.chat.pop(1)
             self.chat_length -= len(removed["content"].split())
+
+    # ───────────────────────── stop‑criterion helper ──────────────────────
+    def _assistant_only(self, text: str) -> str:
+        """Trim everything after the first role tag to mimic old wrapper stops."""
+        m = _ROLE_RE.search(text)
+        return (text[: m.start()] if m else text).strip()
 
     # ─────────────────────────── generation ───────────────────────────────
     def _generate(self, prompt: str) -> str:
         out = self.pipe(
             prompt,
-            do_sample=False,
+            do_sample=False,  # deterministic; sampling params disabled
             max_new_tokens=self.max_new_tokens,
             return_full_text=False,
             pad_token_id=self.tokenizer.eos_token_id,
@@ -127,20 +138,17 @@ class LLama3:
         return out[0]["generated_text"].strip()
 
     def _chat_prompt(self) -> str:
-        """Return a prompt for generation, falling back if the tokenizer has no chat template."""
         try:
-            # Prefer the official chat template if present (HF >= 4.39 models)
             return self.tokenizer.apply_chat_template(
                 self.chat,
                 tokenize=False,
                 add_generation_prompt=True,
             )
         except (ValueError, AttributeError):
-            # Some community models ship without a template; build one manually so
-            # the pipeline never crashes.
-            prompt_lines = [f"{m['role']}: {m['content']}" for m in self.chat]
-            prompt_lines.append("assistant: ")  # generation cue
-            return "\n".join(prompt_lines)
+            # Fallback – plain format if template missing
+            lines = [f"{m['role']}: {m['content']}" for m in self.chat]
+            lines.append("assistant: ")
+            return "\n".join(lines)
 
     # ───────────────────────── function helpers ───────────────────────────
     def _extract_func_payload(self, text: str) -> Optional[Dict[str, Any]]:
@@ -176,9 +184,12 @@ class LLama3:
         self._append_to_chat("user", user_text)
         prompt = self._chat_prompt()
         raw_answer = self._generate(prompt)
-        self._append_to_chat("assistant", raw_answer)
 
-        # 2) detect function‑call
+        # Store only the assistant part (stops applied) in history
+        assistant_snippet = self._assistant_only(raw_answer)
+        self._append_to_chat("assistant", assistant_snippet)
+
+        # 2) detect function‑call in the *untrimmed* raw answer
         payload = self._extract_func_payload(raw_answer)
         if payload:
             name = payload.get("name", "")
@@ -202,11 +213,11 @@ class LLama3:
                 + raw_answer
                 + f"\nFunction `{name}` returned: {result}\nAssistant: "
             )
-            final_answer = self._generate(follow_up)
+            final_answer = self._assistant_only(self._generate(follow_up))
             return LlamaOutput(text=final_answer, function_called=True)
 
-        # 3) plain answer
-        return LlamaOutput(text=raw_answer)
+        # 3) plain answer (trimmed)
+        return LlamaOutput(text=assistant_snippet)
 
     # ───────────────────────── tool registry ─────────────────────────────
     def _load_tools(self) -> Dict[str, Any]:
