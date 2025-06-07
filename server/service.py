@@ -16,6 +16,7 @@ from pathlib import Path
 from whisper import load_model  # type: ignore
 from function_calling.llama3 import LLama3, LlamaOutput  # updated API
 from TTS.api import TTS  # type: ignore
+import certifi, ssl
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -66,7 +67,8 @@ async def _startup() -> None:
         tokenizer_dir=LLAMA_TOKENIZER_DIR,
     )
     app.state.tts     = TTS(model_name="tts_models/en/vctk/vits", progress_bar=False)
-    app.state.httpx   = httpx.AsyncClient(http2=True, timeout=10)
+    ctx = ssl.create_default_context(cafile=certifi.where())
+    app.state.httpx   = httpx.AsyncClient(http2=True, timeout=10, verify=ctx)
 
 @app.on_event("shutdown")
 async def _shutdown() -> None:
