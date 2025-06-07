@@ -28,7 +28,7 @@ LLAMA_TOKENIZER_DIR = Path(__file__).parent / "function_calling" / "Llama-3-8B-f
 # parameters for the Integrations 
 # TBD @Backend
 TUTORAI_URL   = os.getenv("TUTORAI_URL", "https://tutor.ai/api/v1/chat")
-TUTORAI_TOKEN = os.getenv("TUTORAI_TOKEN", "REPLACE_ME")
+TUTORAI_TOKEN = os.getenv("TUTORAI_TOKEN")
 
 # The routing states that BetterAlexa uses for traffic.
 class RouteState(Enum):
@@ -85,7 +85,7 @@ Builds the defined JSON formatted Payload
 Sends request to TutorAI and returns answer and "done" field for state within pipeline
 """
 async def _call_tutorai(query: str, meeting: str) -> DelegateResult:
-    payload = {"client_id": meeting, "conversation_id": meeting, "query": query}
+    payload = {"query": query}
     async with _tutor_sem:
         r = await app.state.httpx.post(
             TUTORAI_URL,
@@ -94,6 +94,24 @@ async def _call_tutorai(query: str, meeting: str) -> DelegateResult:
         )
     if r.status_code != 200:
         raise HTTPException(status_code=502, detail="TutorAI upstream error")
+    
+    # Check response headers for authentication
+    auth_header = r.headers.get("Authorization")
+    if auth_header:
+        if not auth_header.startswith("Bearer "):
+            logging.warning("Invalid Authorization header format in response")
+            raise HTTPException(status_code=502, detail="Invalid auth response format")
+        
+        # Extract and validate token
+        response_token = auth_header[7:]  # Remove "Bearer " prefix
+        if not TUTORAI_TOKEN == response_token:
+            logging.error("Invalid response token received")
+            raise HTTPException(status_code=502, detail="Invalid response authentication")
+        
+        logging.debug("Response authentication verified")
+    else:
+        logging.warning("No Authorization header in TutorAI response")
+
     data = r.json()
     return DelegateResult(answer=data.get("answer", ""), done=data.get("done", False))
 
