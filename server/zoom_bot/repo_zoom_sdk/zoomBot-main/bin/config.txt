@@ -1,0 +1,18 @@
+meeting_number: "849 8847 7950"
+clientID: "aruOgQfORGWnmbpSwsd2Hw"
+clientSecret: "St8squhsyVgdoOGNwbCrNzYmuiGu37Nn"
+meeting_password: "WQ0E6q"
+recording_token: ""
+GetVideoRawData: "false"
+GetAudioRawData: "true"
+SendVideoRawData: "false"
+SendAudioRawData: "true"
+
+create_vSpeaker: "pactl load-module module-null-sink sink_name=vspeaker sink_properties=device.description=virtual_speaker"
+create_vMic: "pactl load-module module-remap-source master=vspeaker.monitor source_name=vmic source_properties=device.description=virtual_mic"
+vSpeaker: "virtual_speaker"
+vMic: "virtual_mic"
+
+path_to_pythonVenv: ""
+path_to_client: ""
+path_to_client_folder: ""

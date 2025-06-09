@@ -1,0 +1,72 @@
+[
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/meeting_sdk.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/meeting_sdk.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/meeting_sdk.cpp"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/cc  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/miniaudio.c.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/miniaudio.c",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/miniaudio.c"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/MeetingReminderEventListener.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/MeetingReminderEventListener.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/MeetingReminderEventListener.cpp"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/MeetingServiceEventListener.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/MeetingServiceEventListener.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/MeetingServiceEventListener.cpp"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/NetworkConnectionHandler.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/NetworkConnectionHandler.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/NetworkConnectionHandler.cpp"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/AuthServiceEventListener.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/AuthServiceEventListener.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/AuthServiceEventListener.cpp"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/MeetingParticipantsCtrlEventListener.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/MeetingParticipantsCtrlEventListener.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/MeetingParticipantsCtrlEventListener.cpp"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/MeetingRecordingCtrlEventListener.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/MeetingRecordingCtrlEventListener.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/MeetingRecordingCtrlEventListener.cpp"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/ZoomSDKRenderer.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/ZoomSDKRenderer.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/ZoomSDKRenderer.cpp"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/ZoomSDKAudioRawData.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/ZoomSDKAudioRawData.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/ZoomSDKAudioRawData.cpp"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/ZoomSDKVideoSource.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/ZoomSDKVideoSource.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/ZoomSDKVideoSource.cpp"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/ZoomSDKVirtualAudioMicEvent.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/ZoomSDKVirtualAudioMicEvent.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/ZoomSDKVirtualAudioMicEvent.cpp"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/audioHandling.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/audioHandling.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/audioHandling.cpp"
+},
+{
+  "directory": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build",
+  "command": "/usr/bin/c++  -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include  -std=c++11 -g   -std=c++11 -pthread -o CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/terminalInteractions.cpp",
+  "file": "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/terminalInteractions.cpp"
+}
+]

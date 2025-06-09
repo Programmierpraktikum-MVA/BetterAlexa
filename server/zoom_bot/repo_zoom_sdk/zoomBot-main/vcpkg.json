@@ -1,0 +1,7 @@
+{
+  "dependencies": [
+    "openssl",
+    "picojson",
+    "jwt-cpp"
+    ]
+}
