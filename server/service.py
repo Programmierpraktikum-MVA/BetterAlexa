@@ -124,10 +124,13 @@ class DelegateResult(BaseModel):
 """
 Builds the defined JSON formatted Payload
 Sends request to TutorAI and returns answer and "done" field for state within pipeline
+uses TUTORAI_TOKEN from environment variables for authentication
 """
 async def _call_tutorai(query: str, meeting: str) -> DelegateResult:
     payload = {"query": query}
+    #semaphore to limit concurrent requests to TutorAI
     async with _tutor_sem:
+        # Send request to TutorAI and await response
         r = await app.state.httpx.post(
             TUTORAI_URL,
             json=payload,
@@ -136,7 +139,7 @@ async def _call_tutorai(query: str, meeting: str) -> DelegateResult:
     if r.status_code != 200:
         raise HTTPException(status_code=502, detail="TutorAI upstream error")
     
-    # Check response headers for authentication
+    # Checks if TUTORAI_TOKEN is contained in response header
     auth_header = r.headers.get("Authorization")
     if auth_header:
         if not auth_header.startswith("Bearer "):
@@ -153,6 +156,7 @@ async def _call_tutorai(query: str, meeting: str) -> DelegateResult:
     else:
         logging.warning("No Authorization header in TutorAI response")
 
+    #extract and return the answer and done status
     data = r.json()
     return DelegateResult(answer=data.get("answer", ""), done=data.get("done", False))
 
