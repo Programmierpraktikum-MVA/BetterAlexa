@@ -9,7 +9,8 @@ from enum import Enum, auto
 from typing import Dict, List, Optional, Callable, Awaitable
 
 import httpx, numpy as np, soundfile as sf
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Depends, Security
+from fastapi.security.api_key import APIKeyHeader
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from pathlib import Path
@@ -17,6 +18,7 @@ from whisper import load_model  # type: ignore
 from function_calling.llama3 import LLama3, LlamaOutput  # updated API
 from TTS.api import TTS  # type: ignore
 import certifi, ssl
+from .database.database_wrapper import authenticate_user, get_sensitive_data, set_sensitive_data
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -74,7 +76,44 @@ async def _startup() -> None:
 async def _shutdown() -> None:
     await app.state.httpx.aclose()
 
-# TBD
+
+# Database
+API_KEY_HEADER = APIKeyHeader(name="X-API-Key")
+def get_current_user(api_key: str = Security(API_KEY_HEADER)):
+    try:
+        user_id = authenticate_user(api_key)
+        return user_id
+    except HTTPException as e:
+        raise e
+
+# Request-Modelle für sichere Daten
+class SensitiveDataRequest(BaseModel):
+    key: str
+    password: str
+
+class SensitiveDataSetRequest(BaseModel):
+    key: str
+    value: str
+    password: str
+
+# Endpoint: Sensible Daten lesen
+@app.post("/get_sensitive_data")
+def read_sensitive_data(request: SensitiveDataRequest, user_id: str = Depends(get_current_user)):
+    try:
+        value = get_sensitive_data(user_id, request.key, request.password)
+        return {"value": value}
+    except HTTPException as e:
+        raise e
+
+# Endpoint: Sensible Daten schreiben
+@app.post("/set_sensitive_data")
+def write_sensitive_data(request: SensitiveDataSetRequest, user_id: str = Depends(get_current_user)):
+    try:
+        set_sensitive_data(user_id, request.key, request.value, request.password)
+        return {"status": "success"}
+    except HTTPException as e:
+        raise e
+    
 # ─────────────────── delegate handlers registry ─────────────
 DelegateHandler = Callable[[str, str], Awaitable["DelegateResult"]]  # (query, meeting_id) -> answer text & done bool maybe
 
