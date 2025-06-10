@@ -1,43 +1,42 @@
 import base64
-import json
-import sqlite3
+import os
 from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
 
-# Key ableiten (z.B. aus user_id, als Bytes-Padding)
-def generate_key(user_id: str) -> bytes:
-    # Einfachheit: user_id auf 32 Zeichen auffüllen/truncaten und base64 kodieren
-    raw_key = (user_id * 32)[:32].encode()  
-    return base64.urlsafe_b64encode(raw_key)
+def derive_key(password: str, salt: bytes) -> bytes:
+    """
+    Leitet einen 32-Byte Schlüssel aus Passwort + Salt mittels PBKDF2 ab.
+    """
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100_000,
+        backend=default_backend()
+    )
+    key = kdf.derive(password.encode())
+    return base64.urlsafe_b64encode(key)
 
-def encrypt(user_id: str, plaintext: str) -> str:
-    key = generate_key(user_id)
+def encrypt_with_password(password: str, plaintext: str) -> (str, str):
+    """
+    Verschlüsselt plaintext mit Schlüssel aus password + zufälligem Salt.
+    Gibt Tuple (encrypted_string, base64_salt) zurück.
+    """
+    salt = os.urandom(16)
+    key = derive_key(password, salt)
     f = Fernet(key)
     encrypted = f.encrypt(plaintext.encode())
-    return encrypted.decode()
+    return encrypted.decode(), base64.b64encode(salt).decode()
 
-def decrypt(user_id: str, ciphertext: str) -> str:
-    key = generate_key(user_id)
+def decrypt_with_password(password: str, encrypted_text: str, salt_b64: str) -> str:
+    """
+    Entschlüsselt encrypted_text mit Schlüssel aus password + Salt.
+    Salt wird als Base64 erwartet.
+    """
+    salt = base64.b64decode(salt_b64)
+    key = derive_key(password, salt)
     f = Fernet(key)
-    decrypted = f.decrypt(ciphertext.encode())
+    decrypted = f.decrypt(encrypted_text.encode())
     return decrypted.decode()
-
-# Speichert Daten pro user_id und key (key ist der Name z.B. 'spotify_api_key')
-def encrypt_and_store(user_id: str, data: dict, conn: sqlite3.Connection, cursor: sqlite3.Cursor):
-    for key, value in data.items():
-        encrypted_value = encrypt(user_id, value)
-        cursor.execute("""
-            INSERT INTO sensitive_data (user_id, key, encrypted_value) 
-            VALUES (?, ?, ?)
-            ON CONFLICT(user_id, key) DO UPDATE SET encrypted_value=excluded.encrypted_value
-        """, (user_id, key, encrypted_value))
-    conn.commit()
-
-def retrieve_and_decrypt(user_id: str, key: str, conn: sqlite3.Connection, cursor: sqlite3.Cursor) -> str:
-    cursor.execute("""
-        SELECT encrypted_value FROM sensitive_data WHERE user_id=? AND key=?
-    """, (user_id, key))
-    row = cursor.fetchone()
-    if not row:
-        raise ValueError("No data found")
-    encrypted_value = row[0]
-    return decrypt(user_id, encrypted_value)
