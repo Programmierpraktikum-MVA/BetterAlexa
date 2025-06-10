@@ -9,7 +9,7 @@ from enum import Enum, auto
 from typing import Dict, List, Optional, Callable, Awaitable
 
 import httpx, numpy as np, soundfile as sf
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from pathlib import Path
@@ -219,3 +219,14 @@ async def stream(payload: StreamPayload):
             yield data[i:i + chunk_size]
 
     return StreamingResponse(audio_streamer(wav), media_type="audio/wav")
+
+"""
+This is the Endpoint for Discord Integration handling.
+It takes (for now) a zoom invite link and forwards this to the zoombot 
+"""
+@app.post("/handle_zoom_link")
+async def handle_zoom_link(request: Request):
+    data = await request.json()
+    link = data.get("link")
+    # TODO: forward the link to zoombot and handle response
+    return {"status": "ok"}
