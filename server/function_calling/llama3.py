@@ -78,7 +78,7 @@ class LLama3:
     ) -> None:
         self.logger = logging.getLogger(__name__)
 
-        # ══════════════════ load functions.json (verbatim) ══════════════════
+        # ═════════════════ load functions.json (verbatim) ══════════════════
         with functions_file.open("r", encoding="utf‑8") as fh:
             self.functions_json_str: str = fh.read()
         self.tutor_delegate_name = tutor_delegate.lower()

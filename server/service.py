@@ -9,13 +9,14 @@ from enum import Enum, auto
 from typing import Dict, List, Optional, Callable, Awaitable
 
 import httpx, numpy as np, soundfile as sf
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from pathlib import Path
 from whisper import load_model  # type: ignore
 from function_calling.llama3 import LLama3, LlamaOutput  # updated API
 from TTS.api import TTS  # type: ignore
+import certifi, ssl
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -28,7 +29,7 @@ LLAMA_TOKENIZER_DIR = Path(__file__).parent / "function_calling" / "Llama-3-8B-f
 # parameters for the Integrations 
 # TBD @Backend
 TUTORAI_URL   = os.getenv("TUTORAI_URL", "https://tutor.ai/api/v1/chat")
-TUTORAI_TOKEN = os.getenv("TUTORAI_TOKEN", "REPLACE_ME")
+TUTORAI_TOKEN = os.getenv("TUTORAI_TOKEN")
 
 # The routing states that BetterAlexa uses for traffic.
 class RouteState(Enum):
@@ -66,7 +67,8 @@ async def _startup() -> None:
         tokenizer_dir=LLAMA_TOKENIZER_DIR,
     )
     app.state.tts     = TTS(model_name="tts_models/en/vctk/vits", progress_bar=False)
-    app.state.httpx   = httpx.AsyncClient(http2=True, timeout=10)
+    ctx = ssl.create_default_context(cafile=certifi.where())
+    app.state.httpx   = httpx.AsyncClient(http2=True, timeout=10, verify=ctx)
 
 @app.on_event("shutdown")
 async def _shutdown() -> None:
@@ -85,7 +87,7 @@ Builds the defined JSON formatted Payload
 Sends request to TutorAI and returns answer and "done" field for state within pipeline
 """
 async def _call_tutorai(query: str, meeting: str) -> DelegateResult:
-    payload = {"client_id": meeting, "conversation_id": meeting, "query": query}
+    payload = {"query": query}
     async with _tutor_sem:
         r = await app.state.httpx.post(
             TUTORAI_URL,
@@ -94,6 +96,24 @@ async def _call_tutorai(query: str, meeting: str) -> DelegateResult:
         )
     if r.status_code != 200:
         raise HTTPException(status_code=502, detail="TutorAI upstream error")
+    
+    # Check response headers for authentication
+    auth_header = r.headers.get("Authorization")
+    if auth_header:
+        if not auth_header.startswith("Bearer "):
+            logging.warning("Invalid Authorization header format in response")
+            raise HTTPException(status_code=502, detail="Invalid auth response format")
+        
+        # Extract and validate token
+        response_token = auth_header[7:]  # Remove "Bearer " prefix
+        if not TUTORAI_TOKEN == response_token:
+            logging.error("Invalid response token received")
+            raise HTTPException(status_code=502, detail="Invalid response authentication")
+        
+        logging.debug("Response authentication verified")
+    else:
+        logging.warning("No Authorization header in TutorAI response")
+
     data = r.json()
     return DelegateResult(answer=data.get("answer", ""), done=data.get("done", False))
 
@@ -199,3 +219,14 @@ async def stream(payload: StreamPayload):
             yield data[i:i + chunk_size]
 
     return StreamingResponse(audio_streamer(wav), media_type="audio/wav")
+
+"""
+This is the Endpoint for Discord Integration handling.
+It takes (for now) a zoom invite link and forwards this to the zoombot 
+"""
+@app.post("/handle_zoom_link")
+async def handle_zoom_link(request: Request):
+    data = await request.json()
+    link = data.get("link")
+    # TODO: forward the link to zoombot and handle response
+    return {"status": "ok"}
