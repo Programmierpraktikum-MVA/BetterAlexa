@@ -23,7 +23,20 @@ def set_sensitive_data(user_id: str, key: str, value: str, password: str) -> Non
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     try:
+        cursor.execute("""
+            SELECT encrypted_value, salt FROM sensitive_data WHERE user_id=? AND key=?
+        """, (user_id, key))
+        row = cursor.fetchone()
+
+        if row:
+            encrypted_value_db, salt_db = row
+            try:
+                decrypted_value = decrypt_with_password(password, encrypted_value_db, salt_db)
+            except Exception:
+                raise HTTPException(status_code=403, detail="Passwort stimmt nicht - Zugriff verweigert")
+
         encrypted_value, salt = encrypt_with_password(password, value)
+
         cursor.execute("""
             INSERT INTO sensitive_data (user_id, key, encrypted_value, salt)
             VALUES (?, ?, ?, ?)
@@ -34,6 +47,7 @@ def set_sensitive_data(user_id: str, key: str, value: str, password: str) -> Non
         conn.commit()
     finally:
         conn.close()
+
 
 def get_sensitive_data(user_id: str, key: str, password: str) -> str:
     conn = sqlite3.connect(DB_PATH)
