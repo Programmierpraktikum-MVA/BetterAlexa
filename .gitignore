@@ -33,5 +33,3 @@ Llama-3-8B-function-calling*
 
 .env
 #/frontend/
-libmeetingsdk.so
-#zu große Datei, wird sie erst beim build erzeugt?
