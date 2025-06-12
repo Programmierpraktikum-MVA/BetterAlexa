@@ -33,3 +33,4 @@ Llama-3-8B-function-calling*
 
 .env
 #/frontend/
+*.so
