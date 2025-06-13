@@ -1,59 +1,28 @@
-"""Llama‑3 wrapper for BetterAlexa – updated to use **chat‑template generation**
-exactly like the previous `llama3_old.py` while still exposing the modern
-`LlamaOutput` API expected by `service.py`.
-
-Key changes vs the last revision
-================================
-* Keeps a rolling **chat list** and formats prompts through
-  `tokenizer.apply_chat_template`, identical to the old implementation.
-* Loads **functions.json verbatim** and injects it once as a *system* message
-  ("You have access to the following functions …").  No schema processing –
-  we simply pass the raw JSON string to the model, again mirroring
-  `llama3_old.py`.
-* Generation defaults to `temperature=0.1`, `top_k=50`, `top_p=0.1` and up
-  to `512` new tokens, matching the legacy behaviour.
-* A new **_assistant_only() stop helper** trims everything after the first
-  role tag ("user", "assistant", "system") – exactly the stop‑criterion the
-  old wrapper achieved implicitly via its EOS token.  This prevents the model
-  from hallucinating additional turns inside a single response.
-
-2025‑06‑06  ▸  Patch 3
---------------------
-* **Fallback to globals() for tools** – if a function name isn’t registered in
-  `self.tools`, `_run_tool()` now looks it up in the module’s global symbol
-  table (so `from actions.wolfram import ask_wolfram_question` works exactly
-  like in the old wrapper).  This lets you add tool functions via a simple
-  import without wiring them into `skills.*` shims.
-* No other logic or comments changed.
-"""
-from __future__ import annotations
-
-import importlib
+import os
 import json
 import logging
-import re
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 import torch
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    BitsAndBytesConfig,
-    pipeline,
-)
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Pipeline
+from transformers import pipeline
+from trl import setup_chat_format
+from deep_translator import GoogleTranslator
+from lingua import Language, LanguageDetectorBuilder
 
-# ───────────────────────── regex helpers ────────────────────────────
-_FUNC_TAG_RE = re.compile(r"<functioncall>(.*?)</functioncall>", re.DOTALL | re.I)
-_FUNC_OPEN_RE = re.compile(r"<functioncall>(.*)", re.DOTALL | re.I)
-_ROLE_RE = re.compile(r"\n\s*(user|assistant|system)[:\s]", re.I)
+from .download_drive import download_google_drive_folder
+from .actions.wolfram import ask_wolfram_question
+from .actions.wikipedia import get_wiki_pageInfo
+from .tutor_ai.backend.ChatEngine import ask_TutorAI_question
+
+DEBUG_MODE = 1
 
 
-# ───────────────────────── public dataclass ─────────────────────────
+# ───────────────────────── output dataclass ────────────────────────────
 @dataclass
 class LlamaOutput:
-    """Result returned by :pymeth:`LLama3.process_input`."""
+    """Structured return type expected by service.py."""
 
     text: str
     delegate: bool = False
@@ -62,191 +31,155 @@ class LlamaOutput:
 
 
 class LLama3:
-    """Chat‑style Llama‑3 wrapper with legacy generation semantics."""
+    """Simplified Llama‑3 wrapper that mirrors llama3.py but keeps JSON‑style
+    tool handling from `llama3_goal.py`. We assume enough VRAM, so the model is
+    *always* loaded in 4‑bit on GPU – no heuristics, no fallbacks."""
 
-    # chat & memory limits
-    _MAX_CHAT_TOKENS = 1024
+    path_to_model: str
+    path_to_tokenizer: str
+    path_to_dir: str
+    functions: str
+    model: AutoModelForCausalLM
+    tokenizer: AutoTokenizer
+    pipeline: Pipeline
+    chat: list[dict[str, str]] = []
+    chat_length: int = 0
+    lang_detector: LanguageDetectorBuilder
 
-    def __init__(
-        self,
-        model_dir: Path,
-        tokenizer_dir: Path,
-        *,
-        functions_file: Path = Path(__file__).with_name("functions.json"),
-        tutor_delegate: str = "TutorAI",
-        max_new_tokens: int = 512,
-    ) -> None:
-        self.logger = logging.getLogger(__name__)
+    _TUTOR_DELEGATE = "tutorai"
 
-        # ═════════════════ load functions.json (verbatim) ══════════════════
-        with functions_file.open("r", encoding="utf‑8") as fh:
-            self.functions_json_str: str = fh.read()
-        self.tutor_delegate_name = tutor_delegate.lower()
+    # ─────────────────────────── init / setup ───────────────────────────
+    def __init__(self, destination_path: str, model_link: str | None = None, tokenizer_link: str | None = None) -> None:
+        self.path_to_dir = os.path.dirname(__file__)
+        self.path_to_model = os.path.join(self.path_to_dir, destination_path + "-model")
+        self.path_to_tokenizer = os.path.join(self.path_to_dir, destination_path + "-tokenizer")
+        self.lang_detector = LanguageDetectorBuilder.from_languages(Language.GERMAN, Language.ENGLISH).build()
 
-        # prepare chat memory & prime with system message
-        self.chat: List[Dict[str, str]] = []
-        self.chat_length: int = 0  # word count approximation
+        if model_link and not os.path.isdir(self.path_to_model):
+            download_google_drive_folder(model_link, self.path_to_model)
+
+        if tokenizer_link and not os.path.isdir(self.path_to_tokenizer):
+            download_google_drive_folder(tokenizer_link, self.path_to_tokenizer)
+
+        self._load_functions()
         system_msg = (
             "You are a helpful assistant with access to the following functions. "
-            "Use them if required -\n{\n" + self.functions_json_str + "\n}"
+            "Use them if required -\n{\n" + self.functions + "\n}"
         )
         self._append_to_chat("system", system_msg)
+        self._prepare_model()
 
-        # ══════════════════ model & tokenizer ═══════════════════════════════
+    # ─────────────────────── chat memory helpers ───────────────────────
+    def _append_to_chat(self, role: str, content: str):
+        msg = {"role": role, "content": content}
+        self.chat.append(msg)
+        self.chat_length += len(content.split())
+        while self.chat_length > 1024 and len(self.chat) > 2:
+            removed = self.chat.pop(1)
+            self.chat_length -= len(removed["content"].split())
+
+    # ─────────────────────────── utilities ─────────────────────────────
+    def _load_functions(self):
+        func_path = os.path.join(self.path_to_dir, "functions.json")
+        with open(func_path, "r", encoding="utf-8") as file:
+            self.functions = file.read()
+
+    # ─────────────────────────── model load ────────────────────────────
+    def _prepare_model(self):
+        tokenizer = AutoTokenizer.from_pretrained(self.path_to_tokenizer)
+        tokenizer.padding_side = "right"
+
         quant_cfg = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_use_double_quant=True,
             bnb_4bit_quant_type="nf4",
             bnb_4bit_compute_dtype=torch.float16,
         )
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir, local_files_only=True)
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_dir,
+        model = AutoModelForCausalLM.from_pretrained(
+            self.path_to_model,
+            device_map="auto",
             quantization_config=quant_cfg,
-            device_map="auto",
-            local_files_only=True,
-        )
-        self.pipe = pipeline(
-            "text-generation",
-            model=self.model,
-            tokenizer=self.tokenizer,
-            device_map="auto",
+            torch_dtype=torch.float16,
         )
 
-        self.max_new_tokens = max_new_tokens
+        self.model, self.tokenizer = setup_chat_format(model, tokenizer)
+        self.pipeline = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer)
 
-        # ══════════════════ tool registry (minimal) ═════════════════════════
-        self.tools: Dict[str, Any] = self._load_tools()
+    # ───────────────────────── generation core ─────────────────────────
+    def _generate(self, user_input: str) -> str:
+        """Handles chat bookkeeping and returns the raw assistant string."""
+        self._append_to_chat("user", user_input)
+        prompt = self.pipeline.tokenizer.apply_chat_template(
+            self.chat, tokenize=False, add_generation_prompt=True
+        )
+        eos_token_id = self.pipeline.tokenizer.eos_token_id
+        pad_token_id = self.pipeline.tokenizer.pad_token_id
 
-    # ──────────────────────────── chat helpers ────────────────────────────
-    def _append_to_chat(self, role: str, content: str) -> None:
-        msg = {"role": role, "content": content}
-        self.chat.append(msg)
-        self.chat_length += len(content.split())
-        # maintain rolling window
-        while self.chat_length > self._MAX_CHAT_TOKENS and len(self.chat) > 2:
-            removed = self.chat.pop(1)
-            self.chat_length -= len(removed["content"].split())
-
-    # ───────────────────────── stop‑criterion helper ──────────────────────
-    def _assistant_only(self, text: str) -> str:
-        """Trim everything after the first role tag to mimic old wrapper stops."""
-        m = _ROLE_RE.search(text)
-        return (text[: m.start()] if m else text).strip()
-
-    # ─────────────────────────── generation ───────────────────────────────
-    def _generate(self, prompt: str) -> str:
-        out = self.pipe(
+        outputs = self.pipeline(
             prompt,
-            do_sample=False,  # deterministic; sampling params disabled
-            max_new_tokens=self.max_new_tokens,
-            return_full_text=False,
-            pad_token_id=self.tokenizer.eos_token_id,
-            eos_token_id=self.tokenizer.eos_token_id,
+            max_new_tokens=512,
+            temperature=0.1,
+            top_k=50,
+            top_p=0.1,
+            eos_token_id=eos_token_id,
+            pad_token_id=pad_token_id,
         )
-        return out[0]["generated_text"].strip()
+        response = outputs[0]["generated_text"][len(prompt) :].strip()
+        self._append_to_chat("assistant", response)
+        return response
 
-    def _chat_prompt(self) -> str:
+    # ─────────────────────── function‑call handler ──────────────────────
+    def _handle_function_call(self, fc_text: str) -> str:
+        if DEBUG_MODE:
+            print(fc_text)
+        payload_str = fc_text[len("<functioncall> ") :].replace("'", "")
         try:
-            return self.tokenizer.apply_chat_template(
-                self.chat,
-                tokenize=False,
-                add_generation_prompt=True,
-            )
-        except (ValueError, AttributeError):
-            # Fallback – plain format if template missing
-            lines = [f"{m['role']}: {m['content']}" for m in self.chat]
-            lines.append("assistant: ")
-            return "\n".join(lines)
-
-    # ───────────────────────── function helpers ───────────────────────────
-    def _extract_func_payload(self, text: str) -> Optional[Dict[str, Any]]:
-        m = _FUNC_TAG_RE.search(text) or _FUNC_OPEN_RE.search(text)
-        if not m:
-            return None
-        json_str = m.group(1)
-        role_match = _ROLE_RE.search(json_str)
-        if role_match:
-            json_str = json_str[: role_match.start()]
-        try:
-            return json.loads(json_str.strip())
-        except json.JSONDecodeError:
-            try:
-                return json.loads(json_str.replace("'", '"'))
-            except Exception:
-                self.logger.warning("Could not parse function JSON: %s", json_str)
-                return None
-
-    def _run_tool(self, name: str, args: Dict[str, Any]) -> Any:
-        """Execute a registered tool, falling back to globals() like the old wrapper."""
-        func = self.tools.get(name)
-        if not func:
-            func = globals().get(name)  # ← legacy fallback
-        if not func:
-            return f"<error>Unknown tool: {name}</error>"
-        try:
-            return func(**args) if args else func()
-        except Exception as exc:  # noqa: BLE001
-            self.logger.exception("Tool '%s' raised", name)
-            return f"<error>{exc}</error>"
-
-    # ───────────────────────── public API ────────────────────────────────
-    def process_input(self, user_text: str) -> LlamaOutput:
-        # 1) generate initial answer
-        self._append_to_chat("user", user_text)
-        prompt = self._chat_prompt()
-        raw_answer = self._generate(prompt)
-
-        # Store only the assistant part (stops applied) in history
-        assistant_snippet = self._assistant_only(raw_answer)
-        self._append_to_chat("assistant", assistant_snippet)
-
-        # 2) detect function‑call in the *untrimmed* raw answer
-        payload = self._extract_func_payload(raw_answer)
-        if payload:
-            name = payload.get("name", "")
-            args = payload.get("arguments", {})
-
-            # ─── Delegation to TutorAI ───────────────────────────────────
-            if name.lower().startswith("ask_tutorai"):
-                return LlamaOutput(text="", delegate=True, delegate_target=self.tutor_delegate_name)
-
-            # ─── Local execution ────────────────────────────────────────
-            if isinstance(args, str):  # JSON encoded inside string
-                try:
-                    args = json.loads(args)
-                except Exception:
-                    args = {}
-            result = self._run_tool(name, args)
-
-            # Let the model turn the raw result into nice prose
-            follow_up = (
-                prompt
-                + raw_answer
-                + f"\nFunction `{name}` returned: {result}\nAssistant: "
-            )
-            final_answer = self._assistant_only(self._generate(follow_up))
-            return LlamaOutput(text=final_answer, function_called=True)
-
-        # 3) plain answer (trimmed)
-        return LlamaOutput(text=assistant_snippet)
-
-    # ───────────────────────── tool registry ─────────────────────────────
-    def _load_tools(self) -> Dict[str, Any]:
-        registry: Dict[str, Any] = {}
-        try:
-            spec = json.loads(self.functions_json_str)
+            data = json.loads(payload_str)
         except Exception:
-            self.logger.warning("functions.json is not valid JSON – tools disabled")
-            return registry
-        for entry in spec:
-            fname = entry.get("name")
-            if not fname:
-                continue
+            return self._generate("FUNCTION RESPONSE: Invalid input format, try again")
+
+        name = data.get("name", "")
+        arguments = data.get("arguments", {})
+        func = globals().get(name)
+        if callable(func):
             try:
-                mod = importlib.import_module(f"skills.{fname}")
-                registry[fname] = getattr(mod, "run")
+                result = func(**arguments)
+            except Exception as exc:
+                result = f"<error>{exc}</error>"
+        else:
+            result = f"<error>Unknown tool: {name}</error>"
+
+        return self._generate("FUNCTION RESPONSE: " + str({"result": result}))
+
+    # ───────────────────────── public API ──────────────────────────────
+    def process_input(self, transcription: str) -> LlamaOutput:  # noqa: C901 – keep logic linear
+        try:
+            lang_detected = self.lang_detector.detect_language_of(transcription).iso_code_639_1.name.lower()
+        except Exception:
+            lang_detected = "en"
+
+        user_input = transcription if lang_detected == "en" else GoogleTranslator("auto", "en").translate(transcription)
+
+        # 1️⃣ Generate initial assistant reply
+        assistant_raw = self._generate(user_input)
+
+        # 2️⃣ Function‑call or delegation handling
+        function_called = False
+        if assistant_raw.startswith("<functioncall> "):
+            payload_str = assistant_raw[len("<functioncall> ") :].replace("'", "")
+            try:
+                payload = json.loads(payload_str)
             except Exception:
-                self.logger.debug("No implementation for %s – stub registered", fname)
-                registry[fname] = lambda **_: f"[{fname} executed]"
-        return registry
+                payload = {}
+            fname = payload.get("name", "").lower()
+
+            if fname.startswith("ask_tutorai"):
+                return LlamaOutput(text="", delegate=True, delegate_target=self._TUTOR_DELEGATE)
+
+            assistant_raw = self._handle_function_call(assistant_raw)
+            function_called = True
+
+        # 3️⃣ Translate back to original language if necessary
+        final_answer = assistant_raw if lang_detected == "en" else GoogleTranslator("en", lang_detected).translate(assistant_raw)
+
+        return LlamaOutput(text=final_answer, function_called=function_called)
