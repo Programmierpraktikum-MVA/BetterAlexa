@@ -29,12 +29,15 @@ class LlamaOutput:
 
 class LLama3:
     """Llama‑3 wrapper with JSON‑style tool handling and simplified GPU load.
-    Translation and language‑detection logic has been removed: everything is
-    assumed to be in English in/out, just like the reference `llama3.py`."""
+    Assumes English input/output and requires no translation libraries.
+
+    The constructor now mirrors the parameters expected by *service.py*:
+        LLama3(model_dir="…", tokenizer_dir="…", ...)
+    It also keeps optional *model_link/tokenizer_link* for drive downloads
+    so existing scripts using those names still work."""
 
     path_to_model: str
     path_to_tokenizer: str
-    path_to_dir: str
     functions: str
     model: AutoModelForCausalLM
     tokenizer: AutoTokenizer
@@ -45,14 +48,44 @@ class LLama3:
     _TUTOR_DELEGATE = "tutorai"
 
     # ─────────────────────────── init / setup ───────────────────────────
-    def __init__(self, destination_path: str, model_link: str | None = None, tokenizer_link: str | None = None) -> None:
-        self.path_to_dir = os.path.dirname(__file__)
-        self.path_to_model = os.path.join(self.path_to_dir, destination_path + "-model")
-        self.path_to_tokenizer = os.path.join(self.path_to_dir, destination_path + "-tokenizer")
+    def __init__(
+        self,
+        model_dir: str | None = None,
+        tokenizer_dir: str | None = None,
+        *,
+        model_link: str | None = None,
+        tokenizer_link: str | None = None,
+        destination_path: str | None = None,
+    ) -> None:
+        """Create a wrapper.
 
+        Parameters
+        ----------
+        model_dir / tokenizer_dir
+            Absolute or relative paths to the downloaded weights/tokenizer
+            directories. **These are what `service.py` passes in.**
+        model_link / tokenizer_link
+            Google‑Drive folder IDs or share links – used when the local dirs
+            don’t exist yet.
+        destination_path
+            (Legacy) base name used to derive the two folders when *dir* args
+            are omitted. Kept for compatibility with older scripts.
+        """
+        base_dir = os.path.dirname(__file__)
+
+        # Resolve paths priority: explicit dirs > destination_path fallback
+        if model_dir and tokenizer_dir:
+            self.path_to_model = os.path.abspath(model_dir)
+            self.path_to_tokenizer = os.path.abspath(tokenizer_dir)
+        elif destination_path is not None:
+            self.path_to_model = os.path.join(base_dir, destination_path + "-model")
+            self.path_to_tokenizer = os.path.join(base_dir, destination_path + "-tokenizer")
+        else:
+            raise ValueError("You must supply either model_dir/tokenizer_dir or destination_path.")
+
+        # Auto‑download if missing and a link is provided
         if model_link and not os.path.isdir(self.path_to_model):
             download_google_drive_folder(model_link, self.path_to_model)
-
         if tokenizer_link and not os.path.isdir(self.path_to_tokenizer):
             download_google_drive_folder(tokenizer_link, self.path_to_tokenizer)
 
@@ -75,7 +108,7 @@ class LLama3:
 
     # ─────────────────────────── utilities ─────────────────────────────
     def _load_functions(self):
-        func_path = os.path.join(self.path_to_dir, "functions.json")
+        func_path = os.path.join(os.path.dirname(__file__), "functions.json")
         with open(func_path, "r", encoding="utf-8") as file:
             self.functions = file.read()
 
@@ -102,22 +135,18 @@ class LLama3:
 
     # ───────────────────────── generation core ─────────────────────────
     def _generate(self, user_input: str) -> str:
-        """Handles chat bookkeeping and returns the raw assistant string."""
         self._append_to_chat("user", user_input)
         prompt = self.pipeline.tokenizer.apply_chat_template(
             self.chat, tokenize=False, add_generation_prompt=True
         )
-        eos_token_id = self.pipeline.tokenizer.eos_token_id
-        pad_token_id = self.pipeline.tokenizer.pad_token_id
-
         outputs = self.pipeline(
             prompt,
             max_new_tokens=512,
             temperature=0.1,
             top_k=50,
             top_p=0.1,
-            eos_token_id=eos_token_id,
-            pad_token_id=pad_token_id,
+            eos_token_id=self.pipeline.tokenizer.eos_token_id,
+            pad_token_id=self.pipeline.tokenizer.pad_token_id,
         )
         response = outputs[0]["generated_text"][len(prompt) :].strip()
         self._append_to_chat("assistant", response)
@@ -148,10 +177,8 @@ class LLama3:
 
     # ───────────────────────── public API ──────────────────────────────
     def process_input(self, transcription: str) -> LlamaOutput:  # noqa: C901 – keep logic linear
-        user_input = transcription  # Always treat input as English
-
         # 1️⃣ Generate initial assistant reply
-        assistant_raw = self._generate(user_input)
+        assistant_raw = self._generate(transcription)
 
         # 2️⃣ Function‑call or delegation handling
         function_called = False
@@ -169,5 +196,4 @@ class LLama3:
             assistant_raw = self._handle_function_call(assistant_raw)
             function_called = True
 
-        # 3️⃣ Return the assistant’s response directly (no translation)
         return LlamaOutput(text=assistant_raw, function_called=function_called)
