@@ -29,12 +29,7 @@ class LlamaOutput:
 
 class LLama3:
     """Llama‑3 wrapper with JSON‑style tool handling and simplified GPU load.
-    Assumes English input/output and requires no translation libraries.
-
-    The constructor now mirrors the parameters expected by *service.py*:
-        LLama3(model_dir="…", tokenizer_dir="…", ...)
-    It also keeps optional *model_link/tokenizer_link* for drive downloads
-    so existing scripts using those names still work."""
+    Assumes English input/output and requires no translation libraries."""
 
     path_to_model: str
     path_to_tokenizer: str
@@ -57,23 +52,8 @@ class LLama3:
         tokenizer_link: str | None = None,
         destination_path: str | None = None,
     ) -> None:
-        """Create a wrapper.
-
-        Parameters
-        ----------
-        model_dir / tokenizer_dir
-            Absolute or relative paths to the downloaded weights/tokenizer
-            directories. **These are what `service.py` passes in.**
-        model_link / tokenizer_link
-            Google‑Drive folder IDs or share links – used when the local dirs
-            don’t exist yet.
-        destination_path
-            (Legacy) base name used to derive the two folders when *dir* args
-            are omitted. Kept for compatibility with older scripts.
-        """
         base_dir = os.path.dirname(__file__)
 
-        # Resolve paths priority: explicit dirs > destination_path fallback
         if model_dir and tokenizer_dir:
             self.path_to_model = os.path.abspath(model_dir)
             self.path_to_tokenizer = os.path.abspath(tokenizer_dir)
@@ -83,7 +63,6 @@ class LLama3:
         else:
             raise ValueError("You must supply either model_dir/tokenizer_dir or destination_path.")
 
-        # Auto‑download if missing and a link is provided
         if model_link and not os.path.isdir(self.path_to_model):
             download_google_drive_folder(model_link, self.path_to_model)
         if tokenizer_link and not os.path.isdir(self.path_to_tokenizer):
@@ -154,39 +133,51 @@ class LLama3:
 
     # ─────────────────────── function‑call handler ──────────────────────
     def _handle_function_call(self, fc_text: str) -> str:
+        """Parse <functioncall> payload, execute the mapped tool, and return a
+        follow‑up generation that verbalises the result."""
         if DEBUG_MODE:
             print(fc_text)
-        payload_str = fc_text[len("<functioncall> ") :].replace("'", "")
+
+        # Extract JSON payload
+        payload_str = fc_text[len("<functioncall> ") :].strip()
         try:
             data = json.loads(payload_str)
-        except Exception:
-            return self._generate("FUNCTION RESPONSE: Invalid input format, try again")
+        except json.JSONDecodeError as exc:
+            logging.warning("Function‑call JSON parse error: %s", exc)
+            return self._generate("FUNCTION RESPONSE: Invalid JSON format, try again.")
 
         name = data.get("name", "")
         arguments = data.get("arguments", {})
+
+        # If the model double‑encoded arguments as a JSON string → decode it
+        if isinstance(arguments, str):
+            try:
+                arguments = json.loads(arguments)
+            except json.JSONDecodeError:
+                # Leave as‑is – the target function might accept a raw string
+                pass
+
         func = globals().get(name)
         if callable(func):
             try:
-                result = func(**arguments)
+                result = func(**arguments) if isinstance(arguments, dict) else func(arguments)
             except Exception as exc:
                 result = f"<error>{exc}</error>"
         else:
             result = f"<error>Unknown tool: {name}</error>"
 
-        return self._generate("FUNCTION RESPONSE: " + str({"result": result}))
+        return self._generate("FUNCTION RESPONSE: " + json.dumps({"result": result}))
 
     # ───────────────────────── public API ──────────────────────────────
-    def process_input(self, transcription: str) -> LlamaOutput:  # noqa: C901 – keep logic linear
-        # 1️⃣ Generate initial assistant reply
+    def process_input(self, transcription: str) -> LlamaOutput:  # noqa: C901
         assistant_raw = self._generate(transcription)
 
-        # 2️⃣ Function‑call or delegation handling
         function_called = False
         if assistant_raw.startswith("<functioncall> "):
-            payload_str = assistant_raw[len("<functioncall> ") :].replace("'", "")
+            payload_str = assistant_raw[len("<functioncall> ") :].strip()
             try:
                 payload = json.loads(payload_str)
-            except Exception:
+            except json.JSONDecodeError:
                 payload = {}
             fname = payload.get("name", "").lower()
 
