@@ -3,7 +3,7 @@ import argparse, os, platform
 from zoom_joiner import join_zoom_meeting
 import threading
 
-from discord_bot import start_discord_bot
+# from discord_bot import start_discord_bot
 
 # Verwende service.py als Uvicorn-App
 APP = "service:app"
