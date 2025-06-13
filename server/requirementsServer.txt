@@ -20,6 +20,7 @@ typing-extensions>=4.11
 webrtcvad==2.0.10
 
 python-dotenv
+discord.py
 
 selenium
 bitsandbytes

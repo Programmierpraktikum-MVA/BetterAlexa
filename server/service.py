@@ -271,5 +271,6 @@ It takes (for now) a zoom invite link and forwards this to the zoombot
 async def handle_zoom_link(request: Request):
     data = await request.json()
     link = data.get("link")
+    logging.debug(f"Received link: {link}")
     # TODO: forward the link to zoombot and handle response
     return {"status": "ok"}

@@ -9,7 +9,7 @@ import requests
 
 """
 This function starts the discord bot named "BetterAlexa" and 
-implements an command for forwarding a zoom invitation link.
+implements a command for forwarding a zoom invitation link.
 """
 def start_discord_bot():
     intents = discord.Intents.default()
@@ -34,6 +34,8 @@ def start_discord_bot():
     async def join_zoom(ctx, link: str):
         global zoom_link
         zoom_link = link
+
+        print(zoom_link)
 
         # Senden des Zoom links an die fast api
         url = "http://localhost:8006/handle_zoom_link"  # maybe needs to be adjusted 
