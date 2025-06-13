@@ -8,8 +8,6 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Pipeline
 from transformers import pipeline
 from trl import setup_chat_format
-from deep_translator import GoogleTranslator
-from lingua import Language, LanguageDetectorBuilder
 
 from .download_drive import download_google_drive_folder
 from .actions.wolfram import ask_wolfram_question
@@ -31,9 +29,9 @@ class LlamaOutput:
 
 
 class LLama3:
-    """Simplified Llama‑3 wrapper that mirrors llama3.py but keeps JSON‑style
-    tool handling from `llama3_goal.py`. We assume enough VRAM, so the model is
-    *always* loaded in 4‑bit on GPU – no heuristics, no fallbacks."""
+    """Llama‑3 wrapper with JSON‑style tool handling and simplified GPU load.
+    Translation and language‑detection logic has been removed: everything is
+    assumed to be in English in/out, just like the reference `llama3.py`."""
 
     path_to_model: str
     path_to_tokenizer: str
@@ -44,7 +42,6 @@ class LLama3:
     pipeline: Pipeline
     chat: list[dict[str, str]] = []
     chat_length: int = 0
-    lang_detector: LanguageDetectorBuilder
 
     _TUTOR_DELEGATE = "tutorai"
 
@@ -53,7 +50,6 @@ class LLama3:
         self.path_to_dir = os.path.dirname(__file__)
         self.path_to_model = os.path.join(self.path_to_dir, destination_path + "-model")
         self.path_to_tokenizer = os.path.join(self.path_to_dir, destination_path + "-tokenizer")
-        self.lang_detector = LanguageDetectorBuilder.from_languages(Language.GERMAN, Language.ENGLISH).build()
 
         if model_link and not os.path.isdir(self.path_to_model):
             download_google_drive_folder(model_link, self.path_to_model)
@@ -153,12 +149,7 @@ class LLama3:
 
     # ───────────────────────── public API ──────────────────────────────
     def process_input(self, transcription: str) -> LlamaOutput:  # noqa: C901 – keep logic linear
-        try:
-            lang_detected = self.lang_detector.detect_language_of(transcription).iso_code_639_1.name.lower()
-        except Exception:
-            lang_detected = "en"
-
-        user_input = transcription if lang_detected == "en" else GoogleTranslator("auto", "en").translate(transcription)
+        user_input = transcription  # Always treat input as English
 
         # 1️⃣ Generate initial assistant reply
         assistant_raw = self._generate(user_input)
@@ -179,7 +170,5 @@ class LLama3:
             assistant_raw = self._handle_function_call(assistant_raw)
             function_called = True
 
-        # 3️⃣ Translate back to original language if necessary
-        final_answer = assistant_raw if lang_detected == "en" else GoogleTranslator("en", lang_detected).translate(assistant_raw)
-
-        return LlamaOutput(text=final_answer, function_called=function_called)
+        # 3️⃣ Return the assistant’s response directly (no translation)
+        return LlamaOutput(text=assistant_raw, function_called=function_called)
