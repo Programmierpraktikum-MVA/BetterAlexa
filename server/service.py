@@ -18,7 +18,7 @@ from whisper import load_model  # type: ignore
 from function_calling.llama3 import LLama3, LlamaOutput  # updated API
 from TTS.api import TTS  # type: ignore
 import certifi, ssl
-from server.database.database_wrapper import authenticate_user, get_sensitive_data, set_sensitive_data
+from database.database_wrapper import authenticate_user, get_sensitive_data, set_sensitive_data
 
 logging.basicConfig(level=logging.DEBUG)
 
