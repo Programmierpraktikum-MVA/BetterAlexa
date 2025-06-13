@@ -15,7 +15,7 @@ set(CMAKE_TOOLCHAIN_FILE "/home/betteralexa/BetterAlexa/vcpkg/scripts/buildsyste
 find_package(OpenSSL REQUIRED)
 find_package(PkgConfig REQUIRED)
 include_directories(/home/betteralexa/vcpkg/installed/x64-linux/include)
-find_package(jwt-cpp CONFIG REQUIRED)
+# find_package(jwt_cpp CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)
 
 
@@ -86,7 +86,7 @@ target_link_libraries(meetingSDK meetingsdk)
 target_link_libraries(meetingSDK glib-2.0)
 target_link_libraries(meetingSDK curl)
 target_link_libraries(meetingSDK pthread)
-target_link_libraries(meetingSDK jwt-cpp::jwt-cpp)
+# target_link_libraries(meetingSDK jwt-cpp::jwt-cpp)
 target_link_libraries(meetingSDK OpenSSL::SSL OpenSSL::Crypto)
 
 configure_file(${CMAKE_SOURCE_DIR}/config.txt ${CMAKE_SOURCE_DIR}/bin/config.txt COPYONLY)

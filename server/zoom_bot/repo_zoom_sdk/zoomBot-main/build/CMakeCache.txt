@@ -227,6 +227,9 @@ PKG_CONFIG_ARGN:STRING=
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 
+//No help, variable specified on the command line.
+VCPKG_MANIFEST_DIR:UNINITIALIZED=/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/vcpkg.json
+
 //Path to a file.
 ZLIB_INCLUDE_DIR:PATH=/usr/include
 
