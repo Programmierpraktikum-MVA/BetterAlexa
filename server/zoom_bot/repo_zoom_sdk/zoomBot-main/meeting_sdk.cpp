@@ -408,8 +408,23 @@ void ReadTEXTSettings()
 		
 		std::cerr << "Reading.." << line <<std::endl;
 	}
+//try new libmeetingsdk.so auf drive zu verlinken
+	if (config.find("zoom_sdk_url") != config.end()) {
+    		std::string url = "https://drive.google.com/uc?export=download&id=1W1savaA-FwgX-D8dRpmyyXFwKTiTiOK7";
+    		std::cout << "Found zoom_sdk_url: " << url << std::endl;
 
-	// Example: Accessing values by key
+    	// Beispiel: Download mit wget
+    		std::string cmd = "wget -O libmeetingsdk.so \"" + url + "\"";
+    		int ret = system(cmd.c_str());
+
+    		if (ret == 0) {
+        		std::cout << "Successfully downloaded libmeetingsdk.so" << std::endl;
+    		} else {
+        		std::cerr << "Failed to download libmeetingsdk.so" << std::endl;
+    		}
+	}
+
+// Example: Accessing values by key
 	if (config.find("meeting_number") != config.end()) {
 		
 		meeting_number=config["meeting_number"];
