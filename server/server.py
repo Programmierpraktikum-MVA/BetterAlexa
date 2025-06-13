@@ -35,8 +35,8 @@ def main():
     zoom_thread.start()
 
     # Starte Discord-Bot parallel (importiert von discord_bot.py)
-    discord_thread = threading.Thread(target=start_discord_bot)
-    discord_thread.start()
+    # discord_thread = threading.Thread(target=start_discord_bot)
+    # discord_thread.start()
 
     # Starte Server je nach Modus
     if args.tcp:
