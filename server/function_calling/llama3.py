@@ -12,7 +12,6 @@ from trl import setup_chat_format
 from .download_drive import download_google_drive_folder
 from .actions.wolfram import ask_wolfram_question
 from .actions.wikipedia import get_wiki_pageInfo
-from .tutor_ai.backend.ChatEngine import ask_TutorAI_question
 
 DEBUG_MODE = 1
 

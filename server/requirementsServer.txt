@@ -25,3 +25,5 @@ selenium
 bitsandbytes
 httpx[http2]
 wikipedia-api
+beautifulsoup4
+trl
