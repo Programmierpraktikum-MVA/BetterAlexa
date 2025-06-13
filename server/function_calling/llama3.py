@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import ast
 from dataclasses import dataclass
 from typing import Optional
 
@@ -112,6 +113,26 @@ class LLama3:
         self.model, self.tokenizer = setup_chat_format(model, tokenizer)
         self.pipeline = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer)
 
+    # ───────────────────────── helpers ────────────────────────────
+    @staticmethod
+    def _safe_json_or_eval(payload: str):
+        """Return dict parsed from payload using JSON first, then ast.literal_eval."""
+        try:
+            return json.loads(payload)
+        except json.JSONDecodeError:
+            try:
+                return ast.literal_eval(payload)
+            except Exception as exc:
+                logging.warning("Payload parse failed: %s", exc)
+                return None
+
+    def _decode_arguments(self, arguments):
+        """Decode JSON‑encoded arguments field if it is a string."""
+        if isinstance(arguments, str):
+            decoded = self._safe_json_or_eval(arguments)
+            return decoded if decoded is not None else arguments
+        return arguments
+
     # ───────────────────────── generation core ─────────────────────────
     def _generate(self, user_input: str) -> str:
         self._append_to_chat("user", user_input)
@@ -133,34 +154,24 @@ class LLama3:
 
     # ─────────────────────── function‑call handler ──────────────────────
     def _handle_function_call(self, fc_text: str) -> str:
-        """Parse <functioncall> payload, execute the mapped tool, and return a
-        follow‑up generation that verbalises the result."""
         if DEBUG_MODE:
             print(fc_text)
 
-        # Extract JSON payload
         payload_str = fc_text[len("<functioncall> ") :].strip()
-        try:
-            data = json.loads(payload_str)
-        except json.JSONDecodeError as exc:
-            logging.warning("Function‑call JSON parse error: %s", exc)
+        data = self._safe_json_or_eval(payload_str)
+        if data is None or not isinstance(data, dict):
             return self._generate("FUNCTION RESPONSE: Invalid JSON format, try again.")
 
         name = data.get("name", "")
-        arguments = data.get("arguments", {})
-
-        # If the model double‑encoded arguments as a JSON string → decode it
-        if isinstance(arguments, str):
-            try:
-                arguments = json.loads(arguments)
-            except json.JSONDecodeError:
-                # Leave as‑is – the target function might accept a raw string
-                pass
+        arguments = self._decode_arguments(data.get("arguments", {}))
 
         func = globals().get(name)
         if callable(func):
             try:
-                result = func(**arguments) if isinstance(arguments, dict) else func(arguments)
+                if isinstance(arguments, dict):
+                    result = func(**arguments)
+                else:
+                    result = func(arguments)
             except Exception as exc:
                 result = f"<error>{exc}</error>"
         else:
@@ -175,11 +186,8 @@ class LLama3:
         function_called = False
         if assistant_raw.startswith("<functioncall> "):
             payload_str = assistant_raw[len("<functioncall> ") :].strip()
-            try:
-                payload = json.loads(payload_str)
-            except json.JSONDecodeError:
-                payload = {}
-            fname = payload.get("name", "").lower()
+            payload = self._safe_json_or_eval(payload_str) or {}
+            fname = (payload.get("name", "")).lower() if isinstance(payload, dict) else ""
 
             if fname.startswith("ask_tutorai"):
                 return LlamaOutput(text="", delegate=True, delegate_target=self._TUTOR_DELEGATE)
