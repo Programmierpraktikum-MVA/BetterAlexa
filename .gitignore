@@ -32,5 +32,4 @@ Llama-3-8B-function-calling*
 */.venv/*
 
 .env
-/server/zoom_bot/repo_zoom_sdk/zoomBot-main/lib/zoom_meeting_sdk/libmeetingsdk.so
-*.so
+/server/zoom_bot/*
