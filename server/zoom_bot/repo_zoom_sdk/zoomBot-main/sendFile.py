@@ -6,11 +6,15 @@ from requests import post
 from os import path
 from audio_recorder import AudioRecorder
 import sys
+from pydub import AudioSegment
+import numpy
+import asyncio
+# TODO: check if requirements need to be updated
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-SERVER_URL = "http://127.0.0.1:8006/whisper"
+SERVER_URL = "http://127.0.0.1:8006/api/v1/stream"
 
 def get_path(file_name):
     """
@@ -48,11 +52,53 @@ def remote_whisper(input_file_path):
         print("exception")
         print(e)
         return e, -2
+
+"""
+A function to convert a mp3 file into a np.array 
+input: file_path is the path to the mp3 file
+       normalized is a boolean, if we want to normalize the output
+"""
+def mp3_to_np_array(file_path, normalized=False):
+    audio = AudioSegment.from_mp3(file_path)
+    array = numpy.array(audio.get_array_of_samples())
+    # Handle stereo files
+    if audio.channels == 2:
+        array = array.reshape((-1, 2))
+    if normalized:
+        return audio.frame_rate, numpy.float32(array) / 2**15
+    else:
+        return audio.frame_rate, array    
+
+async def save_stream_to_file(streamer, filename):
+    with open(filename, "wb") as f:
+        async for chunk in streamer:
+            f.write(chunk)
+
+async def main():
+    # TODO: get the meeting id somehow
+    print(f"Sending following file: {sys.argv[1]}")
+    pcm = mp3_to_np_array(sys.argv[1])
+    payload = {
+        "meeting_id": TBD,
+        "pcm": pcm.tolist(),                     # JSON-friendly
+    }
+
+    response = await post(SERVER_URL, json=payload)
+    response.raise_for_status()
+    print(f"← {len(response.content)/1024:.1f} KB audio from server – received")
+    wav_bytes = response.content    
+    # TODO: check for errors and comment correctly
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))   
+    filename =  os.path.join(script_dir, "response.wav")
+    await save_stream_to_file(wav_bytes, filename)
+
+    with open(os.path.join(script_dir, "done"), "w") as f:
+        f.write(".")
     
 
-
-def main():
-    print(sys.argv[1])
+""" old version (not needed anymore)
+print(sys.argv[1])
     response, errno = remote_whisper(sys.argv[1])
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -70,7 +116,7 @@ def main():
         f.close()
     f = open(os.path.join(script_dir,"done"),"w")
     f.write(".")
-    f.close()
-    
+    f.close() 
+    """
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
