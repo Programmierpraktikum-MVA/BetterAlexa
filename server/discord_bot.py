@@ -38,7 +38,7 @@ def start_discord_bot():
         print(zoom_link)
 
         # Senden des Zoom links an die fast api
-        url = "http://localhost:8006/handle_zoom_link"  # maybe needs to be adjusted 
+        url = "http://127.0.0.1:8006/handle_zoom_link"  # maybe needs to be adjusted 
         response = requests.post(url, json={"link": zoom_link})
 
         await ctx.send("Bot tritt dem Zoom-Meeting bei...")
