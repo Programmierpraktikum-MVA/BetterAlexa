@@ -21,6 +21,8 @@ webrtcvad==2.0.10
 
 python-dotenv
 discord.py
+pydub
+pybind11
 
 selenium
 bitsandbytes
