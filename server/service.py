@@ -12,7 +12,7 @@ import httpx, numpy as np, soundfile as sf
 from fastapi import FastAPI, HTTPException, Request, Depends, Security
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, constr, Field
 from pathlib import Path
 from whisper import load_model  # type: ignore
 from function_calling.llama3 import LLama3, LlamaOutput  # updated API
@@ -78,7 +78,9 @@ async def _shutdown() -> None:
 
 
 # Database
+# Database
 API_KEY_HEADER = APIKeyHeader(name="X-API-Key")
+
 def get_current_user(api_key: str = Security(API_KEY_HEADER)):
     try:
         user_id = authenticate_user(api_key)
@@ -113,6 +115,49 @@ def write_sensitive_data(request: SensitiveDataSetRequest, user_id: str = Depend
         return {"status": "success"}
     except HTTPException as e:
         raise e
+
+# User Registration and Login
+
+class UserCreateRequest(BaseModel):
+    user_id: constr = Field(..., min_length=3)
+    password: constr = Field(..., min_length=6)
+
+class UserLoginRequest(BaseModel):
+    user_id: str
+    password: str
+
+@app.post("/register")
+def register_user(request: UserCreateRequest):
+    from .database.database_wrapper import create_user
+    try:
+        api_key = create_user(request.user_id, request.password)
+        return {"status": "user created", "api_key": api_key}
+    except HTTPException as e:
+        raise e
+
+@app.post("/login")
+def login_user_endpoint(request: UserLoginRequest):
+    from .database.database_wrapper import login_user
+    import sqlite3
+    import os
+
+    DB_PATH = os.path.join(os.path.dirname(__file__), "database", "key_value_store.db")
+
+    try:
+        user_id = login_user(request.user_id, request.password)
+        # Fetch api_key from DB
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT api_key FROM users WHERE user_id=?", (user_id,))
+        row = cursor.fetchone()
+        conn.close()
+        if not row:
+            raise HTTPException(status_code=500, detail="API key not found")
+        api_key = row[0]
+        return {"user_id": user_id, "api_key": api_key}
+    except HTTPException as e:
+        raise e
+
     
 # ─────────────────── delegate handlers registry ─────────────
 DelegateHandler = Callable[[str, str], Awaitable["DelegateResult"]]  # (query, meeting_id) -> answer text & done bool maybe

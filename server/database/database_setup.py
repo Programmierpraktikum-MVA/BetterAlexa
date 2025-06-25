@@ -30,6 +30,7 @@ def create_tables(db_path=DB_PATH):
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
         api_key TEXT UNIQUE NOT NULL
     )
     """)
