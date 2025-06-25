@@ -3,8 +3,6 @@ import argparse, os, platform
 from zoom_joiner import join_zoom_meeting
 import threading
 
-from discord_bot import start_discord_bot
-
 # Verwende service.py als Uvicorn-App
 APP = "service:app"
 
@@ -33,10 +31,6 @@ def main():
     # Starte Zoom-Meeting parallel
     zoom_thread = threading.Thread(target=join_zoom_meeting_on_start)
     zoom_thread.start()
-
-    # Starte Discord-Bot parallel (importiert von discord_bot.py)
-    discord_thread = threading.Thread(target=start_discord_bot)
-    discord_thread.start()
 
     # Starte Server je nach Modus
     if args.tcp:
