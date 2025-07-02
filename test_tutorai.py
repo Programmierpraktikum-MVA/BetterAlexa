@@ -9,7 +9,7 @@ TOKEN = os.getenv("TUTORAI_TOKEN", "dev-token")        # must match BetterAlexa
 async def chat(request: Request, response: Response):
     data = await request.json()                        # {"query": "..."}
     print("⇢ stub got:", json.dumps(data))
-    response.headers["Authorization"] = f"Bearer {TOKEN}"
+    # response.headers["Authorization"] = f"Bearer {TOKEN}"
     return {
         "answer": f"Echo: {data.get('query','')}",
         "done": True                                  # tells pipeline to leave delegate mode
