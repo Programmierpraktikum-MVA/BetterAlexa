@@ -7,6 +7,7 @@ import logging
 import asyncio, io, os
 from enum import Enum, auto
 from typing import Dict, List, Optional, Callable, Awaitable
+import subprocess
 
 import httpx, numpy as np, soundfile as sf
 from fastapi import FastAPI, HTTPException, Request, Depends, Security
@@ -317,5 +318,59 @@ async def handle_zoom_link(request: Request):
     data = await request.json()
     link = data.get("link")
     logging.debug(f"Received link: {link}")
-    # TODO: forward the link to zoombot and handle response
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    zoom_bot_dir = os.path.join(current_dir, os.path.abspath("zoom_bot/repo_zoom_sdk/zoomBot-main"))
+
+    # get the meeting id and pwd from the link
+    meeting_number, pwd = parse_link(link)
+
+    # edit config.txt from zoomBot for our given link
+    # Read lines
+    with open(zoom_bot_dir, "r") as f:
+        lines = f.readlines()
+
+    # Overwrite Meeting_number and meeting_password
+    lines[0] = "meeting_number: \"" + meeting_number + "\""
+    lines[3] = "meeting_password: \"" + pwd + "\""
+
+    # Write back
+    with open(zoom_bot_dir, "w") as f:
+        f.writelines(lines)
+
+    # compile and execute zoom bot 
+    
+    zoom_build_dir = os.path.join(current_dir, os.path.abspath("zoom_bot/repo_zoom_sdk/zoomBot-main/build"))
+    # Ensure the build directory exists
+    os.makedirs(zoom_build_dir, exist_ok=True)
+
+    logging.debug(f"Compiling Zoom Bot from dir: {zoom_build_dir}")
+    # Run 'cmake ..' inside the 'build' directory
+    subprocess.run(['cmake', '..'], cwd=zoom_build_dir, check=True)
+
+    # Run 'cmake --build .' inside the 'build' directory
+    subprocess.run(['cmake', '--build', '.'], cwd=zoom_build_dir, check=True)
+
+    # Run the compiled executable 
+    subprocess.run(['./bin/meetingSDK'], cwd=zoom_build_dir, check=True)
+
     return {"status": "ok"}
+
+def parse_link(link: str):
+    """
+    Takes a zoom meeting invite link and returns the included meeting id and password.
+    
+    Args:
+        link (str): The full zoom invite link.
+
+    Returns:
+        meeting_id: The Meeting ID for the zoom meeting.
+        pwd: The Password for the zoom meeting.
+    """
+    parts = link.split("/")
+    meeting_id, pwd = parts[4].split("?")
+    #meeting_id = meeting_id[0:3] + ' ' + meeting_id[3:7] + ' ' + meeting_id[7:10]
+
+    end = len(pwd) -2
+    pwd = pwd[4:end]
+    return meeting_id,pwd
