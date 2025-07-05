@@ -300,8 +300,8 @@ meetingSDK_EXTERNAL_OBJECTS =
 ../bin/meetingSDK: CMakeFiles/meetingSDK.dir/audioHandling.cpp.o
 ../bin/meetingSDK: CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o
 ../bin/meetingSDK: CMakeFiles/meetingSDK.dir/build.make
-../bin/meetingSDK: /usr/lib/x86_64-linux-gnu/libssl.so
-../bin/meetingSDK: /usr/lib/x86_64-linux-gnu/libcrypto.so
+../bin/meetingSDK: vcpkg_installed/x64-linux/debug/lib/libssl.a
+../bin/meetingSDK: vcpkg_installed/x64-linux/debug/lib/libcrypto.a
 ../bin/meetingSDK: CMakeFiles/meetingSDK.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Linking CXX executable ../bin/meetingSDK"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/meetingSDK.dir/link.txt --verbose=$(VERBOSE)

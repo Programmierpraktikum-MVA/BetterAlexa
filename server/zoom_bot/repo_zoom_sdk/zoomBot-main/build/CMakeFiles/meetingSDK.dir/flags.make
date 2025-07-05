@@ -5,13 +5,13 @@
 # compile CXX with /usr/bin/c++
 C_DEFINES = 
 
-C_INCLUDES = -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include
+C_INCLUDES = -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/jwt-cpp/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include -isystem /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/vcpkg_installed/x64-linux/include
 
 C_FLAGS = -g   -std=c++11 -pthread
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include
+CXX_INCLUDES = -I/home/betteralexa/vcpkg/installed/x64-linux/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/jwt-cpp/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include -I/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/include/h -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/glib-2.0/glib -I/usr/lib64/glib-2.0/include -isystem /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/vcpkg_installed/x64-linux/include
 
 CXX_FLAGS =  -std=c++11 -g   -std=c++11 -pthread
 
