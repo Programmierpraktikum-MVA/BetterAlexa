@@ -30,8 +30,8 @@ LLAMA_TOKENIZER_DIR = Path(__file__).parent / "function_calling" / "Llama-3-8B-f
 
 # parameters for the Integrations 
 # TBD @Backend
-TUTORAI_URL   = os.getenv("TUTORAI_URL", "http://108.181.203.191:8009/api/v1/chat")
-TUTORAI_TOKEN = os.getenv("TUTORAI_TOKEN")
+TUTORAI_URL   = os.getenv("TUTORAI_URL", "http://108.181.203.191:8006/api/v1/chat")
+TUTORAI_TOKEN = os.getenv("101")
 
 # The routing states that BetterAlexa uses for traffic.
 class RouteState(Enum):
