@@ -10,12 +10,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
-set(CMAKE_TOOLCHAIN_FILE "/home/betteralexa/BetterAlexa/vcpkg/scripts/buildsystems/vcpkg.cmake")
+set(CMAKE_TOOLCHAIN_FILE "/home/betteralexa/vcpkg/scripts/buildsystems/vcpkg.cmake")
 
 find_package(OpenSSL REQUIRED)
 find_package(PkgConfig REQUIRED)
 include_directories(/home/betteralexa/vcpkg/installed/x64-linux/include)
-# find_package(jwt_cpp CONFIG REQUIRED)
+include_directories(/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/jwt-cpp/include)
+#find_package(jwt-cpp CONFIG REQUIRED) #was commented
 find_package(ZLIB REQUIRED)
 
 
@@ -27,7 +28,7 @@ pkg_check_modules(GIO REQUIRED gio-2.0)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/include/h)
-
+#include_directories(${CMAKE_SOURCE_DIR}/jwt-cpp/include) #new
 
 # Include GLib directories
 include_directories(${GLIB_INCLUDE_DIRS} ${GIO_INCLUDE_DIRS})
@@ -86,9 +87,9 @@ target_link_libraries(meetingSDK meetingsdk)
 target_link_libraries(meetingSDK glib-2.0)
 target_link_libraries(meetingSDK curl)
 target_link_libraries(meetingSDK pthread)
-# target_link_libraries(meetingSDK jwt-cpp::jwt-cpp)
+#target_link_libraries(meetingSDK jwt-cpp::jwt-cpp) #was commented 
+#target_link_libraries(meetingSDK jwt-cpp) #instead try this
 target_link_libraries(meetingSDK OpenSSL::SSL OpenSSL::Crypto)
-
 configure_file(${CMAKE_SOURCE_DIR}/config.txt ${CMAKE_SOURCE_DIR}/bin/config.txt COPYONLY)
 
 file(COPY ${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/ DESTINATION ${CMAKE_SOURCE_DIR}/bin)

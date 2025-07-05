@@ -5,7 +5,7 @@
         "name": "default",
         "inherits": "vcpkg",
         "environment": {
-          "VCPKG_ROOT": "/home/betteralexa/BetterAlexa/vcpkg"
+          "VCPKG_ROOT": "/home/betteralexa/vcpkg"
         }
       }
     ]
