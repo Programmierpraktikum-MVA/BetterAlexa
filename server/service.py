@@ -321,21 +321,22 @@ async def handle_zoom_link(request: Request):
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     zoom_bot_dir = os.path.join(current_dir, os.path.abspath("zoom_bot/repo_zoom_sdk/zoomBot-main"))
+    config_file_path = os.path.join(zoom_bot_dir, "config.txt")
 
     # get the meeting id and pwd from the link
     meeting_number, pwd = parse_link(link)
 
     # edit config.txt from zoomBot for our given link
     # Read lines
-    with open(zoom_bot_dir, "r") as f:
+    with open(config_file_path, "r") as f:
         lines = f.readlines()
 
-    # Overwrite Meeting_number and meeting_password
-    lines[0] = "meeting_number: \"" + meeting_number + "\""
-    lines[3] = "meeting_password: \"" + pwd + "\""
+    # Overwrite Meeting_number and meeting_password, making sure to add '\n'
+    lines[0] = f'meeting_number: "{meeting_number}"\n'
+    lines[3] = f'meeting_password: "{pwd}"\n'
 
     # Write back
-    with open(zoom_bot_dir, "w") as f:
+    with open(config_file_path, "w") as f:
         f.writelines(lines)
 
     # compile and execute zoom bot 
