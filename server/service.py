@@ -352,7 +352,7 @@ async def handle_zoom_link(request: Request):
     subprocess.run(['cmake', '--build', '.'], cwd=zoom_build_dir, check=True)
 
     # Run the compiled executable 
-    subprocess.run(['./bin/meetingSDK'], cwd=zoom_build_dir, check=True)
+    subprocess.run(['./bin/meetingSDK'], cwd=zoom_bot_dir, check=True)
 
     return {"status": "ok"}
 
