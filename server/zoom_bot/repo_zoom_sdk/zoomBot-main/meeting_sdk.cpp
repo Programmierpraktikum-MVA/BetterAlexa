@@ -409,20 +409,27 @@ void ReadTEXTSettings()
 		std::cerr << "Reading.." << line <<std::endl;
 	}
 //try new libmeetingsdk.so auf drive zu verlinken
+	std::string file_id = "";
 	if (config.find("zoom_sdk_url") != config.end()) {
-    		std::string url = "https://drive.google.com/uc?export=download&id=1W1savaA-FwgX-D8dRpmyyXFwKTiTiOK7";
-    		std::cout << "Found zoom_sdk_url: " << url << std::endl;
+    		file_id = config["zoom_sdk_url"];
+    		std::cout << "Found zoom_sdk_url: " << file_id << std::endl;
+	}
 
-    	// Beispiel: Download mit wget
-    		std::string cmd = "wget -O libmeetingsdk.so \"" + url + "\"";
+	if (!file_id.empty() && access("libmeetingsdk.so", F_OK) == -1) {
+    		std::cout << "Downloading libmeetingsdk.so via Google Drive workaround..." << std::endl;
+
+    		std::string cmd = "./download_gdrive.sh " + file_id + " libmeetingsdk.so";
     		int ret = system(cmd.c_str());
 
-    		if (ret == 0) {
-        		std::cout << "Successfully downloaded libmeetingsdk.so" << std::endl;
+    		if (ret == 0 && access("libmeetingsdk.so", F_OK) != -1) {
+        	std::cout << "Successfully downloaded libmeetingsdk.so" << std::endl;
     		} else {
         		std::cerr << "Failed to download libmeetingsdk.so" << std::endl;
     		}
+	} else {
+    		std::cout << "libmeetingsdk.so already exists. Skipping download." << std::endl;        
 	}
+
 
 // Example: Accessing values by key
 	if (config.find("meeting_number") != config.end()) {
@@ -963,4 +970,3 @@ int main(int argc, char* argv[])
 	g_main_loop_run(loop);
 	return 0;
 }
-

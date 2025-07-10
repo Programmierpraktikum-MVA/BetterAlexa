@@ -3,6 +3,7 @@
 *.wav
 *.m4a
 
+
 transcription.txt
 
 Llama-3-8B-function-calling*
@@ -33,3 +34,5 @@ Llama-3-8B-function-calling*
 
 .env
 /server/zoom_bot/*
+
+libmeetingsdk.so

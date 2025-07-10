@@ -16,3 +16,6 @@ vMic: "virtual_mic"
 path_to_pythonVenv: ""
 path_to_client: ""
 path_to_client_folder: ""
+
+zoom_sdk_url = 1qW6NUsujKs1lotGohuP_nLNRopVcJdP0 # <-- Nur die File-ID, NICHT der ganze Link!
+
