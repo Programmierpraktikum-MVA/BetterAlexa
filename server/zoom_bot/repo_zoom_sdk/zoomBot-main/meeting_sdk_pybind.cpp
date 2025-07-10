@@ -1,5 +1,5 @@
 #include <pybind11/pybind11.h>
-#include "meeting_sdk.cpp" // or the relevant header
+#include "meeting_sdk.h" // or the relevant header
 
 namespace py = pybind11;
 

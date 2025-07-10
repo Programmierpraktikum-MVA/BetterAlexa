@@ -19,7 +19,13 @@ include_directories(/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/
 #find_package(jwt-cpp CONFIG REQUIRED) #was commented
 find_package(ZLIB REQUIRED)
 
-
+#pybind integration
+set(pybind11_DIR "/home/betteralexa/.venv/lib/python3.10/site-packages/pybind11/share/cmake/pybind11")
+find_package(pybind11 REQUIRED)
+pybind11_add_module(meeting_sdk
+	meeting_sdk_pybind.cpp
+	meeting_sdk.cpp
+)
 
 # Find GLib using pkg-config
 pkg_check_modules(GLIB REQUIRED glib-2.0)

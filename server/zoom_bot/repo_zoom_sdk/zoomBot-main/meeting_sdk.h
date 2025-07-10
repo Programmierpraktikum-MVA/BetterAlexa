@@ -9,5 +9,6 @@ namespace zoom{
     void muteUnmute();
 
 }
+uint32_t getUserID();
 
 #endif
