@@ -117,6 +117,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named meeting_sdk
+
+# Build rule for target.
+meeting_sdk: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 meeting_sdk
+.PHONY : meeting_sdk
+
+# fast build rule for target.
+meeting_sdk/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/build
+.PHONY : meeting_sdk/fast
+
+#=============================================================================
 # Target rules for targets named meetingSDK
 
 # Build rule for target.
@@ -398,6 +411,7 @@ meeting_sdk.o: meeting_sdk.cpp.o
 
 # target to build an object file
 meeting_sdk.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/meeting_sdk.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/meeting_sdk.cpp.o
 .PHONY : meeting_sdk.cpp.o
 
@@ -406,6 +420,7 @@ meeting_sdk.i: meeting_sdk.cpp.i
 
 # target to preprocess a source file
 meeting_sdk.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/meeting_sdk.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/meeting_sdk.cpp.i
 .PHONY : meeting_sdk.cpp.i
 
@@ -414,8 +429,33 @@ meeting_sdk.s: meeting_sdk.cpp.s
 
 # target to generate assembly for a file
 meeting_sdk.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/meeting_sdk.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/meeting_sdk.cpp.s
 .PHONY : meeting_sdk.cpp.s
+
+meeting_sdk_pybind.o: meeting_sdk_pybind.cpp.o
+.PHONY : meeting_sdk_pybind.o
+
+# target to build an object file
+meeting_sdk_pybind.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/meeting_sdk_pybind.cpp.o
+.PHONY : meeting_sdk_pybind.cpp.o
+
+meeting_sdk_pybind.i: meeting_sdk_pybind.cpp.i
+.PHONY : meeting_sdk_pybind.i
+
+# target to preprocess a source file
+meeting_sdk_pybind.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/meeting_sdk_pybind.cpp.i
+.PHONY : meeting_sdk_pybind.cpp.i
+
+meeting_sdk_pybind.s: meeting_sdk_pybind.cpp.s
+.PHONY : meeting_sdk_pybind.s
+
+# target to generate assembly for a file
+meeting_sdk_pybind.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/meeting_sdk_pybind.cpp.s
+.PHONY : meeting_sdk_pybind.cpp.s
 
 miniaudio.o: miniaudio.c.o
 .PHONY : miniaudio.o
@@ -474,6 +514,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... meetingSDK"
+	@echo "... meeting_sdk"
 	@echo "... AuthServiceEventListener.o"
 	@echo "... AuthServiceEventListener.i"
 	@echo "... AuthServiceEventListener.s"
@@ -510,6 +551,9 @@ help:
 	@echo "... meeting_sdk.o"
 	@echo "... meeting_sdk.i"
 	@echo "... meeting_sdk.s"
+	@echo "... meeting_sdk_pybind.o"
+	@echo "... meeting_sdk_pybind.i"
+	@echo "... meeting_sdk_pybind.s"
 	@echo "... miniaudio.o"
 	@echo "... miniaudio.i"
 	@echo "... miniaudio.s"

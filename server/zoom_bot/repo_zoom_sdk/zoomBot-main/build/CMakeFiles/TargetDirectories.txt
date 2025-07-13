@@ -1,3 +1,4 @@
+/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles/meeting_sdk.dir
 /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles/meetingSDK.dir
 /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles/edit_cache.dir
 /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles/rebuild_cache.dir

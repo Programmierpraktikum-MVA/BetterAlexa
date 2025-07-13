@@ -63,6 +63,7 @@ CMAKE_BINARY_DIR = /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/z
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
+all: CMakeFiles/meeting_sdk.dir/all
 all: CMakeFiles/meetingSDK.dir/all
 .PHONY : all
 
@@ -71,8 +72,35 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
+clean: CMakeFiles/meeting_sdk.dir/clean
 clean: CMakeFiles/meetingSDK.dir/clean
 .PHONY : clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/meeting_sdk.dir
+
+# All Build rule for target.
+CMakeFiles/meeting_sdk.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles --progress-num=16,17,18 "Built target meeting_sdk"
+.PHONY : CMakeFiles/meeting_sdk.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/meeting_sdk.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles 3
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/meeting_sdk.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles 0
+.PHONY : CMakeFiles/meeting_sdk.dir/rule
+
+# Convenience name for target.
+meeting_sdk: CMakeFiles/meeting_sdk.dir/rule
+.PHONY : meeting_sdk
+
+# clean rule for target.
+CMakeFiles/meeting_sdk.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/clean
+.PHONY : CMakeFiles/meeting_sdk.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/meetingSDK.dir

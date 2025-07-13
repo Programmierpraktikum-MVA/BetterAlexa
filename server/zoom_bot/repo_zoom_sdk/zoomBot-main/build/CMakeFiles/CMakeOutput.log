@@ -495,3 +495,18 @@ int main(void)
   return 0;
 }
 
+Performing C++ SOURCE FILE Test HAS_FLTO succeeded with the following output:
+Change Dir: /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_ccbee/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_ccbee.dir/build.make CMakeFiles/cmTC_ccbee.dir/build
+gmake[1]: Entering directory '/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_ccbee.dir/src.cxx.o
+/usr/bin/c++ -DHAS_FLTO  -std=c++11    -flto -fno-fat-lto-objects -o CMakeFiles/cmTC_ccbee.dir/src.cxx.o -c /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_ccbee
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ccbee.dir/link.txt --verbose=1
+/usr/bin/c++  -std=c++11  CMakeFiles/cmTC_ccbee.dir/src.cxx.o -o cmTC_ccbee  -flto 
+gmake[1]: Leaving directory '/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles/CMakeTmp'
+
+
+Source file was:
+int main() { return 0; }

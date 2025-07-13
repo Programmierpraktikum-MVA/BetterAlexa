@@ -7,6 +7,12 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
+  "/home/betteralexa/.venv/lib/python3.10/site-packages/pybind11/share/cmake/pybind11/FindPythonLibsNew.cmake"
+  "/home/betteralexa/.venv/lib/python3.10/site-packages/pybind11/share/cmake/pybind11/pybind11Common.cmake"
+  "/home/betteralexa/.venv/lib/python3.10/site-packages/pybind11/share/cmake/pybind11/pybind11Config.cmake"
+  "/home/betteralexa/.venv/lib/python3.10/site-packages/pybind11/share/cmake/pybind11/pybind11ConfigVersion.cmake"
+  "/home/betteralexa/.venv/lib/python3.10/site-packages/pybind11/share/cmake/pybind11/pybind11Targets.cmake"
+  "/home/betteralexa/.venv/lib/python3.10/site-packages/pybind11/share/cmake/pybind11/pybind11Tools.cmake"
   "../CMakeLists.txt"
   "CMakeFiles/3.22.1/CMakeCCompiler.cmake"
   "CMakeFiles/3.22.1/CMakeCXXCompiler.cmake"
@@ -18,14 +24,18 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/betteralexa/vcpkg/scripts/buildsystems/vcpkg.cmake"
   "/usr/share/cmake-3.22/Modules/CMakeCInformation.cmake"
   "/usr/share/cmake-3.22/Modules/CMakeCXXInformation.cmake"
+  "/usr/share/cmake-3.22/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake"
   "/usr/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake"
   "/usr/share/cmake-3.22/Modules/CMakeDependentOption.cmake"
   "/usr/share/cmake-3.22/Modules/CMakeGenericSystem.cmake"
   "/usr/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake"
   "/usr/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake"
+  "/usr/share/cmake-3.22/Modules/CMakeParseArguments.cmake"
   "/usr/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake"
   "/usr/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake"
   "/usr/share/cmake-3.22/Modules/CheckCSourceCompiles.cmake"
+  "/usr/share/cmake-3.22/Modules/CheckCXXCompilerFlag.cmake"
+  "/usr/share/cmake-3.22/Modules/CheckCXXSourceCompiles.cmake"
   "/usr/share/cmake-3.22/Modules/CheckIncludeFile.cmake"
   "/usr/share/cmake-3.22/Modules/CheckLibraryExists.cmake"
   "/usr/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
@@ -36,8 +46,10 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake-3.22/Modules/FindPackageHandleStandardArgs.cmake"
   "/usr/share/cmake-3.22/Modules/FindPackageMessage.cmake"
   "/usr/share/cmake-3.22/Modules/FindPkgConfig.cmake"
+  "/usr/share/cmake-3.22/Modules/FindPythonInterp.cmake"
   "/usr/share/cmake-3.22/Modules/FindThreads.cmake"
   "/usr/share/cmake-3.22/Modules/FindZLIB.cmake"
+  "/usr/share/cmake-3.22/Modules/Internal/CheckCompilerFlag.cmake"
   "/usr/share/cmake-3.22/Modules/Internal/CheckSourceCompiles.cmake"
   "/usr/share/cmake-3.22/Modules/Platform/Linux-GNU-C.cmake"
   "/usr/share/cmake-3.22/Modules/Platform/Linux-GNU-CXX.cmake"
@@ -61,5 +73,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
+  "CMakeFiles/meeting_sdk.dir/DependInfo.cmake"
   "CMakeFiles/meetingSDK.dir/DependInfo.cmake"
   )

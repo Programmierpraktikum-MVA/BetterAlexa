@@ -2363,8 +2363,9 @@ CMakeFiles/meetingSDK.dir/meeting_sdk.cpp.o: ../meeting_sdk.cpp \
   ../include/h/meeting_service_components/meeting_recording_interface.h \
   ../include/h/meeting_service_components/meeting_video_interface.h \
   ../include/h/setting_service_interface.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/jwt-cpp/jwt.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/picojson/picojson.h \
+  ../jwt-cpp/include/jwt-cpp/jwt.h \
+  ../jwt-cpp/include/picojson/picojson.h \
+  /usr/include/c++/11/cstddef \
   /usr/include/c++/11/iterator \
   /usr/include/c++/11/bits/stream_iterator.h \
   /usr/include/c++/11/vector \
@@ -2383,79 +2384,80 @@ CMakeFiles/meetingSDK.dir/meeting_sdk.cpp.o: ../meeting_sdk.cpp \
   /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
   /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
+  /usr/include/c++/11/cinttypes \
   /usr/include/inttypes.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/jwt-cpp/base.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ec.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/macros.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/opensslconf.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/configuration.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/opensslv.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/types.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/e_os2.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/safestack.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/stack.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/asn1.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/bio.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/crypto.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/cryptoerr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/symhacks.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/cryptoerr_legacy.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/core.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/bioerr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/asn1err.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/bn.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/bnerr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ecerr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/params.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ecdsa.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/err.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/lhash.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/evp.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/core_dispatch.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/indicator.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/evperr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/objects.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/obj_mac.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/objectserr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/hmac.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/pem.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/x509.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/buffer.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/buffererr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/rsa.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/rsaerr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/dsa.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/dh.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/dherr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/dsaerr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/sha.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/x509err.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/x509_vfy.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/pkcs7.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/pkcs7err.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/http.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/conf.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/conferr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/conftypes.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/pemerr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ssl.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/e_ostime.h \
+  ../jwt-cpp/include/jwt-cpp/base.h \
+  vcpkg_installed/x64-linux/include/openssl/ec.h \
+  vcpkg_installed/x64-linux/include/openssl/macros.h \
+  vcpkg_installed/x64-linux/include/openssl/opensslconf.h \
+  vcpkg_installed/x64-linux/include/openssl/configuration.h \
+  vcpkg_installed/x64-linux/include/openssl/opensslv.h \
+  vcpkg_installed/x64-linux/include/openssl/types.h \
+  vcpkg_installed/x64-linux/include/openssl/e_os2.h \
+  vcpkg_installed/x64-linux/include/openssl/safestack.h \
+  vcpkg_installed/x64-linux/include/openssl/stack.h \
+  vcpkg_installed/x64-linux/include/openssl/asn1.h \
+  vcpkg_installed/x64-linux/include/openssl/bio.h \
+  vcpkg_installed/x64-linux/include/openssl/crypto.h \
+  vcpkg_installed/x64-linux/include/openssl/cryptoerr.h \
+  vcpkg_installed/x64-linux/include/openssl/symhacks.h \
+  vcpkg_installed/x64-linux/include/openssl/cryptoerr_legacy.h \
+  vcpkg_installed/x64-linux/include/openssl/core.h \
+  vcpkg_installed/x64-linux/include/openssl/bioerr.h \
+  vcpkg_installed/x64-linux/include/openssl/asn1err.h \
+  vcpkg_installed/x64-linux/include/openssl/bn.h \
+  vcpkg_installed/x64-linux/include/openssl/bnerr.h \
+  vcpkg_installed/x64-linux/include/openssl/ecerr.h \
+  vcpkg_installed/x64-linux/include/openssl/params.h \
+  vcpkg_installed/x64-linux/include/openssl/ecdsa.h \
+  vcpkg_installed/x64-linux/include/openssl/err.h \
+  vcpkg_installed/x64-linux/include/openssl/lhash.h \
+  vcpkg_installed/x64-linux/include/openssl/evp.h \
+  vcpkg_installed/x64-linux/include/openssl/core_dispatch.h \
+  vcpkg_installed/x64-linux/include/openssl/indicator.h \
+  vcpkg_installed/x64-linux/include/openssl/evperr.h \
+  vcpkg_installed/x64-linux/include/openssl/objects.h \
+  vcpkg_installed/x64-linux/include/openssl/obj_mac.h \
+  vcpkg_installed/x64-linux/include/openssl/objectserr.h \
+  vcpkg_installed/x64-linux/include/openssl/hmac.h \
+  vcpkg_installed/x64-linux/include/openssl/pem.h \
+  vcpkg_installed/x64-linux/include/openssl/x509.h \
+  vcpkg_installed/x64-linux/include/openssl/buffer.h \
+  vcpkg_installed/x64-linux/include/openssl/buffererr.h \
+  vcpkg_installed/x64-linux/include/openssl/rsa.h \
+  vcpkg_installed/x64-linux/include/openssl/rsaerr.h \
+  vcpkg_installed/x64-linux/include/openssl/dsa.h \
+  vcpkg_installed/x64-linux/include/openssl/dh.h \
+  vcpkg_installed/x64-linux/include/openssl/dherr.h \
+  vcpkg_installed/x64-linux/include/openssl/dsaerr.h \
+  vcpkg_installed/x64-linux/include/openssl/sha.h \
+  vcpkg_installed/x64-linux/include/openssl/x509err.h \
+  vcpkg_installed/x64-linux/include/openssl/x509_vfy.h \
+  vcpkg_installed/x64-linux/include/openssl/pkcs7.h \
+  vcpkg_installed/x64-linux/include/openssl/pkcs7err.h \
+  vcpkg_installed/x64-linux/include/openssl/http.h \
+  vcpkg_installed/x64-linux/include/openssl/conf.h \
+  vcpkg_installed/x64-linux/include/openssl/conferr.h \
+  vcpkg_installed/x64-linux/include/openssl/conftypes.h \
+  vcpkg_installed/x64-linux/include/openssl/pemerr.h \
+  vcpkg_installed/x64-linux/include/openssl/ssl.h \
+  vcpkg_installed/x64-linux/include/openssl/e_ostime.h \
   /usr/include/x86_64-linux-gnu/sys/time.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/comp.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/comperr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/async.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/asyncerr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ct.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/cterr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/sslerr.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/sslerr_legacy.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/prov_ssl.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ssl2.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ssl3.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/tls1.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/dtls1.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/srtp.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/openssl/quic.h \
+  vcpkg_installed/x64-linux/include/openssl/comp.h \
+  vcpkg_installed/x64-linux/include/openssl/comperr.h \
+  vcpkg_installed/x64-linux/include/openssl/async.h \
+  vcpkg_installed/x64-linux/include/openssl/asyncerr.h \
+  vcpkg_installed/x64-linux/include/openssl/ct.h \
+  vcpkg_installed/x64-linux/include/openssl/cterr.h \
+  vcpkg_installed/x64-linux/include/openssl/sslerr.h \
+  vcpkg_installed/x64-linux/include/openssl/sslerr_legacy.h \
+  vcpkg_installed/x64-linux/include/openssl/prov_ssl.h \
+  vcpkg_installed/x64-linux/include/openssl/ssl2.h \
+  vcpkg_installed/x64-linux/include/openssl/ssl3.h \
+  vcpkg_installed/x64-linux/include/openssl/tls1.h \
+  vcpkg_installed/x64-linux/include/openssl/dtls1.h \
+  vcpkg_installed/x64-linux/include/openssl/srtp.h \
+  vcpkg_installed/x64-linux/include/openssl/quic.h \
   /usr/include/c++/11/climits \
   /usr/include/c++/11/functional \
   /usr/include/c++/11/bits/std_function.h \
@@ -2486,8 +2488,9 @@ CMakeFiles/meetingSDK.dir/meeting_sdk.cpp.o: ../meeting_sdk.cpp \
   /usr/include/c++/11/bits/hashtable_policy.h \
   /usr/include/c++/11/bits/enable_special_members.h \
   /usr/include/c++/11/bits/unordered_map.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/jwt-cpp/traits/kazuho-picojson/defaults.h \
-  /home/betteralexa/vcpkg/installed/x64-linux/include/jwt-cpp/traits/kazuho-picojson/traits.h \
+  vcpkg_installed/x64-linux/include/openssl/param_build.h \
+  ../jwt-cpp/include/jwt-cpp/traits/kazuho-picojson/defaults.h \
+  ../jwt-cpp/include/jwt-cpp/traits/kazuho-picojson/traits.h \
   /usr/include/c++/11/mutex \
   /usr/include/c++/11/bits/std_mutex.h \
   /usr/include/c++/11/bits/unique_lock.h \
@@ -2868,11 +2871,17 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 ../terminalInteractions.cpp:
 
+/usr/include/x86_64-linux-gnu/bits/eventfd.h:
+
+/usr/include/x86_64-linux-gnu/sys/eventfd.h:
+
 /usr/include/x86_64-linux-gnu/sys/poll.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h:
+
+/usr/include/x86_64-linux-gnu/sys/stat.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/stdalign.h:
 
@@ -2880,9 +2889,9 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 ../miniaudio.c:
 
-/usr/include/c++/11/bits/unordered_map.h:
+../jwt-cpp/include/jwt-cpp/traits/kazuho-picojson/traits.h:
 
-/usr/include/c++/11/bits/hashtable.h:
+/usr/include/c++/11/bits/unordered_map.h:
 
 /usr/include/c++/11/unordered_map:
 
@@ -2894,107 +2903,91 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/set:
 
+/usr/include/c++/11/bits/locale_conv.h:
+
 /usr/include/libintl.h:
 
 /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h:
 
 /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/quic.h:
+vcpkg_installed/x64-linux/include/openssl/srtp.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/srtp.h:
+vcpkg_installed/x64-linux/include/openssl/ssl3.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/sslerr_legacy.h:
+vcpkg_installed/x64-linux/include/openssl/ssl2.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/cterr.h:
+vcpkg_installed/x64-linux/include/openssl/prov_ssl.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ct.h:
+vcpkg_installed/x64-linux/include/openssl/sslerr_legacy.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/asyncerr.h:
+vcpkg_installed/x64-linux/include/openssl/cterr.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/comperr.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/comp.h:
+vcpkg_installed/x64-linux/include/openssl/comperr.h:
 
 /usr/include/x86_64-linux-gnu/sys/time.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/e_ostime.h:
+vcpkg_installed/x64-linux/include/openssl/e_ostime.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ssl.h:
+vcpkg_installed/x64-linux/include/openssl/conf.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/pemerr.h:
+vcpkg_installed/x64-linux/include/openssl/pkcs7err.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/conferr.h:
+vcpkg_installed/x64-linux/include/openssl/pkcs7.h:
 
-/usr/include/x86_64-linux-gnu/sys/eventfd.h:
+vcpkg_installed/x64-linux/include/openssl/x509err.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/pkcs7.h:
+vcpkg_installed/x64-linux/include/openssl/dherr.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/x509err.h:
+vcpkg_installed/x64-linux/include/openssl/dh.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/dherr.h:
+vcpkg_installed/x64-linux/include/openssl/rsa.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/rsaerr.h:
+vcpkg_installed/x64-linux/include/openssl/buffererr.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/buffererr.h:
+vcpkg_installed/x64-linux/include/openssl/objectserr.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/buffer.h:
+vcpkg_installed/x64-linux/include/openssl/obj_mac.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/pem.h:
+vcpkg_installed/x64-linux/include/openssl/core_dispatch.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/objects.h:
+vcpkg_installed/x64-linux/include/openssl/params.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/evperr.h:
+vcpkg_installed/x64-linux/include/openssl/bioerr.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/jwt-cpp/traits/kazuho-picojson/defaults.h:
+vcpkg_installed/x64-linux/include/openssl/core.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/indicator.h:
+vcpkg_installed/x64-linux/include/openssl/cryptoerr.h:
 
-/usr/include/x86_64-linux-gnu/bits/eventfd.h:
+vcpkg_installed/x64-linux/include/openssl/crypto.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/evp.h:
+vcpkg_installed/x64-linux/include/openssl/asn1.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/conf.h:
+vcpkg_installed/x64-linux/include/openssl/async.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/err.h:
+vcpkg_installed/x64-linux/include/openssl/stack.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/http.h:
+vcpkg_installed/x64-linux/include/openssl/types.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ecdsa.h:
+vcpkg_installed/x64-linux/include/openssl/opensslv.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/bnerr.h:
+vcpkg_installed/x64-linux/include/openssl/configuration.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/bn.h:
+vcpkg_installed/x64-linux/include/openssl/ssl.h:
 
-/usr/include/x86_64-linux-gnu/sys/stat.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/asn1err.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/cryptoerr_legacy.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/stack.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/e_os2.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/opensslv.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ec.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/jwt-cpp/base.h:
+vcpkg_installed/x64-linux/include/openssl/opensslconf.h:
 
 /usr/include/inttypes.h:
 
+/usr/include/c++/11/cinttypes:
+
 /usr/include/c++/11/bits/stream_iterator.h:
 
-/usr/include/c++/11/bits/locale_conv.h:
+/usr/include/c++/11/bits/hashtable.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/picojson/picojson.h:
+../jwt-cpp/include/picojson/picojson.h:
 
 ../include/h/meeting_service_components/meeting_video_interface.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/tls1.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/dh.h:
 
 /usr/include/c++/11/bits/algorithmfwd.h:
 
@@ -3010,6 +3003,8 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/map:
 
+vcpkg_installed/x64-linux/include/openssl/symhacks.h:
+
 /usr/include/x86_64-linux-gnu/bits/syscall.h:
 
 /usr/include/x86_64-linux-gnu/sys/syscall.h:
@@ -3020,15 +3015,17 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/glib-2.0/glib/deprecated/gthread.h:
 
+vcpkg_installed/x64-linux/include/openssl/http.h:
+
 /usr/include/glib-2.0/glib/deprecated/grel.h:
 
 /usr/include/glib-2.0/glib/deprecated/gmain.h:
 
 /usr/include/dlfcn.h:
 
-/usr/include/glib-2.0/glib/deprecated/gcompletion.h:
+vcpkg_installed/x64-linux/include/openssl/x509_vfy.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/safestack.h:
+/usr/include/glib-2.0/glib/deprecated/gcompletion.h:
 
 /usr/include/glib-2.0/glib/deprecated/gcache.h:
 
@@ -3040,13 +3037,9 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/glib-2.0/glib/gtimer.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/jwt-cpp/jwt.h:
-
 /usr/include/glib-2.0/glib/gtestutils.h:
 
 /usr/include/glib-2.0/glib/gstringchunk.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/crypto.h:
 
 /usr/include/glib-2.0/glib/gspawn.h:
 
@@ -3059,8 +3052,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 /usr/include/glib-2.0/glib/grefcount.h:
 
 /usr/include/glib-2.0/glib/grcbox.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/dsa.h:
 
 /usr/include/glib-2.0/glib/grand.h:
 
@@ -3086,9 +3077,13 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/glib-2.0/glib/giochannel.h:
 
+vcpkg_installed/x64-linux/include/openssl/sslerr.h:
+
 /usr/include/glib-2.0/glib/ghook.h:
 
 /usr/include/c++/11/bits/locale_facets_nonio.h:
+
+vcpkg_installed/x64-linux/include/openssl/ct.h:
 
 /usr/include/glib-2.0/glib/gslist.h:
 
@@ -3108,11 +3103,11 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/glib-2.0/glib/gdir.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/bioerr.h:
-
 /usr/include/glib-2.0/glib/gdate.h:
 
 /usr/include/glib-2.0/glib/gchecksum.h:
+
+vcpkg_installed/x64-linux/include/openssl/objects.h:
 
 /usr/include/glib-2.0/glib/gbytes.h:
 
@@ -3168,8 +3163,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/glib-2.0/glib/gerror.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/sha.h:
-
 /usr/include/glib-2.0/glib/glib-typeof.h:
 
 /usr/include/glib-2.0/glib/gmacros.h:
@@ -3181,6 +3174,8 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 /usr/include/x86_64-linux-gnu/bits/xopen_lim.h:
 
 /usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
+
+vcpkg_installed/x64-linux/include/openssl/bnerr.h:
 
 /usr/include/x86_64-linux-gnu/bits/dirent_ext.h:
 
@@ -3198,7 +3193,11 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/x86_64-linux-gnu/bits/iscanonical.h:
 
+vcpkg_installed/x64-linux/include/openssl/evp.h:
+
 /usr/include/x86_64-linux-gnu/bits/mathcalls.h:
+
+../jwt-cpp/include/jwt-cpp/traits/kazuho-picojson/defaults.h:
 
 /usr/include/glib-2.0/glib/gcharset.h:
 
@@ -3222,6 +3221,8 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 ../ZoomSDKRenderer.h:
 
+vcpkg_installed/x64-linux/include/openssl/lhash.h:
+
 ../include/h/rawdata/rawdata_video_source_helper_interface.h:
 
 /usr/include/glib-2.0/glib/gdataset.h:
@@ -3236,9 +3237,11 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/bits/locale_classes.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
+vcpkg_installed/x64-linux/include/openssl/dsa.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/prov_ssl.h:
+vcpkg_installed/x64-linux/include/openssl/bn.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
 
@@ -3250,15 +3253,19 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/bits/allocated_ptr.h:
 
+vcpkg_installed/x64-linux/include/openssl/pem.h:
+
+vcpkg_installed/x64-linux/include/openssl/safestack.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/timer_t.h:
 
 /usr/include/c++/11/mutex:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/bio.h:
-
 /usr/include/glib-2.0/glib/gatomic.h:
 
 /usr/include/c++/11/ext/atomicity.h:
+
+vcpkg_installed/x64-linux/include/openssl/conftypes.h:
 
 /usr/include/c++/11/bits/stl_pair.h:
 
@@ -3266,7 +3273,11 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/pthread.h:
 
+../jwt-cpp/include/jwt-cpp/base.h:
+
 /usr/include/x86_64-linux-gnu/c++/11/bits/gthr-default.h:
+
+vcpkg_installed/x64-linux/include/openssl/e_os2.h:
 
 /usr/include/c++/11/ext/concurrence.h:
 
@@ -3276,9 +3287,9 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/bits/ios_base.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/x509_vfy.h:
-
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
+
+vcpkg_installed/x64-linux/include/openssl/ecerr.h:
 
 /usr/include/x86_64-linux-gnu/bits/locale.h:
 
@@ -3287,8 +3298,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 /usr/include/locale.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/pkcs7err.h:
 
 /usr/include/c++/11/bits/localefwd.h:
 
@@ -3324,8 +3333,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/ctype.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/objectserr.h:
-
 /usr/include/c++/11/bits/std_thread.h:
 
 /usr/include/c++/11/bits/cpp_type_traits.h:
@@ -3339,8 +3346,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 ../AuthServiceEventListener.cpp:
 
 /usr/include/c++/11/cstdlib:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/cryptoerr.h:
 
 /usr/include/glib-2.0/glib/gmarkup.h:
 
@@ -3356,7 +3361,11 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/streambuf:
 
+vcpkg_installed/x64-linux/include/openssl/quic.h:
+
 /usr/include/c++/11/tuple:
+
+vcpkg_installed/x64-linux/include/openssl/ec.h:
 
 /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
 
@@ -3384,8 +3393,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/string:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/configuration.h:
-
 /usr/include/x86_64-linux-gnu/bits/types/time_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/confname.h:
@@ -3400,6 +3407,8 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/cctype:
 
+vcpkg_installed/x64-linux/include/openssl/dsaerr.h:
+
 /usr/include/glib-2.0/glib/gslice.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
@@ -3407,6 +3416,8 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 /usr/include/x86_64-linux-gnu/bits/types.h:
 
 ../include/h/meeting_service_interface.h:
+
+vcpkg_installed/x64-linux/include/openssl/rsaerr.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/sigval_t.h:
 
@@ -3422,8 +3433,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 ../ZoomSDKVirtualAudioMicEvent.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/jwt-cpp/traits/kazuho-picojson/traits.h:
-
 /usr/include/c++/11/type_traits:
 
 /usr/include/x86_64-linux-gnu/sys/single_threaded.h:
@@ -3435,6 +3444,8 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 /usr/include/c++/11/bits/char_traits.h:
 
 /usr/include/asm-generic/errno-base.h:
+
+vcpkg_installed/x64-linux/include/openssl/bio.h:
 
 /usr/include/x86_64-linux-gnu/bits/posix_opt.h:
 
@@ -3453,6 +3464,8 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 /usr/include/glib-2.0/glib/genviron.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
+
+vcpkg_installed/x64-linux/include/openssl/asn1err.h:
 
 /usr/include/x86_64-linux-gnu/bits/long-double.h:
 
@@ -3494,17 +3507,15 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/x86_64-linux-gnu/asm/errno.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/lhash.h:
+vcpkg_installed/x64-linux/include/openssl/indicator.h:
 
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/conftypes.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/core_dispatch.h:
 
 /usr/include/x86_64-linux-gnu/bits/fp-fast.h:
 
 /usr/include/c++/11/iostream:
+
+vcpkg_installed/x64-linux/include/openssl/asyncerr.h:
 
 /usr/include/c++/11/backward/binders.h:
 
@@ -3530,8 +3541,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/bits/exception_ptr.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/asn1.h:
-
 /usr/include/glib-2.0/glib/gconvert.h:
 
 /usr/include/c++/11/ext/string_conversions.h:
@@ -3539,8 +3548,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 /usr/include/x86_64-linux-gnu/bits/getopt_core.h:
 
 /usr/include/c++/11/vector:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/macros.h:
 
 /usr/include/glib-2.0/glib/gthreadpool.h:
 
@@ -3551,8 +3558,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 ../include/h/rawdata/rawdata_renderer_interface.h:
 
 /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/async.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
 
@@ -3606,6 +3611,8 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/ratio:
 
+vcpkg_installed/x64-linux/include/openssl/hmac.h:
+
 /usr/include/x86_64-linux-gnu/bits/setjmp.h:
 
 /usr/include/time.h:
@@ -3620,19 +3627,15 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/ostream:
 
+vcpkg_installed/x64-linux/include/openssl/evperr.h:
+
 /usr/include/c++/11/bits/unique_ptr.h:
 
 /usr/include/x86_64-linux-gnu/bits/time64.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ssl2.h:
-
 /usr/include/c++/11/ctime:
 
 /usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ecerr.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/opensslconf.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
 
@@ -3646,11 +3649,7 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/bits/stl_tempbuf.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/types.h:
-
 /usr/include/x86_64-linux-gnu/bits/wchar.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/rsa.h:
 
 /usr/include/x86_64-linux-gnu/c++/11/bits/c++allocator.h:
 
@@ -3665,8 +3664,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 /usr/include/x86_64-linux-gnu/bits/sched.h:
 
 /usr/include/c++/11/ext/alloc_traits.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/core.h:
 
 /usr/include/c++/11/bits/align.h:
 
@@ -3716,6 +3713,8 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
 
+vcpkg_installed/x64-linux/include/openssl/comp.h:
+
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
 
 /usr/include/alloca.h:
@@ -3732,6 +3731,8 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 ../miniaudio.h:
 
+vcpkg_installed/x64-linux/include/openssl/pemerr.h:
+
 ../include/h/setting_service_interface.h:
 
 /usr/include/c++/11/cstdio:
@@ -3739,8 +3740,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 /usr/include/x86_64-linux-gnu/bits/wordsize.h:
 
 /usr/include/c++/11/chrono:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/sslerr.h:
 
 /usr/include/stdio.h:
 
@@ -3751,8 +3750,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 /usr/include/c++/11/cerrno:
 
 /usr/include/errno.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/symhacks.h:
 
 /usr/include/x86_64-linux-gnu/bits/signum-arch.h:
 
@@ -3780,11 +3777,9 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/dsaerr.h:
-
 /usr/include/c++/11/system_error:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/x509.h:
+/usr/include/c++/11/cstddef:
 
 /usr/include/c++/11/bits/stl_vector.h:
 
@@ -3814,7 +3809,15 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/cwctype:
 
+vcpkg_installed/x64-linux/include/openssl/dtls1.h:
+
+vcpkg_installed/x64-linux/include/openssl/tls1.h:
+
+../jwt-cpp/include/jwt-cpp/jwt.h:
+
 /usr/include/c++/11/bits/streambuf_iterator.h:
+
+vcpkg_installed/x64-linux/include/openssl/sha.h:
 
 /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h:
 
@@ -3824,8 +3827,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/bits/locale_facets.tcc:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/obj_mac.h:
-
 ../audioHandling.h:
 
 /usr/include/c++/11/bits/enable_special_members.h:
@@ -3834,17 +3835,19 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/bits/basic_ios.tcc:
 
+vcpkg_installed/x64-linux/include/openssl/conferr.h:
+
 /usr/include/c++/11/istream:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/ssl3.h:
-
 /usr/include/c++/11/bits/istream.tcc:
+
+vcpkg_installed/x64-linux/include/openssl/buffer.h:
+
+vcpkg_installed/x64-linux/include/openssl/ecdsa.h:
 
 /usr/include/glib-2.0/glib/deprecated/gallocator.h:
 
 ../MeetingServiceEventListener.h:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/params.h:
 
 ../NetworkConnectionHandler.h:
 
@@ -3860,6 +3863,8 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/stdlib.h:
 
+vcpkg_installed/x64-linux/include/openssl/err.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
 
 ../MeetingServiceEventListener.cpp:
@@ -3870,11 +3875,15 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 ../NetworkConnectionHandler.cpp:
 
+vcpkg_installed/x64-linux/include/openssl/param_build.h:
+
 ../include/h/rawdata/rawdata_audio_helper_interface.h:
 
 /usr/include/glib-2.0/glib/gqsort.h:
 
 /usr/include/c++/11/bits/stl_uninitialized.h:
+
+vcpkg_installed/x64-linux/include/openssl/macros.h:
 
 /usr/include/glib-2.0/glib/gasyncqueue.h:
 
@@ -3894,7 +3903,7 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 
 /usr/include/c++/11/bits/fstream.tcc:
 
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/dtls1.h:
+vcpkg_installed/x64-linux/include/openssl/cryptoerr_legacy.h:
 
 /usr/include/limits.h:
 
@@ -3905,6 +3914,8 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 ../include/h/zoom_sdk.h:
 
 /usr/include/c++/11/array:
+
+vcpkg_installed/x64-linux/include/openssl/x509.h:
 
 ../MeetingReminderEventListener.cpp:
 
@@ -3923,8 +3934,6 @@ CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o: ../terminalInteractions.cp
 /usr/include/glib-2.0/glib/gbookmarkfile.h:
 
 /usr/include/c++/11/memory:
-
-/home/betteralexa/vcpkg/installed/x64-linux/include/openssl/hmac.h:
 
 /usr/include/c++/11/bits/stl_raw_storage_iter.h:
 

@@ -66,8 +66,8 @@ async def _startup() -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     app.state.whisper = load_model(WHISPER_MODEL_NAME, device=device)
     app.state.llama = LLama3(
-        model_dir=LLAMA_MODEL_DIR,
-        tokenizer_dir=LLAMA_TOKENIZER_DIR,
+        model_dir=str(LLAMA_MODEL_DIR),
+        tokenizer_dir=str(LLAMA_TOKENIZER_DIR),
     )
     app.state.tts     = TTS(model_name="tts_models/en/vctk/vits", progress_bar=False)
     ctx = ssl.create_default_context(cafile=certifi.where())

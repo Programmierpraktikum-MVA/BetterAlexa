@@ -1,7 +1,7 @@
-meeting_number: "849 8847 7950"
+meeting_number: "64845229492"
 clientID: "aruOgQfORGWnmbpSwsd2Hw"
 clientSecret: "St8squhsyVgdoOGNwbCrNzYmuiGu37Nn"
-meeting_password: "WQ0E6q"
+meeting_password: "590550i"
 recording_token: ""
 GetVideoRawData: "false"
 GetAudioRawData: "true"
@@ -13,9 +13,9 @@ create_vMic: "pactl load-module module-remap-source master=vspeaker.monitor sour
 vSpeaker: "virtual_speaker"
 vMic: "virtual_mic"
 
-path_to_pythonVenv: ""
-path_to_client: ""
-path_to_client_folder: ""
+path_to_pythonVenv: "/home/betteralexa/.venv/bin/python"
+path_to_client: "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/sendFile.py"
+path_to_client_folder: "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main"
 
-zoom_sdk_url = 1qW6NUsujKs1lotGohuP_nLNRopVcJdP0 # <-- Nur die File-ID, NICHT der ganze Link!
+zoom_sdk_url = 1qW6NUsujKs1lotGohuP_nLNRopVcJdP0 
 
