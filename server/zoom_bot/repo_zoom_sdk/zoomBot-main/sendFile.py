@@ -9,7 +9,7 @@ import sys
 from pydub import AudioSegment
 import numpy
 import asyncio
-import meeting_sdk
+#import meeting_sdk
 
 # TODO: check if requirements need to be updated
 
@@ -106,7 +106,8 @@ async def main():
         local audiostream response.wav is written with the response of the server.
     """
     # get the user_id from the meeting_sdk.cpp file via pybind11
-    user_id = meeting_sdk.get_user_id()
+    #user_id = meeting_sdk.get_user_id()
+    user_id = 1
     print("User ID from C++:", user_id)
 
     print(f"Sending following file: {sys.argv[1]}")
