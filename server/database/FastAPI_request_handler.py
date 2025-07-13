@@ -1,0 +1,29 @@
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from database_wrapper import set_sensitive_data  # Passe "database" ggf. an deinen Modulnamen an
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # für Tests, später einschränken!
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class SettingsPayload(BaseModel):
+    user_id: str
+    password: str
+    settings: dict
+
+@app.post("/save-settings")
+def save_settings(data: SettingsPayload):
+    try:
+        # Jedes Key-Value-Paar als sensibles Datum abspeichern
+        for key, value in data.settings.items():
+            set_sensitive_data(data.user_id, key, str(value), data.password)
+        return {"status": "success"}
+    except HTTPException as e:
+        raise e
