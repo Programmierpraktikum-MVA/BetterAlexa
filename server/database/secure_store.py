@@ -19,7 +19,7 @@ def derive_key(password: str, salt: bytes) -> bytes:
     key = kdf.derive(password.encode())
     return base64.urlsafe_b64encode(key)
 
-def encrypt_with_password(password: str, plaintext: str) -> (str, str):
+def encrypt_with_password(password: str, plaintext: str) -> (str, str):  # type: ignore
     """
     Verschlüsselt plaintext mit Schlüssel aus password + zufälligem Salt.
     Gibt Tuple (encrypted_string, base64_salt) zurück.

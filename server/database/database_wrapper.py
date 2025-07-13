@@ -43,6 +43,7 @@ def create_user(user_id: str, password: str) -> None:
             (user_id, password_hash, api_key)
         )
         conn.commit()
+        return api_key
     except sqlite3.IntegrityError:
         raise HTTPException(status_code=400, detail="User already exists")
     finally:
@@ -85,7 +86,6 @@ def set_sensitive_data(user_id: str, key: str, value: str, password: str) -> Non
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     try:
-        # Check if entry exists
         cursor.execute(
             "SELECT encrypted_value, salt FROM sensitive_data WHERE user_id=? AND key=?", (user_id, key)
         )
@@ -94,7 +94,6 @@ def set_sensitive_data(user_id: str, key: str, value: str, password: str) -> Non
         if row:
             encrypted_value_db, salt_db = row
             try:
-                # Try decrypting to check password correctness
                 _ = decrypt_with_password(password, encrypted_value_db, salt_db)
             except Exception:
                 raise HTTPException(status_code=403, detail="Passwort stimmt nicht - Zugriff verweigert")
@@ -124,5 +123,58 @@ def get_sensitive_data(user_id: str, key: str, password: str) -> str:
             raise HTTPException(status_code=404, detail="Daten nicht gefunden")
         encrypted_value, salt = row
         return decrypt_with_password(password, encrypted_value, salt)
+    finally:
+        conn.close()
+
+# ----- User Settings Management -----
+
+def is_real_setting(key: str) -> bool:
+    real_keys = {"speed"}
+    return key.lower() in real_keys
+
+def set_user_setting(user_id: str, key: str, value) -> None:
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        if is_real_setting(key):
+            try:
+                real_value = float(value)
+            except ValueError:
+                raise HTTPException(status_code=400, detail=f"Wert für '{key}' muss eine Zahl sein.")
+            cursor.execute("""
+                INSERT INTO user_settings_real (user_id, key, value)
+                VALUES (?, ?, ?)
+                ON CONFLICT(user_id, key) DO UPDATE SET value=excluded.value
+            """, (user_id, key, real_value))
+        else:
+            cursor.execute("""
+                INSERT INTO user_settings_text (user_id, key, value)
+                VALUES (?, ?, ?)
+                ON CONFLICT(user_id, key) DO UPDATE SET value=excluded.value
+            """, (user_id, key, str(value)))
+        conn.commit()
+    finally:
+        conn.close()
+
+def get_user_setting(user_id: str, key: str):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        if is_real_setting(key):
+            cursor.execute("""
+                SELECT value FROM user_settings_real WHERE user_id=? AND key=?
+            """, (user_id, key))
+            row = cursor.fetchone()
+            if not row:
+                return None
+            return float(row[0])
+        else:
+            cursor.execute("""
+                SELECT value FROM user_settings_text WHERE user_id=? AND key=?
+            """, (user_id, key))
+            row = cursor.fetchone()
+            if not row:
+                return None
+            return row[0]
     finally:
         conn.close()

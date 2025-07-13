@@ -35,6 +35,29 @@ def create_tables(db_path=DB_PATH):
     )
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS user_settings_text (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT NOT NULL,
+        key TEXT NOT NULL,
+        value TEXT NOT NULL,
+        UNIQUE(user_id, key),
+        FOREIGN KEY(user_id) REFERENCES users(user_id)
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS user_settings_real (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT NOT NULL,
+        key TEXT NOT NULL,
+        value REAL NOT NULL,
+        UNIQUE(user_id, key),
+        FOREIGN KEY(user_id) REFERENCES users(user_id)
+    )
+    """)
+
+
     conn.commit()
     conn.close()
 

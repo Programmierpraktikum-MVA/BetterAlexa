@@ -20,7 +20,7 @@ from whisper import load_model  # type: ignore
 from function_calling.llama3 import LLama3, LlamaOutput  # updated API
 from TTS.api import TTS  # type: ignore
 import certifi, ssl
-from database.database_wrapper import authenticate_user, get_sensitive_data, set_sensitive_data
+from database.database_wrapper import authenticate_user, get_sensitive_data, set_sensitive_data, get_user_setting, set_user_setting 
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -78,8 +78,6 @@ async def _startup() -> None:
 async def _shutdown() -> None:
     await app.state.httpx.aclose()
 
-
-# Database
 # Database
 API_KEY_HEADER = APIKeyHeader(name="X-API-Key")
 
@@ -128,6 +126,32 @@ class UserLoginRequest(BaseModel):
     user_id: str
     password: str
 
+class UserSettingRequest(BaseModel):
+    key: str = Field(..., min_length=1)
+    value: str
+
+class UserSettingGetRequest(BaseModel):
+    key: str = Field(..., min_length=1)
+
+# Endpoints User Settings
+@app.post("/set_user_setting")
+def api_set_user_setting(request: UserSettingRequest, user_id: str = Depends(get_current_user)):
+    try:
+        set_user_setting(user_id, request.key, request.value)
+        return {"status": "success"}
+    except HTTPException as e:
+        raise e
+
+@app.post("/get_user_setting")
+def api_get_user_setting(request: UserSettingGetRequest, user_id: str = Depends(get_current_user)):
+    try:
+        value = get_user_setting(user_id, request.key)
+        if value is None:
+            raise HTTPException(status_code=404, detail="Setting not found")
+        return {"value": value}
+    except HTTPException as e:
+        raise e
+
 @app.post("/register")
 def register_user(request: UserCreateRequest):
     from .database.database_wrapper import create_user
@@ -159,6 +183,8 @@ def login_user_endpoint(request: UserLoginRequest):
         return {"user_id": user_id, "api_key": api_key}
     except HTTPException as e:
         raise e
+
+    
 
     
 # ─────────────────── delegate handlers registry ─────────────
