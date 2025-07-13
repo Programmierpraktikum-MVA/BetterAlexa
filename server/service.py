@@ -8,6 +8,7 @@ import asyncio, io, os
 from enum import Enum, auto
 from typing import Dict, List, Optional, Callable, Awaitable
 import subprocess
+import json
 
 import httpx, numpy as np, soundfile as sf
 from fastapi import FastAPI, HTTPException, Request, Depends, Security
@@ -171,6 +172,7 @@ class DelegateResult(BaseModel):
 Builds the defined JSON formatted Payload
 Sends request to TutorAI and returns answer and "done" field for state within pipeline
 uses TUTORAI_TOKEN from environment variables for authentication
+EDIT: Token not yet implemented.
 """
 async def _call_tutorai(query: str, meeting: str) -> DelegateResult:
     payload = {"query": query}
@@ -222,7 +224,27 @@ transforms it into text (Whisper),
 answers (Llama or Integration, depending on state),
 and turns the answer into speech (TTS).
 """
-async def pipeline(meeting: str, pcm: np.ndarray) -> bytes:
+async def pipeline( meeting: str, 
+                    pcm: np.ndarray,
+                    user_id: str | None = None,
+                    prefs_password: str | None = None
+                    ) -> bytes:
+    language, speaker, speed = "en", "p335", 1.0
+    if user_id and prefs_password:
+        try:
+            blob = get_sensitive_data(user_id, "tts_prefs", prefs_password)
+            prefs = json.loads(blob)
+            language = prefs.get("language", language)
+            speaker  = prefs.get("speaker",  speaker)
+            speed    = float(prefs.get("speed", speed))
+        except Exception as e:
+            logging.warning(f"No or invalid TTS prefs for {user_id}: {e}")
+    wav_np = app.state.tts.tts(
+        text     = answer,
+        speaker  = speaker,
+        language = language,
+        speed    = speed
+    )
     logging.debug(f"Transcribing PCM audio for meeting {meeting}")
     whisper = app.state.whisper
     transcript = whisper.transcribe(pcm, fp16=False)["text"]
@@ -288,16 +310,19 @@ async def _delegate_call(target: Optional[str], query: str, meeting: str) -> Del
 class StreamPayload(BaseModel):
     meeting_id: str
     pcm: List[float]
+    prefs_password: Optional[str] = None
 
 """
 This is the Endpoint for Traffic. 
 It takes an audio-stream and meeting-id as input and outputs the answer-audio stream.
 """
 @app.post("/api/v1/stream", response_class=StreamingResponse)
-async def stream(payload: StreamPayload):
+async def stream(payload: StreamPayload,
+                 user_id: str = Depends(get_current_user)
+                 ):
     logging.debug(f"Received request")
     try:
-        wav = await pipeline(payload.meeting_id, np.array(payload.pcm, dtype=np.float32))
+        wav = await pipeline(payload.meeting_id, np.array(payload.pcm, dtype=np.float32), user_id, payload.prefs_password)
         logging.debug(f"Generated audio size: {len(wav)} bytes")
     except Exception as e:
         logging.exception(f"Error in pipeline processing: {e}")
