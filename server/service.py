@@ -239,12 +239,7 @@ async def pipeline( meeting: str,
             speed    = float(prefs.get("speed", speed))
         except Exception as e:
             logging.warning(f"No or invalid TTS prefs for {user_id}: {e}")
-    wav_np = app.state.tts.tts(
-        text     = answer,
-        speaker  = speaker,
-        language = language,
-        speed    = speed
-    )
+
     logging.debug(f"Transcribing PCM audio for meeting {meeting}")
     whisper = app.state.whisper
     transcript = whisper.transcribe(pcm, fp16=False)["text"]
@@ -293,7 +288,12 @@ async def pipeline( meeting: str,
     logging.debug(f"TTS input: {answer}")
     # @DB The "speaker" is where you might use the database. Talk to @Winter for other things that might be costumized for the TTS. 
     # TTS
-    wav_np = app.state.tts.tts(text=answer, speaker="p335")
+    wav_np = app.state.tts.tts(
+        text     = answer,
+        speaker  = speaker,
+        language = language,
+        speed    = speed
+    )
     buf = io.BytesIO()
     sf.write(buf, wav_np, samplerate=app.state.tts.synthesizer.output_sample_rate, format="WAV")
     buf.seek(0)
