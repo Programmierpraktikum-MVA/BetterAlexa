@@ -3,6 +3,7 @@ import logging
 #import pygame
 #from gtts import gTTS
 from requests import post
+import httpx
 from os import path
 #from audio_recorder import AudioRecorder
 import sys
@@ -116,6 +117,28 @@ async def main():
         "pcm": pcm.tolist(),                     # JSON-friendly
     }
 
+    script_dir = os.path.dirname(os.path.abspath(__file__)) 
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(SERVER_URL, json=payload)
+            response.raise_for_status()
+            # Save the streamed audio response to a file
+            filename = os.path.join(script_dir, "response.wav")
+            with open(filename, "wb") as f:
+                async for chunk in response.aiter_bytes():
+                    f.write(chunk)
+        print(f"← Audio from server saved to {filename}")
+        # Write a done marker
+        with open(os.path.join(script_dir, "done"), "w") as f:
+            f.write(".")
+    except Exception as e:
+        logging.debug(f"Error, trying to get response from Server: {e}")
+        with open(os.path.join(script_dir, "error"), "w") as f:
+            f.write(str(e))
+
+    
+"""   (old version)
     # send the audiostream to the server and wait for a response
     try:    
         response = await post(SERVER_URL, json=payload)
@@ -130,15 +153,14 @@ async def main():
     print(f"← {len(response.content)/1024:.1f} KB audio from server – received")
     wav_bytes = response.content    
     
-    # save the response audiostream into the response file
-    script_dir = os.path.dirname(os.path.abspath(__file__))   
+    # save the response audiostream into the response file  
     filename =  os.path.join(script_dir, "response.wav")
     await save_stream_to_file(wav_bytes, filename)
 
     # write a done marker into a separat file
     with open(os.path.join(script_dir, "done"), "w") as f:
         f.write(".")
-    
+"""    
 
 """ old version (not needed anymore)
 print(sys.argv[1])
