@@ -3,7 +3,8 @@
 *.wav
 *.m4a
 
-
+/server/zoom_bot/repo_zoom_sdk/zoomBot-main/bin/*
+/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/*
 transcription.txt
 
 Llama-3-8B-function-calling*
