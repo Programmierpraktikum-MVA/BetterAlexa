@@ -355,19 +355,19 @@ async def _delegate_call(target: Optional[str], query: str, meeting: str) -> Del
 class StreamPayload(BaseModel):
     meeting_id: str
     pcm: List[float]
-    prefs_password: Optional[str] = None
+
 
 """
 This is the Endpoint for Traffic. 
 It takes an audio-stream and meeting-id as input and outputs the answer-audio stream.
 """
 @app.post("/api/v1/stream", response_class=StreamingResponse)
-async def stream(payload: StreamPayload,
-                 user_id: str = Depends(get_current_user)
+async def stream(payload: StreamPayload
                  ):
     logging.debug(f"Received request")
+    
     try:
-        wav = await pipeline(payload.meeting_id, np.array(payload.pcm, dtype=np.float32), user_id, payload.prefs_password)
+        wav = await pipeline(payload.meeting_id, np.array(payload.pcm, dtype=np.float32))
         logging.debug(f"Generated audio size: {len(wav)} bytes")
     except Exception as e:
         logging.exception(f"Error in pipeline processing: {e}")
