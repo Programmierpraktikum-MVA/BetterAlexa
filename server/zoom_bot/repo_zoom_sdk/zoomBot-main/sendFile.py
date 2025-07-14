@@ -10,7 +10,8 @@ import sys
 from pydub import AudioSegment
 import numpy
 import asyncio
-from meeting_sdk import get_user_id
+import re
+#from meeting_sdk import get_user_id
 
 # TODO: check if requirements need to be updated
 
@@ -107,13 +108,25 @@ async def main():
         local audiostream response.wav is written with the response of the server.
     """
     # get the user_id from the meeting_sdk.cpp file via pybind11
-    user_id = get_user_id()
-    print("User ID from C++:", user_id)
+    #user_id = get_user_id()
+    #print("User ID from C++:", user_id)
+
+    # workaround for meeting id instead of user_id
+    config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.txt")
+    with open(config_file_path, "r") as f:
+        lines = f.readlines()
+    
+    meeting_id_str = lines[0]
+    match = re.search(r'"([^"]+)"', meeting_id_str)
+    meeting_id = 0
+    if match:
+        meeting_id = match.group(1)
 
     print(f"Sending following file: {sys.argv[1]}")
+    print(f"The send meeting id is {meeting_id}")
     sample_rate, pcm = mp3_to_np_array(sys.argv[1])
     payload = {
-        "meeting_id": str(user_id),
+        "meeting_id": meeting_id,
         "pcm": pcm.tolist(),                     # JSON-friendly
     }
 
