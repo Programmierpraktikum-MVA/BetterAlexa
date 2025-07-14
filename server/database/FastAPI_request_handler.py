@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from .database_wrapper import set_sensitive_data, login_user, create_user  # Passe "database" ggf. an deinen Modulnamen an
 from fastapi.middleware.cors import CORSMiddleware
+from server.service import parse_link
 
 from cachetools import TTLCache
 PWD_TTL_SECONDS = int(os.getenv("PWD_TTL", 60*60))
@@ -36,33 +37,40 @@ class PwdOut(BaseModel):
 
 @app.post("/save-settings")
 
-async def save_settings(data: SettingsPayload):
+def save_settings(data: SettingsPayload):
     print("Neue Anfrage bei /save-settings angekommen:", data)
     try:
         # Jedes Key-Value-Paar als sensibles Datum abspeichern
         for key, value in data.settings.items():
-            set_sensitive_data(data.user_id, key, str(value), data.password)
-        try:
-            await app.state.httpx.post(           # re-uses the shared AsyncClient
-                "http://127.0.0.1:8000/zoom/cache_password",
-                json={"meeting_id": data.meeting_id, "password": data.password},
-                timeout=2.0
-            )
-        except httpx.HTTPError as exc:
-            logging.warning("Could not cache Zoom password: %s", exc)
+            if key == "zoom_link":
+                meeting_id, pwd = parse_link(value)
+                set_sensitive_data(data.user_id, key, str(value), data.password)
+                # Meeting-ID und Passwort separat speichern
+                set_sensitive_data(data.user_id, "zoom_meeting_id", meeting_id, data.password)
+                set_sensitive_data(data.user_id, "zoom_password", pwd, data.password)
+            else:
+                set_sensitive_data(data.user_id, key, str(value), data.password)
         return {"status": "success"}
     except HTTPException as e:
         raise e
 
 @app.post("/login")
 async def login(data: LoginPayload):
-    import httpx, logging
+    import httpx
     print("Login-Versuch:", data)
     if login_user(data.user_id, data.password):
+        try:
+            await app.state.httpx.post(           # re-uses the shared AsyncClient
+                "http://127.0.0.1:8000/zoom/cache_password",
+                json={"meeting_id": data.user_id, "password": data.password},
+                timeout=2.0
+            )
+        except httpx.HTTPError as exc:
+            logging.warning("Could not cache Zoom password: %s", exc)
         return {"status": "login success"}
     else:
         raise HTTPException(status_code=403, detail="Login fehlgeschlagen")
-    
+
 @app.post("/create-user")
 def create_user_endpoint(data: LoginPayload):
     print("Neuer User wird erstellt:", data)
