@@ -15,19 +15,19 @@ def start_discord_bot():
     intents = discord.Intents.default()
     intents.message_content = True
 
-bot = commands.Bot(command_prefix="?", intents=intents)
+    bot = commands.Bot(command_prefix="?", intents=intents)
 
 
-# Dein Bot-Token aus den .env variablen auslesen
-load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
+    # Dein Bot-Token aus den .env variablen auslesen
+    load_dotenv()
+    TOKEN = os.getenv("DISCORD_TOKEN")
 
-# Variable, in der der Link gespeichert wird
-zoom_link = None
+    # Variable, in der der Link gespeichert wird
+    zoom_link = None
 
-@bot.event
-async def on_ready():
-    print(f'Bot ist eingeloggt als {bot.user}')
+    @bot.event
+    async def on_ready():
+        print(f'Bot ist eingeloggt als {bot.user}')
 
     # Command zum Speichern des Zoom-Links
     @bot.command(name="join_zoom")
@@ -41,7 +41,7 @@ async def on_ready():
         url = "http://127.0.0.1:8006/handle_zoom_link"  # maybe needs to be adjusted 
         response = requests.post(url, json={"link": zoom_link})
 
-    await ctx.send("Bot tritt dem Zoom-Meeting bei...")
+        await ctx.send("Bot tritt dem Zoom-Meeting bei...")
 
-# Bot starten
-bot.run(TOKEN)
+    # Bot starten
+    bot.run(TOKEN)
