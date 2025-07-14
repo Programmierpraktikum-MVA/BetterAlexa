@@ -44,17 +44,20 @@ Once youve got the zoomsdk, extract and add from that:
 
 You can find the app credentials in google drive.
 
-## 2. Build:
+## 2. Build (will be made automatically when doing step 3):
 - Set the CMakePresets and CMakeUserPresets and set(CMAKE_TOOLCHAIN_FILE "/home/.../vcpkg/scripts/buildsystems/vcpkg.cmake") in CMakeLists.txt
 - Within build folder: cmake .. and cmake --build .
+- (execute only the bot inside main directory with: ./bin/meetingSDK)
 
-## 3. Execut:
+## 3. Execute:
 ###  1. Have betterAlexa running:
 - Go to server folder
-- Activate the `.venv` environment(`source .venv/bin/activate`)
-- Start the server with the tcp flag(`python server.py --tcp`)
+- Activate the `.venv` environment (`source .venv/bin/activate`)
+- Start the server with the tcp flag (`python server.py --tcp`)
 ###  2. Start personal meeting room
+- Currently you can't start the meeting from a TU Berlin Zoom Account
 ###  3. Go to `MUTE THIS` section in the BetterAlexa Discord server and type in channel `discord-bot`: `?join_zoom <your_zoom_link>`
+###  4. Make the Bot Host
 
 
 ## Further notes:
