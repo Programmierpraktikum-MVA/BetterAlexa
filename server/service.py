@@ -20,7 +20,7 @@ from whisper import load_model  # type: ignore
 from function_calling.llama3 import LLama3, LlamaOutput  # updated API
 from TTS.api import TTS  # type: ignore
 import certifi, ssl
-from database.database_wrapper import authenticate_user, get_sensitive_data, set_sensitive_data, get_user_setting, set_user_setting 
+from database.database_wrapper import authenticate_user, get_sensitive_data, set_sensitive_data, get_user_setting, set_user_setting, set_zoom_link, get_zoom_link 
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -132,7 +132,26 @@ class UserSettingRequest(BaseModel):
 
 class UserSettingGetRequest(BaseModel):
     key: str = Field(..., min_length=1)
+class ZoomLinkRequest(BaseModel):
+    zoom_link: str
 
+@app.post("/set_zoom_link")
+def api_set_zoom_link(request: ZoomLinkRequest, user_id: str = Depends(get_current_user)):
+    try:
+        set_zoom_link(user_id, request.zoom_link)
+        return {"status": "success"}
+    except HTTPException as e:
+        raise e
+
+@app.get("/get_zoom_link")
+def api_get_zoom_link(user_id: str = Depends(get_current_user)):
+    try:
+        zoom_link = get_zoom_link(user_id)
+        if zoom_link is None:
+            raise HTTPException(status_code=404, detail="Zoom link not found")
+        return {"zoom_link": zoom_link}
+    except HTTPException as e:
+        raise e
 # Endpoints User Settings
 @app.post("/set_user_setting")
 def api_set_user_setting(request: UserSettingRequest, user_id: str = Depends(get_current_user)):

@@ -35,6 +35,11 @@ def create_tables(db_path=DB_PATH):
     )
     """)
 
+    cursor.execute("PRAGMA table_info(users)")
+    columns = [info[1] for info in cursor.fetchall()]
+    if "zoom_link" not in columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN zoom_link TEXT")
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS user_settings_text (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

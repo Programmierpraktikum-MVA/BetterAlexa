@@ -178,3 +178,29 @@ def get_user_setting(user_id: str, key: str):
             return row[0]
     finally:
         conn.close()
+
+# ----- Zoom Link Management -----
+
+def set_zoom_link(user_id: str, zoom_link: str) -> None:
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            UPDATE users SET zoom_link = ? WHERE user_id = ?
+        """, (zoom_link, user_id))
+        conn.commit()
+    finally:
+        conn.close()
+
+def get_zoom_link(user_id: str) -> str | None:
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT zoom_link FROM users WHERE user_id = ?", (user_id,))
+        row = cursor.fetchone()
+        if row:
+            return row[0]
+        return None
+    finally:
+        conn.close()
+
