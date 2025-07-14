@@ -36,12 +36,20 @@ class PwdOut(BaseModel):
 
 @app.post("/save-settings")
 
-def save_settings(data: SettingsPayload):
+async def save_settings(data: SettingsPayload):
     print("Neue Anfrage bei /save-settings angekommen:", data)
     try:
         # Jedes Key-Value-Paar als sensibles Datum abspeichern
         for key, value in data.settings.items():
             set_sensitive_data(data.user_id, key, str(value), data.password)
+        try:
+            await app.state.httpx.post(           # re-uses the shared AsyncClient
+                "http://127.0.0.1:8000/zoom/cache_password",
+                json={"meeting_id": data.meeting_id, "password": data.password},
+                timeout=2.0
+            )
+        except httpx.HTTPError as exc:
+            logging.warning("Could not cache Zoom password: %s", exc)
         return {"status": "success"}
     except HTTPException as e:
         raise e
@@ -51,14 +59,6 @@ async def login(data: LoginPayload):
     import httpx, logging
     print("Login-Versuch:", data)
     if login_user(data.user_id, data.password):
-        try:
-            await app.state.httpx.post(           # re-uses the shared AsyncClient
-                "http://127.0.0.1:8000/zoom/cache_password",
-                json={"meeting_id": data.meeting_id, "password": data.password},
-                timeout=2.0
-            )
-        except httpx.HTTPError as exc:
-            logging.warning("Could not cache Zoom password: %s", exc)
         return {"status": "login success"}
     else:
         raise HTTPException(status_code=403, detail="Login fehlgeschlagen")
