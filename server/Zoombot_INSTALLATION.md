@@ -1,4 +1,4 @@
-1. Prerequisites:
+## 1. Prerequisites:
 
 vcpkg install jwt-cpp
 sudo apt-get install libsfml-dev
@@ -23,10 +23,10 @@ sudo apt install curl
 sudo apt install pulseaudio
 
 
-1.1 getting credentials and sdk:
+### 1.1 getting credentials and sdk:
 https://marketplace.zoom.us/ log in, dropdown menu (develop) in top right corner > Build App > General App. Click through app creation: they will complain if there isnt an OAuth Redirect URL, isnt needed for us tho. https://zoom.us is a valid entry. Get client ID and secret, in "surface" select meetings, "Zoom App SDK" and add relevant apis (all event and api permissions, or API: getMeetingContext, getMEetingParticipants, getUserContext, geRecordingContext, setAudioState, getAudioState, shareComputerAudio, joinMeeting, getZoomRoomDeviceDetails; Events: onMyUserContextChange, onZoomRoomEvent), in "Embed" select MeetingSDK and download latest linux version, add Scopes (User>vier users zak token> view users zak token,Meeting>real-time media streams>real time audio streams, zoom App>enable zoom App with zoom meeting client)
 
-1.2 setting credentials and sdk
+### 1.2 setting credentials and sdk
 add client id and secret to config.txt, also meeting number and password (must be personal meeting room if the app isnt published on the marketplace!). While were here: make sure the pactl commands work for you find alternative if not. There needs to be a an output that feeds an input, set the names of them in meeting_sdk.cpp>joinMeeting() line 662 following
 Also we need the path to:
 	 an executable of python within the venv of the BetterAlexa client. (.venv/bin/python3, make sure its set as executable tho)
@@ -44,19 +44,19 @@ Once youve got the zoomsdk, extract and add from that:
 
 You can find the app credentials in google drive.
 
-2. Build:
-  1. Set the CMakePresets and CMakeUserPresets and set(CMAKE_TOOLCHAIN_FILE "/home/.../vcpkg/scripts/buildsystems/vcpkg.cmake") in CMakeLists.txt
-  2. Within build folder: cmake .. and cmake --build .
+## 2. Build:
+###  1. Set the CMakePresets and CMakeUserPresets and set(CMAKE_TOOLCHAIN_FILE "/home/.../vcpkg/scripts/buildsystems/vcpkg.cmake") in CMakeLists.txt
+###  2. Within build folder: cmake .. and cmake --build .
 
-3. Execut:
-  1. Have betterAlexa running:
-    1. Go to server folder
-    2. Activate the .venv environment(source .venv/bin/activate)
-    3. Start the server with the tcp flag(python server.py --tcp)
-  2. Start personal meeting room
-  3. Go to MUTE THIS section in the BetterAlexa Discord server and type in channel discord-bot: ?join_zoom <your_zoom_link>
+## 3. Execut:
+###  1. Have betterAlexa running:
+- Go to server folder
+- Activate the `.venv` environment(`source .venv/bin/activate`)
+- Start the server with the tcp flag(`python server.py --tcp`)
+###  2. Start personal meeting room
+###  3. Go to `MUTE THIS` section in the BetterAlexa Discord server and type in channel `discord-bot`: `?join_zoom <your_zoom_link>`
 
 
-Further notes:
-	1. Name of bot is set in meeting_sdk.cpp>JoinMeeting() l 602 withoutloginParam.userName = "Bot";
-	2. Exact details on when the bot listens/answers can be tuned in ZoomSdkAudioRawData.cpp>ZoomSDKAudioRawData() more detailed explanation can also be found there
+## Further notes:
+###	1. Name of bot is set in meeting_sdk.cpp>JoinMeeting() l 602 withoutloginParam.userName = "Bot";
+###	2. Exact details on when the bot listens/answers can be tuned in ZoomSdkAudioRawData.cpp>ZoomSDKAudioRawData() more detailed explanation can also be found there
