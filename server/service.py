@@ -269,35 +269,39 @@ transforms it into text (Whisper),
 answers (Llama or Integration, depending on state),
 and turns the answer into speech (TTS).
 """
-async def pipeline( meeting: str, 
-                    pcm: np.ndarray,
-                    user_id: str | None = None,
-                    prefs_password: str | None = None
-                    ) -> bytes:
+async def pipeline(
+    meeting: str,
+    pcm: np.ndarray,
+    pwd: Optional[str] = None,
+) -> bytes:
     language, speaker, speed = "en", "p335", 1.0
-    if user_id and prefs_password:
+
+    # ─── Per-meeting TTS preferences protected by Zoom password ───
+    if pwd:
         try:
-            blob = get_sensitive_data(user_id, "tts_prefs", prefs_password)
+            blob = get_sensitive_data(meeting, "tts_prefs", pwd)
             prefs = json.loads(blob)
             language = prefs.get("language", language)
             speaker  = prefs.get("speaker",  speaker)
             speed    = float(prefs.get("speed", speed))
         except Exception as e:
-            logging.warning(f"No or invalid TTS prefs for {user_id}: {e}")
+            logging.warning(f"No or invalid TTS prefs for meeting {meeting}: {e}")
 
+    # ─── Speech-to-text ───
     logging.debug(f"Transcribing PCM audio for meeting {meeting}")
-    whisper = app.state.whisper
-    transcript = whisper.transcribe(pcm, fp16=False)["text"]
+    transcript = app.state.whisper.transcribe(pcm, fp16=False)["text"]
     logging.debug(f"Transcription result: {transcript}")
-    state = SESSION_STATE.get(meeting, RouteState.BETTERALEXA)
-    llama: LLama3 = app.state.llama
-    logging.debug(f"RouteState for meeting {meeting}: {state}")
 
-    # 1) Local handling
+    # ─── Routing state ───
+    state = SESSION_STATE.get(meeting, RouteState.BETTERALEXA)
+    logging.debug(f"RouteState for meeting {meeting}: {state}")
+    llama: LLama3 = app.state.llama
+
     if state is RouteState.BETTERALEXA:
         out: LlamaOutput = llama.process_input(transcript)
         logging.debug(f"Llama output: {out}")
         answer = out.text
+
         if out.delegate:
             target = (out.delegate_target or "tutorai").lower()
             if target == "tutorai":
@@ -310,7 +314,6 @@ async def pipeline( meeting: str,
             if result.done:
                 SESSION_STATE[meeting] = RouteState.BETTERALEXA
 
-    # 2) Ongoing delegation
     elif state in STATE_TO_DELEGATE:
         target = STATE_TO_DELEGATE[state]
         logging.debug(f"Ongoing delegation to {target}")
@@ -318,29 +321,33 @@ async def pipeline( meeting: str,
         answer = result.answer
         if result.done:
             SESSION_STATE[meeting] = RouteState.BETTERALEXA
-
-    # 3) Testing fallback
     else:
         answer = "[testing mode placeholder]"
 
+    # ─── Sanity checks ───
     answer = answer.strip()
     if not answer:
         logging.warning("Empty TTS input detected. Using placeholder response.")
         answer = "Sorry, I didn't catch that. Can you repeat?"
-    elif len(answer) > 500:  # arbitrary length check
+    elif len(answer) > 500:
         logging.warning(f"Excessively long TTS input detected ({len(answer)} chars). Truncating.")
         answer = answer[:500]
     logging.debug(f"TTS input: {answer}")
-    # @DB The "speaker" is where you might use the database. Talk to @Winter for other things that might be costumized for the TTS. 
-    # TTS
+
+    # ─── Text-to-speech ───
     wav_np = app.state.tts.tts(
-        text     = answer,
-        speaker  = speaker,
-        language = language,
-        speed    = speed
+        text=answer,
+        speaker=speaker,
+        language=language,
+        speed=speed,
     )
     buf = io.BytesIO()
-    sf.write(buf, wav_np, samplerate=app.state.tts.synthesizer.output_sample_rate, format="WAV")
+    sf.write(
+        buf,
+        wav_np,
+        samplerate=app.state.tts.synthesizer.output_sample_rate,
+        format="WAV",
+    )
     buf.seek(0)
     logging.debug(f"Returning WAV bytes of length: {buf.getbuffer().nbytes}")
     return buf.read()
@@ -365,9 +372,19 @@ It takes an audio-stream and meeting-id as input and outputs the answer-audio st
 async def stream(payload: StreamPayload
                  ):
     logging.debug(f"Received request")
-    
+    pwd: Optional[str] = None
     try:
-        wav = await pipeline(payload.meeting_id, np.array(payload.pcm, dtype=np.float32))
+        response = await app.state.httpx.get(
+            f"http://127.0.0.1:8000/zoom/password/{payload.meeting_id}",
+            timeout=2.0,
+        )
+        if response.status_code == 200:
+            pwd = response.json()["password"]
+    except httpx.HTTPError as exc:
+        logging.warning(f"Could not reach /zoom/password endpoint: {exc}")
+
+    try:
+        wav = await pipeline(payload.meeting_id, np.array(payload.pcm, dtype=np.float32), pwd)
         logging.debug(f"Generated audio size: {len(wav)} bytes")
     except Exception as e:
         logging.exception(f"Error in pipeline processing: {e}")
