@@ -45,8 +45,8 @@ Once youve got the zoomsdk, extract and add from that:
 You can find the app credentials in google drive.
 
 ## 2. Build:
-###  1. Set the CMakePresets and CMakeUserPresets and set(CMAKE_TOOLCHAIN_FILE "/home/.../vcpkg/scripts/buildsystems/vcpkg.cmake") in CMakeLists.txt
-###  2. Within build folder: cmake .. and cmake --build .
+- Set the CMakePresets and CMakeUserPresets and set(CMAKE_TOOLCHAIN_FILE "/home/.../vcpkg/scripts/buildsystems/vcpkg.cmake") in CMakeLists.txt
+- Within build folder: cmake .. and cmake --build .
 
 ## 3. Execut:
 ###  1. Have betterAlexa running:
@@ -58,5 +58,5 @@ You can find the app credentials in google drive.
 
 
 ## Further notes:
-###	1. Name of bot is set in meeting_sdk.cpp>JoinMeeting() l 602 withoutloginParam.userName = "Bot";
-###	2. Exact details on when the bot listens/answers can be tuned in ZoomSdkAudioRawData.cpp>ZoomSDKAudioRawData() more detailed explanation can also be found there
+- Name of bot is set in meeting_sdk.cpp>JoinMeeting() l 602 withoutloginParam.userName = "Bot";
+- Exact details on when the bot listens/answers can be tuned in ZoomSdkAudioRawData.cpp>ZoomSDKAudioRawData() more detailed explanation can also be found there
