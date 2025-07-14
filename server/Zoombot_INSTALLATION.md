@@ -48,13 +48,14 @@ You can find the app credentials in google drive.
 - Set the CMakePresets and CMakeUserPresets and set(CMAKE_TOOLCHAIN_FILE "/home/.../vcpkg/scripts/buildsystems/vcpkg.cmake") in CMakeLists.txt
 - Within build folder: cmake .. and cmake --build .
 
-## 3. Execut:
+## 3. Execute:
 ###  1. Have betterAlexa running:
 - Go to server folder
 - Activate the `.venv` environment(`source .venv/bin/activate`)
 - Start the server with the tcp flag(`python server.py --tcp`)
 ###  2. Start personal meeting room
 ###  3. Go to `MUTE THIS` section in the BetterAlexa Discord server and type in channel `discord-bot`: `?join_zoom <your_zoom_link>`
+### 4. Set the bot as host of the meeting
 
 
 ## Further notes:
