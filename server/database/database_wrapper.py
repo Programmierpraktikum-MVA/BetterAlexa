@@ -204,3 +204,32 @@ def get_zoom_link(user_id: str) -> str | None:
     finally:
         conn.close()
 
+def get_user_id_by_meeting_id(meeting_id: str) -> str:
+    """
+    Return the `user_id` that is associated with a given Zoom `meeting_id`.
+
+    The lookup scans the `zoom_link` column of the `users` table and searches
+    for any link that contains the exact meeting ID.  Assumes one-to-one
+    mapping between a meeting and a user.
+
+    Raises
+    ------
+    fastapi.HTTPException
+        404 – no user has a Zoom link with that meeting ID
+    """
+    if not meeting_id:
+        raise HTTPException(status_code=400, detail="Meeting-ID muss angegeben werden")
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "SELECT user_id FROM users WHERE zoom_link LIKE ?",
+            (f"%{meeting_id}%",),
+        )
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Meeting-ID nicht verknüpft")
+        return str(row[0])
+    finally:
+        conn.close()

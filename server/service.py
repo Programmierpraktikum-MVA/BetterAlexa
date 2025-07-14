@@ -20,7 +20,7 @@ from whisper import load_model  # type: ignore
 from function_calling.llama3 import LLama3, LlamaOutput  # updated API
 from TTS.api import TTS  # type: ignore
 import certifi, ssl
-from database.database_wrapper import authenticate_user, get_sensitive_data, set_sensitive_data, get_user_setting, set_user_setting, set_zoom_link, get_zoom_link 
+from database.database_wrapper import authenticate_user, get_sensitive_data, set_sensitive_data, get_user_setting, set_user_setting, set_zoom_link, get_zoom_link, get_user_id_by_meeting_id 
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -270,31 +270,32 @@ answers (Llama or Integration, depending on state),
 and turns the answer into speech (TTS).
 """
 async def pipeline(
-    meeting: str,
+    meeting_id: str,
     pcm: np.ndarray,
     pwd: Optional[str] = None,
 ) -> bytes:
     language, speaker, speed = "en", "p335", 1.0
 
     # ─── Per-meeting TTS preferences protected by Zoom password ───
+    user_id = get_user_id_by_meeting_id(meeting_id)
     if pwd:
         try:
-            blob = get_sensitive_data(meeting, "tts_prefs", pwd)
+            blob = get_sensitive_data(user_id, "tts_prefs", pwd)
             prefs = json.loads(blob)
             language = prefs.get("language", language)
             speaker  = prefs.get("speaker",  speaker)
             speed    = float(prefs.get("speed", speed))
         except Exception as e:
-            logging.warning(f"No or invalid TTS prefs for meeting {meeting}: {e}")
+            logging.warning(f"No or invalid TTS prefs for meeting {user_id}: {e}")
 
     # ─── Speech-to-text ───
-    logging.debug(f"Transcribing PCM audio for meeting {meeting}")
+    logging.debug(f"Transcribing PCM audio for meeting {user_id}")
     transcript = app.state.whisper.transcribe(pcm, fp16=False)["text"]
     logging.debug(f"Transcription result: {transcript}")
 
     # ─── Routing state ───
-    state = SESSION_STATE.get(meeting, RouteState.BETTERALEXA)
-    logging.debug(f"RouteState for meeting {meeting}: {state}")
+    state = SESSION_STATE.get(user_id, RouteState.BETTERALEXA)
+    logging.debug(f"RouteState for meeting {user_id}: {state}")
     llama: LLama3 = app.state.llama
 
     if state is RouteState.BETTERALEXA:
@@ -305,22 +306,22 @@ async def pipeline(
         if out.delegate:
             target = (out.delegate_target or "tutorai").lower()
             if target == "tutorai":
-                SESSION_STATE[meeting] = RouteState.TUTORAI
+                SESSION_STATE[user_id] = RouteState.TUTORAI
             else:
                 logging.warning(f"Unknown delegate target '{target}', staying in BETTERALEXA")
             logging.debug(f"Delegating to {target}")
-            result = await _delegate_call(target, transcript, meeting)
+            result = await _delegate_call(target, transcript, user_id)
             answer = result.answer
             if result.done:
-                SESSION_STATE[meeting] = RouteState.BETTERALEXA
+                SESSION_STATE[user_id] = RouteState.BETTERALEXA
 
     elif state in STATE_TO_DELEGATE:
         target = STATE_TO_DELEGATE[state]
         logging.debug(f"Ongoing delegation to {target}")
-        result = await _delegate_call(target, transcript, meeting)
+        result = await _delegate_call(target, transcript, user_id)
         answer = result.answer
         if result.done:
-            SESSION_STATE[meeting] = RouteState.BETTERALEXA
+            SESSION_STATE[user_id] = RouteState.BETTERALEXA
     else:
         answer = "[testing mode placeholder]"
 
