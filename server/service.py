@@ -11,7 +11,7 @@ import subprocess
 import json
 
 import httpx, numpy as np, soundfile as sf
-from fastapi import FastAPI, HTTPException, Request, Depends, Security
+from fastapi import FastAPI, HTTPException, Request, Depends, Security, BackgroundTasks
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, constr, Field
@@ -384,7 +384,7 @@ This is the Endpoint for Discord Integration handling.
 It takes (for now) a zoom invite link and forwards this to the zoombot 
 """
 @app.post("/handle_zoom_link")
-async def handle_zoom_link(request: Request):
+async def handle_zoom_link(request: Request, background_tasks: BackgroundTasks):
     data = await request.json()
     link = data.get("link")
     logging.debug(f"Received link: {link}")
@@ -415,17 +415,16 @@ async def handle_zoom_link(request: Request):
     # Ensure the build directory exists
     os.makedirs(zoom_build_dir, exist_ok=True)
 
-    logging.debug(f"Compiling Zoom Bot from dir: {zoom_build_dir}")
-    # Run 'cmake ..' inside the 'build' directory
-    subprocess.run(['cmake', '..'], cwd=zoom_build_dir, check=True)
-
-    # Run 'cmake --build .' inside the 'build' directory
-    subprocess.run(['cmake', '--build', '.'], cwd=zoom_build_dir, check=True)
-
-    # Run the compiled executable 
-    subprocess.run(['./bin/meetingSDK'], cwd=zoom_bot_dir, check=True)
+    # Add the background task
+    background_tasks.add_task(run_zoom_bot, zoom_bot_dir, zoom_build_dir)
 
     return {"status": "ok"}
+
+def run_zoom_bot(zoom_bot_dir, zoom_build_dir):
+    logging.debug(f"Compiling Zoom Bot from dir: {zoom_build_dir}")
+    subprocess.run(['cmake', '..'], cwd=zoom_build_dir, check=True)
+    subprocess.run(['cmake', '--build', '.'], cwd=zoom_build_dir, check=True)
+    subprocess.run(['./bin/meetingSDK'], cwd=zoom_bot_dir, check=True)
 
 def parse_link(link: str):
     """

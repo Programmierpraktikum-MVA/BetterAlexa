@@ -83,12 +83,12 @@ clean: CMakeFiles/meetingSDK.dir/clean
 CMakeFiles/meeting_sdk.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles --progress-num=16,17,18 "Built target meeting_sdk"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles --progress-num=16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31 "Built target meeting_sdk"
 .PHONY : CMakeFiles/meeting_sdk.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/meeting_sdk.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles 16
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/meeting_sdk.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/build/CMakeFiles 0
 .PHONY : CMakeFiles/meeting_sdk.dir/rule

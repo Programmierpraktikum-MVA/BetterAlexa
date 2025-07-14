@@ -147,6 +147,7 @@ AuthServiceEventListener.o: AuthServiceEventListener.cpp.o
 
 # target to build an object file
 AuthServiceEventListener.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/AuthServiceEventListener.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/AuthServiceEventListener.cpp.o
 .PHONY : AuthServiceEventListener.cpp.o
 
@@ -155,6 +156,7 @@ AuthServiceEventListener.i: AuthServiceEventListener.cpp.i
 
 # target to preprocess a source file
 AuthServiceEventListener.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/AuthServiceEventListener.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/AuthServiceEventListener.cpp.i
 .PHONY : AuthServiceEventListener.cpp.i
 
@@ -163,6 +165,7 @@ AuthServiceEventListener.s: AuthServiceEventListener.cpp.s
 
 # target to generate assembly for a file
 AuthServiceEventListener.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/AuthServiceEventListener.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/AuthServiceEventListener.cpp.s
 .PHONY : AuthServiceEventListener.cpp.s
 
@@ -171,6 +174,7 @@ MeetingParticipantsCtrlEventListener.o: MeetingParticipantsCtrlEventListener.cpp
 
 # target to build an object file
 MeetingParticipantsCtrlEventListener.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/MeetingParticipantsCtrlEventListener.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/MeetingParticipantsCtrlEventListener.cpp.o
 .PHONY : MeetingParticipantsCtrlEventListener.cpp.o
 
@@ -179,6 +183,7 @@ MeetingParticipantsCtrlEventListener.i: MeetingParticipantsCtrlEventListener.cpp
 
 # target to preprocess a source file
 MeetingParticipantsCtrlEventListener.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/MeetingParticipantsCtrlEventListener.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/MeetingParticipantsCtrlEventListener.cpp.i
 .PHONY : MeetingParticipantsCtrlEventListener.cpp.i
 
@@ -187,6 +192,7 @@ MeetingParticipantsCtrlEventListener.s: MeetingParticipantsCtrlEventListener.cpp
 
 # target to generate assembly for a file
 MeetingParticipantsCtrlEventListener.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/MeetingParticipantsCtrlEventListener.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/MeetingParticipantsCtrlEventListener.cpp.s
 .PHONY : MeetingParticipantsCtrlEventListener.cpp.s
 
@@ -195,6 +201,7 @@ MeetingRecordingCtrlEventListener.o: MeetingRecordingCtrlEventListener.cpp.o
 
 # target to build an object file
 MeetingRecordingCtrlEventListener.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/MeetingRecordingCtrlEventListener.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/MeetingRecordingCtrlEventListener.cpp.o
 .PHONY : MeetingRecordingCtrlEventListener.cpp.o
 
@@ -203,6 +210,7 @@ MeetingRecordingCtrlEventListener.i: MeetingRecordingCtrlEventListener.cpp.i
 
 # target to preprocess a source file
 MeetingRecordingCtrlEventListener.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/MeetingRecordingCtrlEventListener.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/MeetingRecordingCtrlEventListener.cpp.i
 .PHONY : MeetingRecordingCtrlEventListener.cpp.i
 
@@ -211,6 +219,7 @@ MeetingRecordingCtrlEventListener.s: MeetingRecordingCtrlEventListener.cpp.s
 
 # target to generate assembly for a file
 MeetingRecordingCtrlEventListener.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/MeetingRecordingCtrlEventListener.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/MeetingRecordingCtrlEventListener.cpp.s
 .PHONY : MeetingRecordingCtrlEventListener.cpp.s
 
@@ -219,6 +228,7 @@ MeetingReminderEventListener.o: MeetingReminderEventListener.cpp.o
 
 # target to build an object file
 MeetingReminderEventListener.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/MeetingReminderEventListener.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/MeetingReminderEventListener.cpp.o
 .PHONY : MeetingReminderEventListener.cpp.o
 
@@ -227,6 +237,7 @@ MeetingReminderEventListener.i: MeetingReminderEventListener.cpp.i
 
 # target to preprocess a source file
 MeetingReminderEventListener.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/MeetingReminderEventListener.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/MeetingReminderEventListener.cpp.i
 .PHONY : MeetingReminderEventListener.cpp.i
 
@@ -235,6 +246,7 @@ MeetingReminderEventListener.s: MeetingReminderEventListener.cpp.s
 
 # target to generate assembly for a file
 MeetingReminderEventListener.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/MeetingReminderEventListener.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/MeetingReminderEventListener.cpp.s
 .PHONY : MeetingReminderEventListener.cpp.s
 
@@ -243,6 +255,7 @@ MeetingServiceEventListener.o: MeetingServiceEventListener.cpp.o
 
 # target to build an object file
 MeetingServiceEventListener.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/MeetingServiceEventListener.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/MeetingServiceEventListener.cpp.o
 .PHONY : MeetingServiceEventListener.cpp.o
 
@@ -251,6 +264,7 @@ MeetingServiceEventListener.i: MeetingServiceEventListener.cpp.i
 
 # target to preprocess a source file
 MeetingServiceEventListener.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/MeetingServiceEventListener.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/MeetingServiceEventListener.cpp.i
 .PHONY : MeetingServiceEventListener.cpp.i
 
@@ -259,6 +273,7 @@ MeetingServiceEventListener.s: MeetingServiceEventListener.cpp.s
 
 # target to generate assembly for a file
 MeetingServiceEventListener.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/MeetingServiceEventListener.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/MeetingServiceEventListener.cpp.s
 .PHONY : MeetingServiceEventListener.cpp.s
 
@@ -267,6 +282,7 @@ NetworkConnectionHandler.o: NetworkConnectionHandler.cpp.o
 
 # target to build an object file
 NetworkConnectionHandler.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/NetworkConnectionHandler.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/NetworkConnectionHandler.cpp.o
 .PHONY : NetworkConnectionHandler.cpp.o
 
@@ -275,6 +291,7 @@ NetworkConnectionHandler.i: NetworkConnectionHandler.cpp.i
 
 # target to preprocess a source file
 NetworkConnectionHandler.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/NetworkConnectionHandler.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/NetworkConnectionHandler.cpp.i
 .PHONY : NetworkConnectionHandler.cpp.i
 
@@ -283,6 +300,7 @@ NetworkConnectionHandler.s: NetworkConnectionHandler.cpp.s
 
 # target to generate assembly for a file
 NetworkConnectionHandler.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/NetworkConnectionHandler.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/NetworkConnectionHandler.cpp.s
 .PHONY : NetworkConnectionHandler.cpp.s
 
@@ -291,6 +309,7 @@ ZoomSDKAudioRawData.o: ZoomSDKAudioRawData.cpp.o
 
 # target to build an object file
 ZoomSDKAudioRawData.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/ZoomSDKAudioRawData.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/ZoomSDKAudioRawData.cpp.o
 .PHONY : ZoomSDKAudioRawData.cpp.o
 
@@ -299,6 +318,7 @@ ZoomSDKAudioRawData.i: ZoomSDKAudioRawData.cpp.i
 
 # target to preprocess a source file
 ZoomSDKAudioRawData.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/ZoomSDKAudioRawData.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/ZoomSDKAudioRawData.cpp.i
 .PHONY : ZoomSDKAudioRawData.cpp.i
 
@@ -307,6 +327,7 @@ ZoomSDKAudioRawData.s: ZoomSDKAudioRawData.cpp.s
 
 # target to generate assembly for a file
 ZoomSDKAudioRawData.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/ZoomSDKAudioRawData.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/ZoomSDKAudioRawData.cpp.s
 .PHONY : ZoomSDKAudioRawData.cpp.s
 
@@ -315,6 +336,7 @@ ZoomSDKRenderer.o: ZoomSDKRenderer.cpp.o
 
 # target to build an object file
 ZoomSDKRenderer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/ZoomSDKRenderer.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/ZoomSDKRenderer.cpp.o
 .PHONY : ZoomSDKRenderer.cpp.o
 
@@ -323,6 +345,7 @@ ZoomSDKRenderer.i: ZoomSDKRenderer.cpp.i
 
 # target to preprocess a source file
 ZoomSDKRenderer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/ZoomSDKRenderer.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/ZoomSDKRenderer.cpp.i
 .PHONY : ZoomSDKRenderer.cpp.i
 
@@ -331,6 +354,7 @@ ZoomSDKRenderer.s: ZoomSDKRenderer.cpp.s
 
 # target to generate assembly for a file
 ZoomSDKRenderer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/ZoomSDKRenderer.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/ZoomSDKRenderer.cpp.s
 .PHONY : ZoomSDKRenderer.cpp.s
 
@@ -339,6 +363,7 @@ ZoomSDKVideoSource.o: ZoomSDKVideoSource.cpp.o
 
 # target to build an object file
 ZoomSDKVideoSource.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/ZoomSDKVideoSource.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/ZoomSDKVideoSource.cpp.o
 .PHONY : ZoomSDKVideoSource.cpp.o
 
@@ -347,6 +372,7 @@ ZoomSDKVideoSource.i: ZoomSDKVideoSource.cpp.i
 
 # target to preprocess a source file
 ZoomSDKVideoSource.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/ZoomSDKVideoSource.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/ZoomSDKVideoSource.cpp.i
 .PHONY : ZoomSDKVideoSource.cpp.i
 
@@ -355,6 +381,7 @@ ZoomSDKVideoSource.s: ZoomSDKVideoSource.cpp.s
 
 # target to generate assembly for a file
 ZoomSDKVideoSource.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/ZoomSDKVideoSource.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/ZoomSDKVideoSource.cpp.s
 .PHONY : ZoomSDKVideoSource.cpp.s
 
@@ -363,6 +390,7 @@ ZoomSDKVirtualAudioMicEvent.o: ZoomSDKVirtualAudioMicEvent.cpp.o
 
 # target to build an object file
 ZoomSDKVirtualAudioMicEvent.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/ZoomSDKVirtualAudioMicEvent.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/ZoomSDKVirtualAudioMicEvent.cpp.o
 .PHONY : ZoomSDKVirtualAudioMicEvent.cpp.o
 
@@ -371,6 +399,7 @@ ZoomSDKVirtualAudioMicEvent.i: ZoomSDKVirtualAudioMicEvent.cpp.i
 
 # target to preprocess a source file
 ZoomSDKVirtualAudioMicEvent.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/ZoomSDKVirtualAudioMicEvent.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/ZoomSDKVirtualAudioMicEvent.cpp.i
 .PHONY : ZoomSDKVirtualAudioMicEvent.cpp.i
 
@@ -379,6 +408,7 @@ ZoomSDKVirtualAudioMicEvent.s: ZoomSDKVirtualAudioMicEvent.cpp.s
 
 # target to generate assembly for a file
 ZoomSDKVirtualAudioMicEvent.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/ZoomSDKVirtualAudioMicEvent.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/ZoomSDKVirtualAudioMicEvent.cpp.s
 .PHONY : ZoomSDKVirtualAudioMicEvent.cpp.s
 
@@ -387,6 +417,7 @@ audioHandling.o: audioHandling.cpp.o
 
 # target to build an object file
 audioHandling.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/audioHandling.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/audioHandling.cpp.o
 .PHONY : audioHandling.cpp.o
 
@@ -395,6 +426,7 @@ audioHandling.i: audioHandling.cpp.i
 
 # target to preprocess a source file
 audioHandling.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/audioHandling.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/audioHandling.cpp.i
 .PHONY : audioHandling.cpp.i
 
@@ -403,6 +435,7 @@ audioHandling.s: audioHandling.cpp.s
 
 # target to generate assembly for a file
 audioHandling.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/audioHandling.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/audioHandling.cpp.s
 .PHONY : audioHandling.cpp.s
 
@@ -462,6 +495,7 @@ miniaudio.o: miniaudio.c.o
 
 # target to build an object file
 miniaudio.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/miniaudio.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/miniaudio.c.o
 .PHONY : miniaudio.c.o
 
@@ -470,6 +504,7 @@ miniaudio.i: miniaudio.c.i
 
 # target to preprocess a source file
 miniaudio.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/miniaudio.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/miniaudio.c.i
 .PHONY : miniaudio.c.i
 
@@ -478,6 +513,7 @@ miniaudio.s: miniaudio.c.s
 
 # target to generate assembly for a file
 miniaudio.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/miniaudio.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/miniaudio.c.s
 .PHONY : miniaudio.c.s
 
@@ -486,6 +522,7 @@ terminalInteractions.o: terminalInteractions.cpp.o
 
 # target to build an object file
 terminalInteractions.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/terminalInteractions.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.o
 .PHONY : terminalInteractions.cpp.o
 
@@ -494,6 +531,7 @@ terminalInteractions.i: terminalInteractions.cpp.i
 
 # target to preprocess a source file
 terminalInteractions.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/terminalInteractions.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.i
 .PHONY : terminalInteractions.cpp.i
 
@@ -502,6 +540,7 @@ terminalInteractions.s: terminalInteractions.cpp.s
 
 # target to generate assembly for a file
 terminalInteractions.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meeting_sdk.dir/build.make CMakeFiles/meeting_sdk.dir/terminalInteractions.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meetingSDK.dir/build.make CMakeFiles/meetingSDK.dir/terminalInteractions.cpp.s
 .PHONY : terminalInteractions.cpp.s
 

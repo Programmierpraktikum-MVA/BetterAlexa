@@ -1,7 +1,7 @@
-meeting_number: "64845229492"
+meeting_number: "87692462401"
 clientID: "aruOgQfORGWnmbpSwsd2Hw"
 clientSecret: "St8squhsyVgdoOGNwbCrNzYmuiGu37Nn"
-meeting_password: "590550i"
+meeting_password: "7KB0euvVzTPNLgqOJY2rNTKXGb611h"
 recording_token: ""
 GetVideoRawData: "false"
 GetAudioRawData: "true"
@@ -15,7 +15,6 @@ vMic: "virtual_mic"
 
 path_to_pythonVenv: "/home/betteralexa/.venv/bin/python"
 path_to_client: "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/sendFile.py"
-path_to_client_folder: "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main"
+path_to_client_folder: "/home/betteralexa/BetterAlexa/server/zoom_bot/repo_zoom_sdk/zoomBot-main/"
 
 zoom_sdk_url = 1qW6NUsujKs1lotGohuP_nLNRopVcJdP0 
-

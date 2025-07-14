@@ -3,13 +3,15 @@ import logging
 #import pygame
 #from gtts import gTTS
 from requests import post
+import httpx
 from os import path
 #from audio_recorder import AudioRecorder
 import sys
 from pydub import AudioSegment
 import numpy
 import asyncio
-import meeting_sdk
+import re
+#from meeting_sdk import get_user_id
 
 # TODO: check if requirements need to be updated
 
@@ -106,16 +108,50 @@ async def main():
         local audiostream response.wav is written with the response of the server.
     """
     # get the user_id from the meeting_sdk.cpp file via pybind11
-    user_id = meeting_sdk.get_user_id()
-    print("User ID from C++:", user_id)
+    #user_id = get_user_id()
+    #print("User ID from C++:", user_id)
+
+    # workaround for meeting id instead of user_id
+    config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.txt")
+    with open(config_file_path, "r") as f:
+        lines = f.readlines()
+    
+    meeting_id_str = lines[0]
+    match = re.search(r'"([^"]+)"', meeting_id_str)
+    meeting_id = 0
+    if match:
+        meeting_id = match.group(1)
 
     print(f"Sending following file: {sys.argv[1]}")
+    print(f"The send meeting id is {meeting_id}")
     sample_rate, pcm = mp3_to_np_array(sys.argv[1])
     payload = {
-        "meeting_id": str(user_id),
+        "meeting_id": meeting_id,
         "pcm": pcm.tolist(),                     # JSON-friendly
     }
 
+    script_dir = os.path.dirname(os.path.abspath(__file__)) 
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(SERVER_URL, json=payload)
+            response.raise_for_status()
+            # Save the streamed audio response to a file
+            filename = os.path.join(script_dir, "response.wav")
+            with open(filename, "wb") as f:
+                async for chunk in response.aiter_bytes():
+                    f.write(chunk)
+        print(f"← Audio from server saved to {filename}")
+        # Write a done marker
+        with open(os.path.join(script_dir, "done"), "w") as f:
+            f.write(".")
+    except Exception as e:
+        logging.debug(f"Error, trying to get response from Server: {e}")
+        with open(os.path.join(script_dir, "error"), "w") as f:
+            f.write(str(e))
+
+    
+"""   (old version)
     # send the audiostream to the server and wait for a response
     try:    
         response = await post(SERVER_URL, json=payload)
@@ -130,15 +166,14 @@ async def main():
     print(f"← {len(response.content)/1024:.1f} KB audio from server – received")
     wav_bytes = response.content    
     
-    # save the response audiostream into the response file
-    script_dir = os.path.dirname(os.path.abspath(__file__))   
+    # save the response audiostream into the response file  
     filename =  os.path.join(script_dir, "response.wav")
     await save_stream_to_file(wav_bytes, filename)
 
     # write a done marker into a separat file
     with open(os.path.join(script_dir, "done"), "w") as f:
         f.write(".")
-    
+"""    
 
 """ old version (not needed anymore)
 print(sys.argv[1])
