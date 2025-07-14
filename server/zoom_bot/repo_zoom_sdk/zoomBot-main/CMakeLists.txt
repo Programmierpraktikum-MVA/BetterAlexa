@@ -25,6 +25,34 @@ find_package(pybind11 REQUIRED)
 pybind11_add_module(meeting_sdk
 	meeting_sdk_pybind.cpp
 	meeting_sdk.cpp
+	ZoomSDKRenderer.cpp
+	ZoomSDKAudioRawData.cpp
+	ZoomSDKVideoSource.cpp
+	ZoomSDKVirtualAudioMicEvent.cpp
+	MeetingReminderEventListener.cpp
+	MeetingServiceEventListener.cpp
+	NetworkConnectionHandler.cpp
+	AuthServiceEventListener.cpp
+	MeetingParticipantsCtrlEventListener.cpp
+	MeetingRecordingCtrlEventListener.cpp
+	audioHandling.cpp
+	terminalInteractions.cpp
+	miniaudio.c
+)
+
+target_link_libraries(meeting_sdk
+	PRIVATE
+	${GLIB_LIBRARIES}
+	${GIO_LIBRARIES}
+	m
+	gcc_s
+	gcc
+	#meetingsdk
+	glib-2.0
+	curl
+	pthread
+	OpenSSL::SSL
+	OpenSSL::Crypto
 )
 
 # Find GLib using pkg-config
