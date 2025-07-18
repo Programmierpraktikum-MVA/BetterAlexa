@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+router = APIRouter()
 from pydantic import BaseModel
 from .database_wrapper import set_sensitive_data, login_user, create_user, set_zoom_link  # Passe "database" ggf. an deinen Modulnamen an
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,9 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from cachetools import TTLCache
 PWD_TTL_SECONDS = int(os.getenv("PWD_TTL", 60*60))
 ZOOM_PWD_CACHE  = TTLCache(maxsize=1_000, ttl=PWD_TTL_SECONDS)
-from .server.service import parse_link
 
-router = APIRouter()
 app = FastAPI()
 
 app.add_middleware(
