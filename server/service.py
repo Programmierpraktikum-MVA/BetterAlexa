@@ -23,7 +23,7 @@ from function_calling.llama3 import LLama3, LlamaOutput  # updated API
 from TTS.api import TTS  # type: ignore
 import certifi, ssl
 from database.database_wrapper import authenticate_user, get_sensitive_data, set_sensitive_data, get_user_setting, set_user_setting, set_zoom_link, get_zoom_link, get_user_id_by_meeting_id 
-
+from fastapi.middleware.cors import CORSMiddleware
 logging.basicConfig(level=logging.DEBUG)
 
 # parameters for the LLMs
@@ -55,6 +55,15 @@ for noisy in ["TTS", "transformers", "urllib3", "numba"]:
 # ─────────────────────── FastAPI setup ──────────────────────
 app = FastAPI(title="BetterAlexa Core", version="0.6")
 app.include_router(settings_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # für Tests, später einschränken!
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # This links the FastAPI_request_handler.py fastapi endpoints to these FASTAPI endpoints, so that they can communicate. 
 
 # A semaphore for limiting how many parallel TutorAI conversations BetterAlexa can have
