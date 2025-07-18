@@ -362,7 +362,7 @@ async def pipeline(
     sf.write(
         buf,
         wav_np,
-        samplerate=app.state.tts.synthesizer.output_sample_rate,
+        samplerate=app.state.ttsEN.synthesizer.output_sample_rate,
         format="WAV",
     )
     buf.seek(0)
