@@ -73,6 +73,8 @@ async def save_settings(data: SettingsPayload):
             # any other setting → just encrypt & store
             set_sensitive_data(data.user_id, key, str(value), data.password)
 
+    return {"status": "success"}
+
 @router.post("/login")
 async def login(data: LoginPayload):
     import httpx
