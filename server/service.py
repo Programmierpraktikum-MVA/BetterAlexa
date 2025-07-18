@@ -351,11 +351,12 @@ async def pipeline(
     if language == "de": 
         wav_np = app.state.ttsDE.tts(
             text=answer,
-            speaker=speaker,
+            
         )
     else:
         wav_np = app.state.ttsEN.tts(
             text=answer,
+            speaker=speaker
         )
     buf = io.BytesIO()
     sf.write(
