@@ -56,7 +56,7 @@
         };
 
         try {
-            const response = await fetch("http://108.181.203.191:8006/save-settings", {
+            const response = await fetch("http://localhost:8006/save-settings", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
