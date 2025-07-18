@@ -154,7 +154,7 @@ async def main():
     script_dir = os.path.dirname(os.path.abspath(__file__)) 
 
     try:
-        timeout = httpx.Timeout(connect=5.0, read=30.0)
+        timeout = httpx.Timeout(30.0)
         async with httpx.AsyncClient(timeout=timeout) as client:
             async with client.stream("POST", SERVER_URL, json=payload) as resp:
                 resp.raise_for_status()
