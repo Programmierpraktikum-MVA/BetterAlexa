@@ -111,6 +111,31 @@ def set_sensitive_data(user_id: str, key: str, value: str, password: str) -> Non
     finally:
         conn.close()
 
+
+def set_meeting_id(user_id: str, meeting_id: str) -> None:
+    """
+    Store the Zoom meeting-ID in plain text in the `users` table.
+    Creates the row if the user was just registered and has no entry yet.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            UPDATE users SET meeting_id = ?
+            WHERE user_id = ?
+        """, (meeting_id, user_id))
+
+        # If the user does not exist yet, INSERT instead of UPDATE-0-rows
+        if cursor.rowcount == 0:
+            cursor.execute("""
+                INSERT INTO users (user_id, meeting_id, password_hash, api_key)
+                VALUES (?, ?, '', '')                 -- fill other columns later
+            """, (user_id, meeting_id))
+
+        conn.commit()
+    finally:
+        conn.close()
+
 def get_sensitive_data(user_id: str, key: str, password: str) -> str:
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -125,6 +150,8 @@ def get_sensitive_data(user_id: str, key: str, password: str) -> str:
         return decrypt_with_password(password, encrypted_value, salt)
     finally:
         conn.close()
+
+
 
 # ----- User Settings Management -----
 
@@ -224,7 +251,7 @@ def get_user_id_by_meeting_id(meeting_id: str) -> str:
     cursor = conn.cursor()
     try:
         cursor.execute(
-            "SELECT user_id FROM users WHERE zoom_link LIKE ?",
+            "SELECT user_id FROM users WHERE meeting_id LIKE ?",
             (f"%{meeting_id}%",),
         )
         row = cursor.fetchone()

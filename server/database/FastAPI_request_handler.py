@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 import logging
 from pydantic import BaseModel
-from database.database_wrapper import set_sensitive_data, login_user, create_user  # Passe "database" ggf. an deinen Modulnamen an
+from database.database_wrapper import get_user_id_by_meeting_id, set_meeting_id, set_sensitive_data, login_user, create_user  # Passe "database" ggf. an deinen Modulnamen an
 
 import os
 from cachetools import TTLCache
@@ -37,10 +37,7 @@ def save_settings(data: SettingsPayload):
         for key, value in data.settings.items():
             if key == "zoom_link":
                 meeting_id, pwd = parse_link(value)
-                set_sensitive_data(data.user_id, key, str(value), data.password)
-                # Meeting-ID und Passwort separat speichern
-                set_sensitive_data(data.user_id, "zoom_meeting_id", meeting_id, data.password)
-                set_sensitive_data(data.user_id, "zoom_password", pwd, data.password)
+                set_meeting_id(data.user_id, meeting_id)
             else:
                 set_sensitive_data(data.user_id, key, str(value), data.password)
         return {"status": "success"}
@@ -58,7 +55,7 @@ async def login(data: LoginPayload):
     if not login_user(data.user_id, data.password):
         raise HTTPException(status_code=403, detail="Login fehlgeschlagen")
 
-    ZOOM_PWD_CACHE[data.user_id] = data.password        # ← one line does it
+    ZOOM_PWD_CACHE[data.user_id] = data.password        
     return {"status": "login success"}
 
 
@@ -71,18 +68,12 @@ def create_user_endpoint(data: LoginPayload):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("/zoom/cache_password", response_model=None, tags=["zoom"])
-def cache_password(payload: CachePwdIn):
-    """Store a password in RAM for `PWD_TTL_SECONDS`."""
-    ZOOM_PWD_CACHE[payload.meeting_id] = payload.password
-    return True
-
 @router.get("/zoom/password/{meeting_id}", response_model=PwdOut, tags=["zoom"])
 def get_password(meeting_id: str):
     """
     Return the cached password (404 if not present or expired).
     """
-    pwd = ZOOM_PWD_CACHE.get(meeting_id)
+    pwd = ZOOM_PWD_CACHE.get(get_user_id_by_meeting_id(meeting_id))
     if pwd is None:
         raise HTTPException(status_code=404, detail="Password not found or expired")
     return PwdOut(meeting_id=meeting_id, password=pwd)
