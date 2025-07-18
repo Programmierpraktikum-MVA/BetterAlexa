@@ -348,13 +348,13 @@ async def pipeline(
 
     # ─── Text-to-speech ───
     logging.debug(f"languageTTS =={language}")
-    if language == "en": 
-        wav_np = app.state.tts.ttsEN(
+    if language == "de": 
+        wav_np = app.state.ttsDE.tts(
             text=answer,
             speaker=speaker,
         )
     else:
-        wav_np = app.state.tts.ttsDE(
+        wav_np = app.state.ttsEN.tts(
             text=answer,
         )
     buf = io.BytesIO()
