@@ -1,5 +1,9 @@
 import os
 import logging
+import asyncio, subprocess, os
+from pydub import AudioSegment
+import logging, time, os
+
 #import pygame
 #from gtts import gTTS
 from requests import post
@@ -15,9 +19,12 @@ import re
 #from meeting_sdk import get_user_id
 
 # TODO: check if requirements need to be updated
+# TODO: Imports
+logging.basicConfig(
+    level=logging.DEBUG,                       # change to INFO in production
+    format="%(asctime)s  %(levelname)s  %(message)s",
+)        
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 SERVER_URL = "http://127.0.0.1:8000/api/v1/stream"
 
@@ -122,10 +129,36 @@ async def main():
         async with httpx.AsyncClient() as client:
             async with client.stream("POST", SERVER_URL, json=payload) as resp:
                 resp.raise_for_status()
-                out_path = os.path.join(script_dir, "response.wav")  
+                logging.debug(f"HTTP {resp.status_code}  {resp.reason_phrase}")
+                logging.debug(f"Response headers: {dict(resp.headers)}")
+
+                expected = resp.headers.get("content-length")
+                if expected:
+                    logging.debug(f"Expected payload size: {expected} bytes")
+
+                out_path = os.path.join(script_dir, "response.wav")
+                total_bytes = 0
+                chunk_idx   = 0
+                t0 = time.perf_counter()
+
                 with open(out_path, "wb") as f:
                     async for chunk in resp.aiter_bytes():
+                        chunk_idx   += 1
+                        total_bytes += len(chunk)
                         f.write(chunk)
+                        logging.debug(
+                            f"chunk {chunk_idx:03d}: {len(chunk)} bytes  "
+                            f"(running total {total_bytes} bytes)"
+                        )
+
+                dt = time.perf_counter() - t0
+                mbps = (total_bytes * 8 / 1e6) / dt if dt else 0
+                logging.debug(
+                    f"Finished receiving WAV: {total_bytes} bytes in {dt:.3f} s "
+                    f"({mbps:.2f} Mbit/s)"
+                )
+                logging.debug(f"WAV written to {out_path} "
+                            f"({os.path.getsize(out_path)} bytes on disk)")
     except Exception as e:
         logging.debug(f"Error, trying to get response from Server: {e}")
         with open(os.path.join(script_dir, "error"), "w") as f:
