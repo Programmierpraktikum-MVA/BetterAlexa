@@ -1,7 +1,6 @@
-from fastapi import APIRouter, HTTPException
-router = APIRouter()
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from .database_wrapper import set_sensitive_data, login_user, create_user, set_zoom_link  # Passe "database" ggf. an deinen Modulnamen an
+from .database_wrapper import set_sensitive_data, login_user, create_user  # Passe "database" ggf. an deinen Modulnamen an
 from fastapi.middleware.cors import CORSMiddleware
 from server.service import parse_link
 
@@ -36,41 +35,24 @@ class PwdOut(BaseModel):
     meeting_id: str
     password:   str
 
+@app.post("/save-settings")
 
-@router.post("/save-settings")
-async def save_settings(data: SettingsPayload):
-    """
-    Persist user settings and, for Zoom, also:
-      • store the plain-text link in the users table          (set_zoom_link)
-      • keep encrypted copies of link / meeting_id / password (set_sensitive_data)
-      • cache the password in RAM for quick lookup            (/zoom/cache_password)
-    """
+def save_settings(data: SettingsPayload):
     print("Neue Anfrage bei /save-settings angekommen:", data)
-
-    for key, value in data.settings.items():
-        if key == "zoom_link":
-            # split the invite into meeting-ID and pwd
-            meeting_id, pwd = parse_link(value)
-
-            # ① write the link into the `users.zoom_link` column
-            set_zoom_link(data.user_id, value)                         
-
-            # ② store encrypted copies
-            set_sensitive_data(data.user_id, key, str(value), data.password)
-            set_sensitive_data(data.user_id, "zoom_meeting_id", meeting_id, data.password)
-            set_sensitive_data(data.user_id, "zoom_password",   pwd,         data.password)
-
-            # ③ cache the password under the real meeting-ID
-            await app.state.httpx.post(
-                "http://127.0.0.1:8000/zoom/cache_password",
-                json={"meeting_id": meeting_id, "password": pwd},
-                timeout=2.0,
-            )
-        else:
-            # any other setting → just encrypt & store
-            set_sensitive_data(data.user_id, key, str(value), data.password)
-
-    return {"status": "success"}
+    try:
+        # Jedes Key-Value-Paar als sensibles Datum abspeichern
+        for key, value in data.settings.items():
+            if key == "zoom_link":
+                meeting_id, pwd = parse_link(value)
+                set_sensitive_data(data.user_id, key, str(value), data.password)
+                # Meeting-ID und Passwort separat speichern
+                set_sensitive_data(data.user_id, "zoom_meeting_id", meeting_id, data.password)
+                set_sensitive_data(data.user_id, "zoom_password", pwd, data.password)
+            else:
+                set_sensitive_data(data.user_id, key, str(value), data.password)
+        return {"status": "success"}
+    except HTTPException as e:
+        raise e
 
 @app.post("/login")
 async def login(data: LoginPayload):
@@ -98,13 +80,13 @@ def create_user_endpoint(data: LoginPayload):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("/zoom/cache_password", response_model=None, tags=["zoom"])
+@app.post("/zoom/cache_password", response_model=None, tags=["zoom"])
 def cache_password(payload: CachePwdIn):
     """Store a password in RAM for `PWD_TTL_SECONDS`."""
     ZOOM_PWD_CACHE[payload.meeting_id] = payload.password
     return True
 
-@router.get("/zoom/password/{meeting_id}", response_model=PwdOut, tags=["zoom"])
+@app.get("/zoom/password/{meeting_id}", response_model=PwdOut, tags=["zoom"])
 def get_password(meeting_id: str):
     """
     Return the cached password (404 if not present or expired).
