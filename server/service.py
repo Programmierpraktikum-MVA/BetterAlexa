@@ -26,8 +26,6 @@ from database.database_wrapper import authenticate_user, get_sensitive_data, set
 from fastapi.middleware.cors import CORSMiddleware
 logging.basicConfig(level=logging.DEBUG)
 
-
-
 # parameters for the LLMs
 WHISPER_MODEL_NAME = os.getenv("WHISPER_MODEL", "medium")
 LLAMA_MODEL_NAME   = os.getenv("LLAMA_MODEL", "Llama-3-8B-function-calling")
@@ -60,12 +58,11 @@ app.include_router(settings_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],            # relax later if you like
+    allow_origins=["*"],  # für Tests, später einschränken!
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # This links the FastAPI_request_handler.py fastapi endpoints to these FASTAPI endpoints, so that they can communicate. 
 
