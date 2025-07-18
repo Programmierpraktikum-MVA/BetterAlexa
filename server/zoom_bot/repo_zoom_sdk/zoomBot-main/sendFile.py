@@ -18,7 +18,7 @@ import re
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-SERVER_URL = "http://127.0.0.1:8006/api/v1/stream"
+SERVER_URL = "http://127.0.0.1:8000/api/v1/stream"
 
 def get_path(file_name):
     """
