@@ -23,7 +23,13 @@ ZOOM_PWD_CACHE  = TTLCache(maxsize=1_000, ttl=PWD_TTL_SECONDS)
 
 router = APIRouter() 
 
-
+router.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # für Tests, später einschränken!
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class SettingsPayload(BaseModel):
     user_id: str
