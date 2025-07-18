@@ -1,14 +1,27 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from .database_wrapper import set_sensitive_data, login_user, create_user, set_zoom_link  # Passe "database" ggf. an deinen Modulnamen an
-from fastapi.middleware.cors import CORSMiddleware
-import os
+"""
+Helper endpoints for user settings and Zoom password cache.
+Loaded by service.py and mounted there.
+"""
 
+import os, logging
+from fastapi import APIRouter, HTTPException           # APIRouter instead of FastAPI
+from pydantic import BaseModel
 from cachetools import TTLCache
+
+# absolute, package-agnostic imports
+from database.database_wrapper import (
+    set_sensitive_data,
+    login_user,
+    create_user,
+    set_zoom_link,
+)
+
+
+
 PWD_TTL_SECONDS = int(os.getenv("PWD_TTL", 60*60))
 ZOOM_PWD_CACHE  = TTLCache(maxsize=1_000, ttl=PWD_TTL_SECONDS)
 
-app = FastAPI()
+router = APIRouter() 
 
 app.add_middleware(
     CORSMiddleware,
@@ -35,9 +48,8 @@ class PwdOut(BaseModel):
     meeting_id: str
     password:   str
 
-@app.post("/save-settings")
 
-@app.post("/save-settings")
+@router.post("/save-settings")
 async def save_settings(data: SettingsPayload):
     """
     Persist user settings and, for Zoom, also:
@@ -72,7 +84,7 @@ async def save_settings(data: SettingsPayload):
 
     return {"status": "success"}
 
-@app.post("/login")
+@router.post("/login")
 async def login(data: LoginPayload):
     import httpx
     print("Login-Versuch:", data)
@@ -89,7 +101,7 @@ async def login(data: LoginPayload):
     else:
         raise HTTPException(status_code=403, detail="Login fehlgeschlagen")
 
-@app.post("/create-user")
+@router.post("/create-user")
 def create_user_endpoint(data: LoginPayload):
     print("Neuer User wird erstellt:", data)
     try:
@@ -98,13 +110,13 @@ def create_user_endpoint(data: LoginPayload):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/zoom/cache_password", response_model=None, tags=["zoom"])
+@router.post("/zoom/cache_password", response_model=None, tags=["zoom"])
 def cache_password(payload: CachePwdIn):
     """Store a password in RAM for `PWD_TTL_SECONDS`."""
     ZOOM_PWD_CACHE[payload.meeting_id] = payload.password
     return True
 
-@app.get("/zoom/password/{meeting_id}", response_model=PwdOut, tags=["zoom"])
+@router.get("/zoom/password/{meeting_id}", response_model=PwdOut, tags=["zoom"])
 def get_password(meeting_id: str):
     """
     Return the cached password (404 if not present or expired).
