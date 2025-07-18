@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
+router = APIRouter()
 from pydantic import BaseModel
 from .database_wrapper import set_sensitive_data, login_user, create_user, set_zoom_link  # Passe "database" ggf. an deinen Modulnamen an
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,9 +36,8 @@ class PwdOut(BaseModel):
     meeting_id: str
     password:   str
 
-@app.post("/save-settings")
 
-@app.post("/save-settings")
+@router.post("/save-settings")
 async def save_settings(data: SettingsPayload):
     """
     Persist user settings and, for Zoom, also:
@@ -98,13 +98,13 @@ def create_user_endpoint(data: LoginPayload):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.post("/zoom/cache_password", response_model=None, tags=["zoom"])
+@router.post("/zoom/cache_password", response_model=None, tags=["zoom"])
 def cache_password(payload: CachePwdIn):
     """Store a password in RAM for `PWD_TTL_SECONDS`."""
     ZOOM_PWD_CACHE[payload.meeting_id] = payload.password
     return True
 
-@app.get("/zoom/password/{meeting_id}", response_model=PwdOut, tags=["zoom"])
+@router.get("/zoom/password/{meeting_id}", response_model=PwdOut, tags=["zoom"])
 def get_password(meeting_id: str):
     """
     Return the cached password (404 if not present or expired).
