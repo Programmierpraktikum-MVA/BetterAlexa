@@ -53,9 +53,7 @@ for noisy in ["TTS", "transformers", "urllib3", "numba"]:
 # ─────────────────────── FastAPI setup ──────────────────────
 app = FastAPI(title="BetterAlexa Core", version="0.6")
 
-# This links the FastAPI_request_handler.py fastapi endpoints to these FASTAPI endpoints, so that they can communicate. 
-from database.FastAPI_request_handler import router as zoom_router
-app.include_router(zoom_router)
+
 # A semaphore for limiting how many parallel TutorAI conversations BetterAlexa can have
 _tutor_sem = asyncio.Semaphore(int(os.getenv("TUTOR_CONCURRENCY", 5)))
 
