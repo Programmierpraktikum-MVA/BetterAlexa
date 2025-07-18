@@ -4,7 +4,7 @@ import hashlib
 import binascii
 import secrets
 from fastapi import HTTPException
-from secure_store import encrypt_with_password, decrypt_with_password
+from database.secure_store import encrypt_with_password, decrypt_with_password
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "key_value_store.db")
 
