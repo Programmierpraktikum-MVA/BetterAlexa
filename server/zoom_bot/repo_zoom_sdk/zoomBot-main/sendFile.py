@@ -188,6 +188,12 @@ async def main():
                 )
                 logging.debug(f"WAV written to {out_path} "
                             f"({os.path.getsize(out_path)} bytes on disk)")
+                
+                mp3_path = os.path.join(script_dir, "response.mp3")
+                AudioSegment.from_file(out_path, format="wav").export(
+                    mp3_path, format="mp3", bitrate="64k"
+                )
+                os.remove(out_path)               # optional: keep only the MP3
     except Exception as e:
         logging.debug(f"Error, trying to get response from Server: {e}")
         with open(os.path.join(script_dir, "error"), "w") as f:
