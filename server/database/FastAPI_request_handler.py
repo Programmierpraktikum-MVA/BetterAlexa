@@ -23,7 +23,7 @@ ZOOM_PWD_CACHE  = TTLCache(maxsize=1_000, ttl=PWD_TTL_SECONDS)
 
 router = APIRouter() 
 
-app.add_middleware(
+router.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # für Tests, später einschränken!
     allow_credentials=True,
