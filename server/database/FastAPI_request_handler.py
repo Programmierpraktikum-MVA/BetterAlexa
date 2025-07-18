@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 
 from pydantic import BaseModel
-from database_wrapper import set_sensitive_data, login_user, create_user  # Passe "database" ggf. an deinen Modulnamen an
+from database.database_wrapper import set_sensitive_data, login_user, create_user  # Passe "database" ggf. an deinen Modulnamen an
 
 import os
 from cachetools import TTLCache
