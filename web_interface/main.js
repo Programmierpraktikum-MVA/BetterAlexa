@@ -1,11 +1,11 @@
-// BetterAlexa – main.js (drop‑in replacement)
-// -------------------------------------------------
-// Frontend logic + dynamic backend URL selection so that the same file works
-// locally (http://localhost:8006) **and** in production (https://betteraIexa.adastruct.com).
-// -------------------------------------------------
+// BetterAlexa – main.js (drop-in replacement, rich alert details)
+// ------------------------------------------------------------------
+// Shows *all* error information directly inside the browser alert
+// dialog (HTTP status, response body, network/CORS details).
+// ------------------------------------------------------------------
 
 (() => {
-  /* ─────────────────────────── DOM references ─────────────────────────── */
+  /* ──────────────── DOM references ──────────────── */
   const loginContainer   = document.getElementById("loginContainer");
   const settingsContainer= document.getElementById("settingsContainer");
   const loginBtn         = document.getElementById("loginBtn");
@@ -18,26 +18,23 @@
   const spotifyUser      = document.getElementById("spotifyUser");
   const spotifyPass      = document.getElementById("spotifyPass");
 
-  /* ──────────────────── Helper: backend base URL ──────────────────────── */
+  /* ───────────── Helper: backend base URL ───────────── */
   const API_BASE = (() => {
     const { protocol, hostname } = window.location;
-    // If we are running on localhost *or* 127.0.0.1 we assume the FastAPI dev
-    // server is still listening on port 8006.
     if (["localhost", "127.0.0.1"].includes(hostname)) {
-      return `${protocol}//${hostname}:8006`;
+      return `${protocol}//${hostname}:8006`;          // dev
     }
-    // Otherwise use exactly the same origin that served the frontend.
-    return `${protocol}//${hostname}`;         // e.g. https://betteraIexa.adastruct.com
+    return `${protocol}//${hostname}`;                 // prod
   })();
 
-  /* ─────────────────────────── UI behaviour ───────────────────────────── */
+  /* ──────────────── UI behaviour ──────────────── */
   loginBtn.addEventListener("click", () => {
     loginContainer.classList.add("hidden");
     settingsContainer.classList.remove("hidden");
   });
 
   paceSlider.addEventListener("input", () => {
-    paceValue.textContent = `${paceSlider.value}x`;
+    paceValue.textContent   = `${paceSlider.value}x`;
   });
   volumeSlider.addEventListener("input", () => {
     volumeValue.textContent = `${volumeSlider.value}%`;
@@ -52,7 +49,7 @@
     el.classList[show ? "remove" : "add"]("hidden");
   }
 
-  /* ────────────────────── Persist settings to API ─────────────────────── */
+  /* ───────────── Persist settings to API ───────────── */
   saveBtn.addEventListener("click", async () => {
     const settings = collectSettings();
     const user_id  = document.getElementById("username").value.trim();
@@ -72,40 +69,68 @@
         body   : JSON.stringify(payload),
       });
 
-      if (res.ok) {
-        alert("Einstellungen erfolgreich gespeichert.");
-      } else {
-        const { detail } = await res.json();
-        alert(`Fehler: ${detail}`);
+      /* ───── Handle HTTP-level errors ───── */
+      if (!res.ok) {
+        const copy = res.clone();            // we might need body twice
+        let body;
+        try { body = await copy.json(); }    // attempt JSON first
+        catch { body = await copy.text(); }
+
+        const bodyText = typeof body === "string" ? body
+                         : JSON.stringify(body, null, 2);
+
+        console.error(
+          `API error: ${res.status} ${res.statusText}`,
+          "Response body:", body,
+          "Payload sent:", payload,
+        );
+
+        alert(`HTTP-Fehler ${res.status} ${res.statusText}\n` +
+              `Antwort-Body:\n${bodyText}`);
+        return;
       }
+
+      /* ───── Success ───── */
+      console.info("Einstellungen gespeichert:", payload);
+      alert("Einstellungen erfolgreich gespeichert.");
+
     } catch (err) {
-      console.error("Fehler beim Senden:", err);
-      alert("Verbindung zum Server fehlgeschlagen.");
+      /* ───── Network / CORS / unexpected errors ───── */
+      console.error("Network/CORS error while sending:", err);
+      if (err.stack) console.error(err.stack);
+
+      alert(`Verbindung zum Server fehlgeschlagen:\n` +
+            `${err.name}: ${err.message}` +
+            (err.stack ? `\nStack-Trace:\n${err.stack}` : ""));
     }
   });
 
-  /* ───────────────────────── Misc. helpers ────────────────────────────── */
+  /* ───────────── Misc. helpers ───────────── */
   function collectSettings() {
     const data = {};
-    settingsContainer.querySelectorAll("input, select, textarea").forEach((el) => {
-      const { name, type, value, checked } = el;
-      if (!name) return;
-      if (type === "checkbox" || type === "radio") {
-        data[name] = checked ? value : "false";
-      } else if (type === "range") {
-        data[name] = parseFloat(value);
-      } else {
-        data[name] = value;
-      }
-    });
+    settingsContainer.querySelectorAll("input, select, textarea")
+      .forEach((el) => {
+        const { name, type, value, checked } = el;
+        if (!name) return;
+        if (type === "checkbox" || type === "radio") {
+          data[name] = checked ? value : "false";
+        } else if (type === "range") {
+          data[name] = parseFloat(value);
+        } else {
+          data[name] = value;
+        }
+      });
     return data;
   }
 
-  // optional: download settings as JSON (still available for future use)
+  /* ───── Download settings to a file (optional) ───── */
   function downloadSettings(settings) {
     const blob = new Blob([JSON.stringify(settings, null, 2)], { type: "application/json" });
     const url  = URL.createObjectURL(blob);
-    const a    = Object.assign(document.createElement("a"), { href: url, download: "einstellungen.json" });
+    const a    = Object.assign(document.createElement("a"), {
+      href: url,
+      download: "einstellungen.json",
+    });
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
@@ -114,7 +139,7 @@
     }, 100);
   }
 
-  // Initial slider labels
+  // initial slider labels
   paceValue.textContent   = `${paceSlider.value}x`;
   volumeValue.textContent = `${volumeSlider.value}%`;
 })();
