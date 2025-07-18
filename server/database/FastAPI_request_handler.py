@@ -4,7 +4,7 @@ Loaded by service.py and mounted there.
 """
 
 import os, logging
-from fastapi import APIRouter, HTTPException           # APIRouter instead of FastAPI
+from fastapi import APIRouter, HTTPException, Request           # APIRouter instead of FastAPI
 from pydantic import BaseModel
 from cachetools import TTLCache
 
@@ -67,11 +67,8 @@ async def save_settings(data: SettingsPayload):
             set_sensitive_data(data.user_id, "zoom_password",   pwd,         data.password)
 
             # ③ cache the password under the real meeting-ID
-            await router.state.httpx.post(
-                "http://127.0.0.1:8000/zoom/cache_password",
-                json={"meeting_id": meeting_id, "password": pwd},
-                timeout=2.0,
-            )
+            ZOOM_PWD_CACHE[meeting_id] = pwd          # save_settings
+            ZOOM_PWD_CACHE[data.user_id] = data.password   # login
         else:
             # any other setting → just encrypt & store
             set_sensitive_data(data.user_id, key, str(value), data.password)
@@ -84,11 +81,7 @@ async def login(data: LoginPayload):
     print("Login-Versuch:", data)
     if login_user(data.user_id, data.password):
         try:
-            await router.state.httpx.post(           # re-uses the shared AsyncClient
-                "http://127.0.0.1:8000/zoom/cache_password",
-                json={"meeting_id": data.user_id, "password": data.password},
-                timeout=2.0
-            )
+            ZOOM_PWD_CACHE[data.user_id] = data.password   # login
         except httpx.HTTPError as exc:
             logging.warning("Could not cache Zoom password: %s", exc)
         return {"status": "login success"}
