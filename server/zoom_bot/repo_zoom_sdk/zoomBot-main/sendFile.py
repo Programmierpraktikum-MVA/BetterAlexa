@@ -109,7 +109,8 @@ async def main():
 
     print(f"Sending following file: {sys.argv[1]}")
     print(f"The send meeting id is {meeting_id}")
-    sample_rate, pcm = wav_to_np_array(sys.argv[1])
+    sample_rate, pcm = wav_to_np_array(sys.argv[1], normalized=True)
+
     payload = {
         "meeting_id": meeting_id,
         "pcm": pcm.tolist(),                     # JSON-friendly
@@ -119,17 +120,12 @@ async def main():
 
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(SERVER_URL, json=payload)
-            response.raise_for_status()
-            # Save the streamed audio response to a file
-            filename = os.path.join(script_dir, "response.wav")
-            with open(filename, "wb") as f:
-                async for chunk in response.aiter_bytes():
-                    f.write(chunk)
-        print(f"← Audio from server saved to {filename}")
-        # Write a done marker
-        with open(os.path.join(script_dir, "done"), "w") as f:
-            f.write(".")
+            async with client.stream("POST", SERVER_URL, json=payload) as resp:
+                resp.raise_for_status()
+                out_path = os.path.join(script_dir, "response.wav")  
+                with open(out_path, "wb") as f:
+                    async for chunk in resp.aiter_bytes():
+                        f.write(chunk)
     except Exception as e:
         logging.debug(f"Error, trying to get response from Server: {e}")
         with open(os.path.join(script_dir, "error"), "w") as f:
