@@ -10,8 +10,8 @@ from typing import Dict, List, Optional, Callable, Awaitable
 import subprocess
 import json
 
-from database.FastAPI_request_handler import router as settings_router
 
+from FastAPI_request_handler import router as settings_router 
 import httpx, numpy as np, soundfile as sf
 from fastapi import FastAPI, HTTPException, Request, Depends, Security, BackgroundTasks
 from fastapi.security.api_key import APIKeyHeader
