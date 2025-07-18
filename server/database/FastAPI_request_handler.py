@@ -2,7 +2,6 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from .database_wrapper import set_sensitive_data, login_user, create_user  # Passe "database" ggf. an deinen Modulnamen an
 from fastapi.middleware.cors import CORSMiddleware
-from server.service import parse_link
 
 from cachetools import TTLCache
 PWD_TTL_SECONDS = int(os.getenv("PWD_TTL", 60*60))
@@ -95,3 +94,24 @@ def get_password(meeting_id: str):
     if pwd is None:
         raise HTTPException(status_code=404, detail="Password not found or expired")
     return PwdOut(meeting_id=meeting_id, password=pwd)
+
+
+#From service.py, import stuff
+def parse_link(link: str):
+    """
+    Takes a zoom meeting invite link and returns the included meeting id and password.
+    
+    Args:
+        link (str): The full zoom invite link.
+
+    Returns:
+        meeting_id: The Meeting ID for the zoom meeting.
+        pwd: The Password for the zoom meeting.
+    """
+    parts = link.split("/")
+    meeting_id, pwd = parts[4].split("?")
+    #meeting_id = meeting_id[0:3] + ' ' + meeting_id[3:7] + ' ' + meeting_id[7:10]
+
+    end = len(pwd) -2
+    pwd = pwd[4:end]
+    return meeting_id,pwd
