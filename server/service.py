@@ -9,7 +9,8 @@ from enum import Enum, auto
 from typing import Dict, List, Optional, Callable, Awaitable
 import subprocess
 import json
-
+from fastapi.middleware.cors import CORSMiddleware
+from database.FastAPI_request_handler import router as zoom_router
 import httpx, numpy as np, soundfile as sf
 from fastapi import FastAPI, HTTPException, Request, Depends, Security, BackgroundTasks
 from fastapi.security.api_key import APIKeyHeader
@@ -52,7 +53,15 @@ for noisy in ["TTS", "transformers", "urllib3", "numba"]:
 
 # ─────────────────────── FastAPI setup ──────────────────────
 app = FastAPI(title="BetterAlexa Core", version="0.6")
+app.include_router(zoom_router)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # für Tests, später einschränken!
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # A semaphore for limiting how many parallel TutorAI conversations BetterAlexa can have
 _tutor_sem = asyncio.Semaphore(int(os.getenv("TUTOR_CONCURRENCY", 5)))

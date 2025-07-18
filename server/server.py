@@ -10,8 +10,8 @@ def main():
     # Argumente parsen
     p = argparse.ArgumentParser()
     p.add_argument("--tcp", action="store_true",
-                   help="Bind on 0.0.0.0:8006 instead of /tmp/ai.sock")
-    p.add_argument("--port", type=int, default=8006)
+                   help="Bind on 0.0.0.0:8000 instead of /tmp/ai.sock")
+    p.add_argument("--port", type=int, default=8000)
     p.add_argument("--host", default="0.0.0.0")
     args = p.parse_args()
     
