@@ -13,7 +13,7 @@ from os import path
 import sys
 import soundfile as sf
 
-import numpy
+import numpy as np
 import asyncio
 import re
 #from meeting_sdk import get_user_id
@@ -69,11 +69,39 @@ def remote_whisper(input_file_path):
         return e, -2
 """
 
-def wav_to_np_array(file_path, normalized=False):
-    pcm, sample_rate = sf.read(file_path, always_2d=False)   # pcm is float32/-64
-    if not normalized and pcm.dtype.kind == "f":              # convert to int16 if caller expects raw
-        pcm = (pcm * 32768).astype("int16")
-    return sample_rate, pcm  
+def wav_to_np_array(file_path: str, *, normalized: bool = True):
+    """
+    Load a WAV file and return (sample_rate, pcm).
+
+    Parameters
+    ----------
+    file_path : str
+        Path to the WAV file.
+    normalized : bool, default=True
+        • True  → return float32 in the range –1.0 … 1.0 (what Whisper expects)  
+        • False → return int16 raw PCM (–32768 … 32767).
+
+    Returns
+    -------
+    sample_rate : int
+    pcm         : np.ndarray
+        • 1-D mono, dtype=float32 or int16 according to `normalized`.
+    """
+    # Request float32 so we never get platform-dependent int variants
+    pcm, sample_rate = sf.read(file_path, dtype="float32")
+
+    # Down-mix stereo/5.1/etc. to mono for Whisper
+    if pcm.ndim > 1:
+        pcm = pcm.mean(axis=1, dtype=np.float32)
+
+    if normalized:                       # keep -1 … 1 float32
+        peak = np.abs(pcm).max()
+        if peak > 1.0:                   # occasional badly-scaled files
+            pcm /= peak
+        return sample_rate, pcm
+
+    # Caller wants raw 16-bit integers
+    return sample_rate, (pcm * 32768).astype(np.int16)
 
 async def save_stream_to_file(streamer, filename):
     """
@@ -126,7 +154,8 @@ async def main():
     script_dir = os.path.dirname(os.path.abspath(__file__)) 
 
     try:
-        async with httpx.AsyncClient() as client:
+        timeout = httpx.Timeout(connect=5.0, read=30.0)
+        async with httpx.AsyncClient(timeout=timeout) as client:
             async with client.stream("POST", SERVER_URL, json=payload) as resp:
                 resp.raise_for_status()
                 logging.debug(f"HTTP {resp.status_code}  {resp.reason_phrase}")
