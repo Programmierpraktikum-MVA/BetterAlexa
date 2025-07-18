@@ -7,7 +7,8 @@ import httpx
 from os import path
 #from audio_recorder import AudioRecorder
 import sys
-from pydub import AudioSegment
+import soundfile as sf
+
 import numpy
 import asyncio
 import re
@@ -61,27 +62,11 @@ def remote_whisper(input_file_path):
         return e, -2
 """
 
-def mp3_to_np_array(file_path, normalized=False):
-    """
-    Converts a mp3_file located at file_path to a (normalized) np_array. 
-    
-    Args:
-        file_path (str): The path to the input audio file (mp3).
-        normalized (bool): Set true if we want to normalize the output array.
-
-    Returns:
-        audio.frame_rate:   The sample rate of the mp3 file.
-        array:              The (normalized) np_array containing the audio.
-    """
-    audio = AudioSegment.from_mp3(file_path)
-    array = numpy.array(audio.get_array_of_samples())
-    # Handle stereo files
-    if audio.channels == 2:
-        array = array.reshape((-1, 2))
-    if normalized:
-        return audio.frame_rate, numpy.float32(array) / 2**15
-    else:
-        return audio.frame_rate, array    
+def wav_to_np_array(file_path, normalized=False):
+    pcm, sample_rate = sf.read(file_path, always_2d=False)   # pcm is float32/-64
+    if not normalized and pcm.dtype.kind == "f":              # convert to int16 if caller expects raw
+        pcm = (pcm * 32768).astype("int16")
+    return sample_rate, pcm  
 
 async def save_stream_to_file(streamer, filename):
     """
@@ -124,7 +109,7 @@ async def main():
 
     print(f"Sending following file: {sys.argv[1]}")
     print(f"The send meeting id is {meeting_id}")
-    sample_rate, pcm = mp3_to_np_array(sys.argv[1])
+    sample_rate, pcm = wav_to_np_array(sys.argv[1])
     payload = {
         "meeting_id": meeting_id,
         "pcm": pcm.tolist(),                     # JSON-friendly
