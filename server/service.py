@@ -80,7 +80,8 @@ async def _startup() -> None:
         model_dir=str(LLAMA_MODEL_DIR),
         tokenizer_dir=str(LLAMA_TOKENIZER_DIR),
     )
-    app.state.tts     = TTS(model_name="tts_models/en/vctk/vits", progress_bar=False)
+    app.state.ttsEN     = TTS(model_name="tts_models/en/vctk/vits", progress_bar=False)
+    app.state.ttsDE     = TTS(model_name="tts_models/de/thorsten/tacotron2-DDC", progress_bar=False)
     ctx = ssl.create_default_context(cafile=certifi.where())
     app.state.httpx   = httpx.AsyncClient(http2=True, timeout=10, verify=ctx)
 
@@ -346,12 +347,16 @@ async def pipeline(
     logging.debug(f"TTS input: {answer}")
 
     # ─── Text-to-speech ───
-    wav_np = app.state.tts.tts(
-        text=answer,
-        speaker=speaker,
-        language=language,
-        speed=speed,
-    )
+    logging.debug(f"languageTTS =={language}")
+    if language == "en": 
+        wav_np = app.state.tts.ttsEN(
+            text=answer,
+            speaker=speaker,
+        )
+    else:
+        wav_np = app.state.tts.ttsDE(
+            text=answer,
+        )
     buf = io.BytesIO()
     sf.write(
         buf,
