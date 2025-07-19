@@ -460,21 +460,39 @@ def run_zoom_bot(zoom_bot_dir, zoom_build_dir):
     subprocess.run(['cmake', '--build', '.'], cwd=zoom_build_dir, check=True)
     subprocess.run(['./bin/meetingSDK'], cwd=zoom_bot_dir, check=True)
 
-def parse_link(link: str):
-    """
-    Takes a zoom meeting invite link and returns the included meeting id and password.
-    
-    Args:
-        link (str): The full zoom invite link.
+from urllib.parse import urlparse, parse_qs
+from typing import Tuple, Optional
 
-    Returns:
-        meeting_id: The Meeting ID for the zoom meeting.
-        pwd: The Password for the zoom meeting.
+def parse_link(link: str) -> Tuple[str, Optional[str]]:
     """
-    parts = link.split("/")
-    meeting_id, pwd = parts[4].split("?")
-    #meeting_id = meeting_id[0:3] + ' ' + meeting_id[3:7] + ' ' + meeting_id[7:10]
+    Extract the Zoom meeting-ID and optional password from an invite URL.
 
-    end = len(pwd) -2
-    pwd = pwd[4:end]
-    return meeting_id,pwd
+    Returns
+    -------
+    meeting_id : str            e.g. '12345678901'
+    password   : Optional[str]  e.g. 'Q2pWc1lRbGxybGg0' or None
+    """
+    parsed = urlparse(link)
+
+    # --- meeting-ID --------------------------------------------------------
+    # Path examples: '/j/12345678901', '/s/12345678901', '/w/12345678901'
+    path_parts = [p for p in parsed.path.split('/') if p]          # drop ''
+    meeting_id = None
+    for token in ('j', 's', 'w'):                                  # common tokens
+        if token in path_parts:
+            idx = path_parts.index(token) + 1
+            if idx < len(path_parts):
+                meeting_id = path_parts[idx]
+                break
+    if meeting_id is None:                                         # fallback
+        for part in reversed(path_parts):
+            if part.isdigit():
+                meeting_id = part
+                break
+    if meeting_id is None:
+        raise ValueError(f"Could not find meeting-id in link: {link}")
+
+    # --- password (query string) ------------------------------------------
+    pwd = parse_qs(parsed.query).get("pwd", [None])[0]
+
+    return meeting_id, pwd
