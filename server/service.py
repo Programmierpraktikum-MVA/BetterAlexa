@@ -51,6 +51,8 @@ SESSION_DELEGATE: Dict[str, Optional[str]] = {}   # e.g. {"m42": "tutorai"}
 for noisy in ["TTS", "transformers", "urllib3", "numba"]:
     logging.getLogger(noisy).setLevel(logging.WARNING)
 
+user_logged_in = False
+
 # ─────────────────────── FastAPI setup ──────────────────────
 app = FastAPI(title="BetterAlexa Core", version="0.6")
 app.include_router(zoom_router)
@@ -288,14 +290,16 @@ async def pipeline(
     language_speaker = "en1"
 
     # ─── Per-meeting TTS preferences protected by Zoom password ───
-    user_id = get_user_id_by_meeting_id(meeting_id)
-    if pwd:
-        try:
-            language_speaker = get_sensitive_data(user_id, "preferred_language", pwd)
-            logging.debug(f"language_speaker: {language_speaker}")
-        except Exception as e:
-            logging.warning(f"No or invalid TTS prefs for meeting {user_id}: {e}")
-
+    if user_logged_in: 
+        user_id = get_user_id_by_meeting_id(meeting_id)
+        if pwd:
+            try:
+                language_speaker = get_sensitive_data(user_id, "preferred_language", pwd)
+                logging.debug(f"language_speaker: {language_speaker}")
+            except Exception as e:
+                logging.warning(f"No or invalid TTS prefs for meeting {user_id}: {e}")
+    else: 
+        language_speaker = "en1"
     # ─── Speech-to-text ───
     logging.debug(f"Transcribing PCM audio for meeting {user_id}")
     transcript = app.state.whisper.transcribe(pcm, fp16=False)["text"]
@@ -396,8 +400,11 @@ async def stream(payload: StreamPayload
             f"http://127.0.0.1:8000/zoom/password/{payload.meeting_id}",
             timeout=2.0,
         )
+        if response.status_code == 404:
+            user_logged_in = False
         if response.status_code == 200:
             pwd = response.json()["password"]
+            user_logged_in = True
     except httpx.HTTPError as exc:
         logging.warning(f"Could not reach /zoom/password endpoint: {exc}")
 
