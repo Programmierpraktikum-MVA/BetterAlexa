@@ -69,39 +69,26 @@ def remote_whisper(input_file_path):
         return e, -2
 """
 
+from scipy.signal import resample_poly
+
+TARGET_SR = 16_000           # what Whisper wants
+
 def wav_to_np_array(file_path: str, *, normalized: bool = True):
-    """
-    Load a WAV file and return (sample_rate, pcm).
-
-    Parameters
-    ----------
-    file_path : str
-        Path to the WAV file.
-    normalized : bool, default=True
-        • True  → return float32 in the range –1.0 … 1.0 (what Whisper expects)  
-        • False → return int16 raw PCM (–32768 … 32767).
-
-    Returns
-    -------
-    sample_rate : int
-    pcm         : np.ndarray
-        • 1-D mono, dtype=float32 or int16 according to `normalized`.
-    """
-    # Request float32 so we never get platform-dependent int variants
     pcm, sample_rate = sf.read(file_path, dtype="float32")
 
-    # Down-mix stereo/5.1/etc. to mono for Whisper
-    if pcm.ndim > 1:
+    if pcm.ndim > 1:                       # down-mix to mono
         pcm = pcm.mean(axis=1, dtype=np.float32)
 
-    if normalized:                       # keep -1 … 1 float32
-        peak = np.abs(pcm).max()
-        if peak > 1.0:                   # occasional badly-scaled files
-            pcm /= peak
-        return sample_rate, pcm
+    if sample_rate != TARGET_SR:           # high-quality polyphase resample
+        pcm = resample_poly(pcm, TARGET_SR, sample_rate)
+        sample_rate = TARGET_SR            # keep the variable consistent
 
-    # Caller wants raw 16-bit integers
-    return sample_rate, (pcm * 32768).astype(np.int16)
+    if normalized:
+        peak = np.abs(pcm).max()
+        if peak > 1.0:                     # guard against clipping
+            pcm /= peak
+
+    return sample_rate, pcm
 
 async def save_stream_to_file(streamer, filename):
     """
