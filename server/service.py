@@ -288,7 +288,7 @@ async def pipeline(
     pwd: Optional[str] = None,
 ) -> bytes:
     language_speaker = "en1"
-
+    user_id = -1
     # ─── Per-meeting TTS preferences protected by Zoom password ───
     if user_logged_in: 
         user_id = get_user_id_by_meeting_id(meeting_id)
@@ -401,6 +401,7 @@ async def stream(payload: StreamPayload
             timeout=2.0,
         )
         if response.status_code == 404:
+            logging.debug(f"User not logged in.")
             user_logged_in = False
         if response.status_code == 200:
             pwd = response.json()["password"]
