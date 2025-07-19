@@ -285,17 +285,14 @@ async def pipeline(
     pcm: np.ndarray,
     pwd: Optional[str] = None,
 ) -> bytes:
-    language, speaker, speed = "en", "p335", 1.0
+    language_speaker = "en1"
 
     # ─── Per-meeting TTS preferences protected by Zoom password ───
     user_id = get_user_id_by_meeting_id(meeting_id)
     if pwd:
         try:
-            blob = get_sensitive_data(user_id, "tts_prefs", pwd)
-            prefs = json.loads(blob)
-            language = prefs.get("language", language)
-            speaker  = prefs.get("speaker",  speaker)
-            speed    = float(prefs.get("speed", speed))
+            language_speaker = get_sensitive_data(user_id, "preferred_language", pwd)
+            logging.debug(f"language_speaker: {language_speaker}")
         except Exception as e:
             logging.warning(f"No or invalid TTS prefs for meeting {user_id}: {e}")
 
@@ -347,16 +344,20 @@ async def pipeline(
     logging.debug(f"TTS input: {answer}")
 
     # ─── Text-to-speech ───
-    logging.debug(f"languageTTS =={language}")
-    if language == "de": 
+    logging.debug(f"languageTTS =={language_speaker}")
+    if language_speaker == "de": 
         wav_np = app.state.ttsDE.tts(
-            text=answer,
-            
+            text=answer
         )
     else:
+        if language_speaker == 'en1':
+            language_speaker = 'p335'
+        else: 
+            language_speaker = 'p234'
+            
         wav_np = app.state.ttsEN.tts(
             text=answer,
-            speaker=speaker
+            speaker=language_speaker
         )
     buf = io.BytesIO()
     sf.write(
