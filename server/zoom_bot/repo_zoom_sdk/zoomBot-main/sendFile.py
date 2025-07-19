@@ -194,6 +194,8 @@ async def main():
                     mp3_path, format="mp3", bitrate="64k"
                 )
                 os.remove(out_path)               # optional: keep only the MP3
+                with open(os.path.join(script_dir, "done"), "w") as f:
+                    f.write(".")
     except Exception as e:
         logging.debug(f"Error, trying to get response from Server: {e}")
         with open(os.path.join(script_dir, "error"), "w") as f:
