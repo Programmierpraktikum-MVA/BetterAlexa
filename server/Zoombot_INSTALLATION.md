@@ -36,6 +36,7 @@ Also we need the path to:
 Once youve got the zoomsdk, extract and add from that:
  -  `h` to `./include/h`
  - `qt_libs` to `./lib/zoom_meeting_sdk/qt_libs`
+ - download libmeetingsdk.so from Google Drive (betteralexaintegration@gmail.com)
  - all the `lib******.so` files to `./lib/zoom_meeting_sdk/lib******.so`
  - `translation.json` to `./lib/zoom_meeting_sdk/json`
  - oficially: softlink  `libmeetingsdk.so` to `libmeetingsdk.so.1` within `./lib/zoom_meeting_sdk/` . You can use the command `ln -s libmeetingsdk.so libmeetingsdk.so.1` to do so
