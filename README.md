@@ -1,51 +1,103 @@
-# server.py
+# BetterAlexa
 
-This script is used for the server side of the application. It uses a whisper and llama3 model to transcribe incoming audio from the client and generates an answer using predefined functions in `functions.json`, which will be sent back to the client in text form.
+Welcome to **BetterAlexa** — a speech- and text-driven personal assistant that listens, thinks, and acts. It consists of a Python server for talking/tool-calling, a simple Python voice client, a web interface and an Integration with Discord (Text) and Zoom (Speech). The website depends on the server being up.
 
-## Setup
+---
 
-1. **Python Version**: We tested it with 3.10 but similar versions will probably work as well. You can check your Python version by running `python --version` in your terminal.
+## What’s in this repository?
 
-2. **Virtual Environment**: It is recommended to create a virtual environment for running this script. You can do this by running the following commands in your terminal:
+```
+.
+├─ server/          # Python backend (Whisper, Llama 3 reasoning, tool/function calls, database)
+├─ client/          # Python voice client (records audio, sends to server, plays TTS)
+├─ web_interface/   # Web UI that interacts with the DB
+├─ .gitattributes
+├─ .gitignore
+├─ README.md
+└─ test_tutorai.py
+```
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    ```
+> Notes
+> - The backend transcribes audio with Whisper and uses an LLM (Llama 3) plus predefined functions (see `functions.json`) to generate responses.
+> - The **website requires the server** to be running and reachable.
 
-    This creates a new virtual environment in a directory named `.venv` and activates it. Preferably do this in the main directory.
+---
 
-3. **Install Requirements**: Install the required Python packages. You can do this by running `pip install -r requirementsServer.txt` in the main directory.
+## Prerequisites
 
-4. **Integrations**: If you want to use the API based Integrations, like Discord, you have to setup an .env file for your authentication tokens. This .env file should never be in the open repository and should be updated by hand.
+- **Python**: 3.10 (project was tested with 3.10)
+- ~30gb of local storage for LLM and libraries 
 
-5. **Run the Script**: Just run `python server.py` in the terminal.
+---
 
-## Usage
+## Setup — Server (required)
 
-Now you can use the client to use the service provided by the server. Sometimes you will see some activity like the search for wikipedia pages. 
+The server handles audio transcription, reasoning, and tool calls.
 
-# client/client.py
+1. **Create and activate a virtual environment** (from the repo root):
+   ```bash
+   python -m venv .venv
+   # macOS/Linux
+   source .venv/bin/activate
+   # Windows (PowerShell)
+   .venv\Scripts\Activate.ps1
+   ```
 
-This script is used for the client side of the application. It's recording audio and sending it to the server which responds with a text. We then use google text2speech to translate it back to sound.
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirementsServer.txt
+   ```
 
-## Setup
+3. **(Optional) Configure integrations**  
+   If you plan to use API-based integrations (e.g., Discord), create a `.env` file with your tokens/secrets. Do **not** commit this file.
 
-1. **Python Version**: We tested it with 3.10 but similar versions will probably work as well. You can check your Python version by running `python --version` in your terminal.
+4. **Run the server**:
+   ```bash
+   python server.py
+   ```
 
-2. **Virtual Environment**: It is recommended to create a virtual environment for running this script. You can do this by running the following commands in your terminal:
+> Keep this terminal running. The **web interface** and the **Python client** both depend on this server.
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    ```
+---
 
-    This creates a new virtual environment in a directory named `.venv` and activates it. Preferably do this in the client directory.
+## Setup — Python Voice Client (depends on the server)
 
-3. **Install Requirements**: Install the required Python packages. You can do this by running `pip install -r requirementsClient.txt` in the client directory.
+1. **Create and activate a venv** (from `client/`):
+   ```bash
+   python -m venv .venv
+   # macOS/Linux
+   source .venv/bin/activate
+   # Windows (PowerShell)
+   .venv\Scripts\Activate.ps1
+   ```
 
-4. **Run the Script**: Ensure that the server is already running with `python server.py`. Then you should be able to run `python client.py` in the terminal in the client directory.
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirementsClient.txt
+   ```
 
-## Usage
+3. **Run the client** (make sure the server is already running):
+   ```bash
+   python client.py
+   ```
 
-First select your desired audio device. After that type 'y' if you are ready to record some audio. Press str + C if you are done with recording.
+4. **Usage**  
+   - Type `y` to start recording, then stop with `Ctrl+C`.
+
+---
+
+## Database
+
+See the **database README** for setup and usage details:  
+➡️ [`server/database/README.md`](server/database/README.md)
+
+> If your database module lives elsewhere in your fork (e.g., `backend/indexing/`), link to that folder’s `README.md` instead.
+
+---
+
+## Troubleshooting
+ 
+- **Port conflicts**: change either the server port or the web dev server port, and update the env accordingly.  
+- **Audio device issues**: ensure your microphone is enabled and selected; re-run the client to pick a different device.
+
+---
