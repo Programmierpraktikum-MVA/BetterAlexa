@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anwendungseinstellungen</title>
-    <link rel="stylesheet" href="style.css">
-    
+    <link rel="stylesheet" href="style.css?v=2">
+
 </head>
 <body>
     <!-- Login Container -->
@@ -20,15 +20,36 @@
                 <label for="password">Passwort</label>
                 <input type="password" id="password" placeholder="Passwort eingeben">
             </div>
-            <div class="checkbox-group">
-                <input type="checkbox" id="remember">
-                <label for="remember">Angemeldet bleiben</label>
-            </div>
             <div class="form-group">
                 <button id="loginBtn" class="btn">Anmelden</button>
+                <p style="text-align: center; margin-top: 15px;">
+                    <a href="#" id="showRegister">Noch kein Konto? Registrieren</a>
+                </p>
             </div>
-            <div style="text-align: center;">
-                <a href="#" class="link">Passwort vergessen?</a>
+        </div>
+    </div>
+
+    <!-- Registrierungs Container -->
+    <div id="registerContainer" class="container hidden">
+        <div class="card">
+            <h1>Registrierung</h1>
+            <div class="form-group">
+                <label for="regUsername">Benutzername</label>
+                <input type="text" id="regUsername" placeholder="Benutzernamen wählen">
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Passwort</label>
+                <input type="password" id="regPassword" placeholder="Passwort erstellen">
+            </div>
+            <div class="form-group">
+                <label for="regPasswordConfirm">Passwort bestätigen</label>
+                <input type="password" id="regPasswordConfirm" placeholder="Passwort wiederholen">
+            </div>
+            <div class="form-group">
+                <button id="registerBtn" class="btn">Konto erstellen</button>
+                <p style="text-align: center; margin-top: 15px;">
+                    <a href="#" id="showLogin">Zurück zur Anmeldung</a>
+                </p>
             </div>
         </div>
     </div>
@@ -37,23 +58,14 @@
     <div id="settingsContainer" class="container hidden">
         <div class="card">
             <h1>Einstellungen</h1>
-            
+
             <h2>Spracheinstellungen</h2>
             <div class="form-group">
-                <label for="language">Sprache</label>
+                <label for="language">Sprache/Sprecher</label>
                 <select id="language" name="preferred_language">
-                    <option value="de">Deutsch</option>
-                    <option value="en">English</option>
-                    <option value="fr">Français</option>
-                    <option value="es">Español</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="speaker">Sprecher</label>
-                <select id="speaker" name="tts_voice">
-                    <option value="voice1">Standard-Stimme</option>
-                    <option value="voice2">Stimme 2 (weiblich)</option>
-                    <option value="voice3">Stimme 3 (männlich)</option>
+                    <option value="de">Deutsch (männlich)</option>
+                    <option value="en1">English (female)</option>
+                    <option value="en2">English (male)</option>
                 </select>
             </div>
             <div class="form-group">
@@ -63,40 +75,42 @@
                     <span id="paceValue">1.0x</span>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="volume">Lautstärke</label>
-                <div class="slider-container">
-                    <input type="range" id="volume" name="tts_volume" class="slider" min="0" max="100" value="80">
-                    <span id="volumeValue">80%</span>
-                </div>
-            </div>
-            
+
             <h2>Rechtliches</h2>
             <div class="checkbox-group">
                 <input type="checkbox" id="storePermission" name="store_permission" value="true">
-                <label for="storePermission">Darf Gesagtes gespeichert werden?</label>
+                <label for="storePermission">Gesagtes Speichern</label>
             </div>
             <div class="checkbox-group">
                 <input type="checkbox" id="discordPermission" name="discord_permission" value="true" checked>
-                <label for="discordPermission">Anmeldung über Discord erlaubt</label>
+                <label for="discordPermission">Anmeldung über Discord erlauben</label>
             </div>
-            
+
             <h2>Integrationen</h2>
             <div class="form-group">
-                <label>Spotify Integration</label>
+
                 <div class="checkbox-group">
                     <input type="checkbox" id="spotifyEnabled" name="spotify_enabled" value="true">
                     <label for="spotifyEnabled">Spotify Integration aktivieren</label>
                 </div>
+
                 <input type="text" id="spotifyUser" name="spotify_user" placeholder="Spotify Benutzername" class="hidden" style="margin-top: 10px; margin-left: 28px;">
                 <input type="password" id="spotifyPass" name="spotify_pass" placeholder="Spotify Passwort" class="hidden" style="margin-top: 10px; margin-left: 28px;">
-            </div>
-            
+                <label><input type="checkbox" id="tutorai-checkbox" name="tutorai-enabled">TutorAI Integration</label>
+                <div id="trigger-input" class="hidden">
+    <label for="trigger">Triggerwort:</label>
+    <input type="text" id="trigger" name="trigger" placeholder="z. B. ‚Hey Tutor‘">
+  </div>
+  <div class="form-group">
+    <label for="zoomLink">Zoom Meeting Link</label>
+    <input type="text" id="zoomLink" name="zoom_link" placeholder="https://zoom.us/j/..." style="margin-top: 10px;">
+</div>
+
             <div class="save-btn-container">
                 <button id="saveBtn" class="save-btn">Einstellungen speichern</button>
             </div>
         </div>
     </div>
-    <script src="main.js"></script>
+    <script src="main.js?v=9"></script>
 </body>
 </html>

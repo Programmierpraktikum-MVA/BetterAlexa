@@ -2,7 +2,7 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             display: flex;
             justify-content: center;
@@ -12,12 +12,12 @@
             margin: 0;
             padding: 20px;
         }
-        
+
         .container {
             width: 100%;
             max-width: 400px;
         }
-        
+
         .card {
             background: white;
             border-radius: 10px;
@@ -25,35 +25,35 @@
             padding: 30px;
             margin-bottom: 20px;
         }
-        
+
         h1, h2 {
             color: #333;
             margin-top: 0;
         }
-        
+
         h1 {
             text-align: center;
             margin-bottom: 30px;
         }
-        
+
         h2 {
             font-size: 1.2em;
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
             color: #555;
         }
-        
+
         input[type="text"],
         input[type="password"],
         select {
@@ -63,27 +63,27 @@
             border-radius: 5px;
             font-size: 16px;
         }
-        
+
         .checkbox-group {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
         }
-        
+
         .checkbox-group input {
             margin-right: 10px;
         }
-        
+
         .link {
             color: #1877f2;
             text-decoration: none;
             font-size: 14px;
         }
-        
+
         .link:hover {
             text-decoration: underline;
         }
-        
+
         .btn {
             width: 100%;
             padding: 12px;
@@ -95,24 +95,24 @@
             font-weight: 600;
             cursor: pointer;
         }
-        
+
         .btn:hover {
             background-color: #166fe5;
         }
-        
+
         .slider-container {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
+
         .slider {
             flex: 1;
             height: 5px;
             background: #ddd;
             outline: none;
         }
-        
+
         .integration-btn {
             display: flex;
             align-items: center;
@@ -127,11 +127,11 @@
             margin-bottom: 10px;
             cursor: pointer;
         }
-        
+
         .integration-btn:hover {
             background-color: #f9f9f9;
         }
-        
+
         .hidden {
             display: none;
         }
@@ -139,7 +139,7 @@
             margin-top: 30px;
             text-align: right;
         }
-        
+
         .save-btn {
             padding: 12px 25px;
             background-color: #4CAF50;
@@ -150,7 +150,37 @@
             font-weight: 600;
             cursor: pointer;
         }
-        
+
         .save-btn:hover {
             background-color: #45a049;
         }
+
+        .hidden {
+            display: none;
+        }
+        label {
+            font-size: 16px;
+        }
+        #trigger-input {
+            margin-top: 10px;
+        }
+        /* Füge am Ende hinzu */
+#showRegister, #showLogin {
+    color: #1877f2;
+    text-decoration: none;
+    font-size: 14px;
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+}
+
+#showRegister:hover, #showLogin:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #d32f2f;
+    font-size: 14px;
+    margin-top: 5px;
+    display: none;
+}
