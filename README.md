@@ -55,9 +55,9 @@ The server handles audio transcription, reasoning, and tool calls.
    ```bash
    python server.py
    ```
-
-> Keep this terminal running. The **web interface** and the **Python client** both depend on this server.
-
+   The server will run on local interfaces by default. This can be changed by adding the flags --tcp, --port 8000, --host 0.0.0.0
+> Keep this terminal running. The **web interface** depends on this server.
+> If you want to use the discord but, you have to start it seperately (see /server/discord_bot.py)
 ---
 
 ## Setup — Python Voice Client (depends on the server)
