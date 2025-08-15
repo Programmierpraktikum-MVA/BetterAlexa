@@ -32,7 +32,7 @@ LLAMA_MODEL_DIR = Path(__file__).parent / "function_calling" / "Llama-3-8B-funct
 LLAMA_TOKENIZER_DIR = Path(__file__).parent / "function_calling" / "Llama-3-8B-function-calling-tokenizer"
 
 # parameters for the Integrations 
-# TBD @Backend
+# These ports can be changed; in dialog with the other projects
 TUTORAI_URL   = os.getenv("TUTORAI_URL", "http://108.181.203.191:8006/api/v1/chat")
 TUTORAI_TOKEN = os.getenv("101")
 
@@ -43,7 +43,7 @@ class RouteState(Enum):
     TESTING     = auto()
     TUTORAI     = auto()
 
-# per‑meeting state stores
+# per‑meeting state stores, the string beeing the meeting_id
 SESSION_STATE: Dict[str, RouteState]       = {}
 SESSION_DELEGATE: Dict[str, Optional[str]] = {}   # e.g. {"m42": "tutorai"}
 
@@ -101,7 +101,7 @@ def get_current_user(api_key: str = Security(API_KEY_HEADER)):
     except HTTPException as e:
         raise e
 
-# Request-Modelle für sichere Daten
+# Request-Modelle für sichere Daten, für DB
 class SensitiveDataRequest(BaseModel):
     key: str
     password: str
@@ -111,7 +111,7 @@ class SensitiveDataSetRequest(BaseModel):
     value: str
     password: str
 
-# Endpoint: Sensible Daten lesen
+# Endpoint: Sensible Daten lesen, für DB
 @app.post("/get_sensitive_data")
 def read_sensitive_data(request: SensitiveDataRequest, user_id: str = Depends(get_current_user)):
     try:
@@ -120,7 +120,7 @@ def read_sensitive_data(request: SensitiveDataRequest, user_id: str = Depends(ge
     except HTTPException as e:
         raise e
 
-# Endpoint: Sensible Daten schreiben
+# Endpoint: Sensible Daten schreiben, für DB
 @app.post("/set_sensitive_data")
 def write_sensitive_data(request: SensitiveDataSetRequest, user_id: str = Depends(get_current_user)):
     try:
@@ -165,6 +165,7 @@ def api_get_zoom_link(user_id: str = Depends(get_current_user)):
         return {"zoom_link": zoom_link}
     except HTTPException as e:
         raise e
+    
 # Endpoints User Settings
 @app.post("/set_user_setting")
 def api_set_user_setting(request: UserSettingRequest, user_id: str = Depends(get_current_user)):
@@ -234,7 +235,7 @@ EDIT: Token not yet implemented.
 """
 async def _call_tutorai(query: str, meeting: str) -> DelegateResult:
     payload = {"query": query}
-    #semaphore to limit concurrent requests to TutorAI
+    # semaphore to limit concurrent requests to TutorAI
     async with _tutor_sem:
         # Send request to TutorAI and await response
         r = await app.state.httpx.post(
@@ -262,7 +263,7 @@ async def _call_tutorai(query: str, meeting: str) -> DelegateResult:
     else:
         logging.warning("No Authorization header in TutorAI response")
 
-    #extract and return the answer and done status
+    # extract and return the answer and done status
     data = r.json()
     return DelegateResult(answer=data.get("answer", ""), done=data.get("done", False))
 
